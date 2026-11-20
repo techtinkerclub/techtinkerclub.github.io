@@ -7218,6 +7218,876 @@
           "paths": {}
         }
       ]
+    },
+    {
+      "version": 1,
+      "id": "u10-3v2-overload-to-try-v1",
+      "title": "U10 | 3 vs 2 overload · Create space and score",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Attack",
+      "length": 20,
+      "width": 18,
+      "objective": "Recognise a 3 v 2 overload, fix each defender before releasing a backward pass, preserve width and depth, then legally ground the ball in the opponents' in-goal. Distinguish crossing a line from actually scoring.",
+      "safety": "Non-contact decision-making progression: defenders track and make an agreed light touch only; there is no tackle, fend, hand-off, or body contact in this version. Use a clear 20 × 18 m channel with extra run-off. Avoid diving or sliding onto the ground; demonstrate a controlled ball grounding and stop safely beyond the line. Adjust speed, distance, and contact constraints to the players' ability and current RFU U10 rules.",
+      "minutes": 12,
+      "players": "5 active: A1, A2, A3 attack against D1, D2. Rotate every 2–3 repetitions; rotate the ball carrier and scoring player.",
+      "equipment": "1 size-4 rugby ball, 4 cones for the channel, 2 cone markers for the try line (the drawn line shows the attacking direction), plus a safe run-off.",
+      "instructions": "SET-UP: Three attackers (A1–A3) start behind the ball with width and depth. Two defenders (D1–D2) guard the centre. The labelled TRY LINE is ahead of the defenders; its arrow points UP into the scoring in-goal. At the coach's signal, A1 attacks D1's inside shoulder to commit them. A2 stays a step deeper to receive the backward pass. A2 attacks D2 and releases A3 only after D2 commits. A3 receives behind the passer, straightens into the free channel, CROSSES the line while carrying, then deliberately GROUNDS the ball under control. Pause between crossing and grounding to ask whether the try has already been scored (answer: no). Reset, swap carrier/scorer and rotate defenders.",
+      "coaching": "Three priorities only: (1) Attack the defender rather than drifting sideways; watch their hips and draw their commitment. (2) Supporting players preserve width, stay behind the ball, show hands, communicate and receive backward passes. (3) Once clear, the finisher straightens, crosses the line into in-goal and deliberately grounds the ball; no score simply for crossing. Freeze after A1 commits, after A2 commits, and just after A3 crosses. Praise the correct decision, not automatic passing. If the defender does not commit, A1 or A2 may carry instead.",
+      "regression": "Begin 2 v 1 with one touch defender. Fix one defender and make one backward pass, then add A3/D2. Walk the first repetition before increasing speed. Use a wider channel for hesitant passers.",
+      "progression": "Let D1 or D2 drift, then change whom the carrier fixes so that the pass is not predetermined. Narrow the channel slightly, add a recovering defender only after success, or stop A3 just over the line to ask for the grounding action. Try carrying the ball across the line with D1 to explain why the defending team is not awarded this attacking try.",
+      "questions": "Who is fixing D1? What tells you that D1 has committed? Where should A2 stand in relation to the ball? Must A2 pass, or can A2 carry? How do you keep A3 in the game without drifting too early? When A3 runs over the try line, is that already a try? What must A3 do next? Why does a defender crossing into their own in-goal with the ball not score this attacking try?",
+      "notes": "Adapted from the actual starter-library 3 vs 2 Overload (seed-020), retaining its five-player roster, positioning concept, two backward passes and final outside break. This version adds a directional try line and TWO separate final actions: enter in-goal (no score) and controlled grounding (TRY). Animation is a teaching aid, not an automatic referee; A3 is the designated attacking ball-carrier and only explicit grounding after legal directional entry scores. Use the companion earlier two-player demo to introduce the rule before this game-like progression.",
+      "links": [
+        {
+          "label": "RFU · Under-10 Rules of Play (Regulation 15, Appendix 4, 2026–27)",
+          "url": "https://www.englandrugby.com/run/rules-governance/rfu-rules-and-regulations/regulation-15-age-grade-rugby/regulation-15-appendix-4-u10-rules-of-play",
+          "kind": "Age-grade rules · governing body"
+        },
+        {
+          "label": "World Rugby · Law 8: Scoring",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/8-scoring",
+          "kind": "Laws · official"
+        },
+        {
+          "label": "World Rugby · Law 21: In-goal",
+          "url": "https://passport.world.rugby/laws-of-the-game/laws-by-number/21-in-goal/",
+          "kind": "Laws · official"
+        },
+        {
+          "label": "World Rugby · Coaching through games",
+          "url": "https://passport.world.rugby/coaching/coaching-children/coaching-children-the-basics/coaching-through-games/",
+          "kind": "Coaching methodology · official"
+        }
+      ],
+      "provenance": "Derivative of the existing 3 vs 2 Overload starter drill seed-020, retaining its five-player 3 v 2 sequence and adding an explicit legal try-scoring finish. Authored as a separate example, not a replacement for the original.",
+      "review": "Editorially developed from the existing starter drill with age-grade references. For practical delivery, the session coach must review field space, player readiness and the current RFU Under-10 Rules of Play; this does not constitute an independent RFU safety approval.",
+      "frames": [
+        {
+          "name": "Set up · 3 attackers against 2 defenders",
+          "seconds": 0,
+          "notes": "Five players in a 20 × 18 m no-contact channel. A1 has the ball. A2 and A3 hold width and depth. D1 and D2 are passive touch defenders. The TRY LINE arrow points UP to the attacking in-goal.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 220,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 450,
+              "y": 425,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 710,
+              "y": 440,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 290,
+              "y": 200,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 540,
+              "y": 195,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 235,
+              "y": 390,
+              "rot": 0,
+              "ownerId": "o0"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Fix defender 1 · keep support behind",
+          "seconds": 2.2,
+          "notes": "A1 runs at D1's inside shoulder to stop the defender drifting. A2 stays deeper, facing the ball; A3 holds the outside lane. Freeze: has D1 committed, and can A1 keep carrying?",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 290,
+              "y": 290,
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "o1"
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 465,
+              "y": 345,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 720,
+              "y": 355,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 300,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 550,
+              "y": 230,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 305,
+              "y": 270,
+              "rot": 0,
+              "ownerId": "o0"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "Backward pass · A1 to A2",
+          "seconds": 2,
+          "notes": "When D1 commits to A1, A1 passes backwards to A2; the catch happens behind the passer. A3 keeps width and depth; D2 stays in front of A2. Do not pass automatically if the carrier can still run.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 305,
+              "y": 255,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 485,
+              "y": 285,
+              "rot": 0,
+              "headMode": "player",
+              "headTargetId": "o2"
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 730,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 337,
+              "y": 235,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 520,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 500,
+              "y": 268,
+              "rot": 0,
+              "ownerId": "o1",
+              "transferKind": "pass",
+              "carrySide": "left"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {
+            "o5": {
+              "start": 38,
+              "end": 70
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Fix defender 2 · pass to the free runner",
+          "seconds": 2.1,
+          "notes": "A2 straightens at D2 to commit the second defender. A3 stays a step behind and in the outside lane, calls, and receives a second backward pass. Freeze: does D2 bite or drift? If D2 stays away, A2 could carry.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 357,
+              "y": 205,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 510,
+              "y": 212,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 745,
+              "y": 276,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 343,
+              "y": 205,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 547,
+              "y": 195,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 758,
+              "y": 264,
+              "rot": 0,
+              "ownerId": "o2",
+              "transferKind": "pass",
+              "carrySide": "left"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {
+            "o5": {
+              "start": 43,
+              "end": 75
+            }
+          },
+          "paths": {}
+        },
+        {
+          "name": "Break through · cross the line (no try yet)",
+          "seconds": 2.2,
+          "notes": "A3 breaks into the open channel carrying the ball. The attacker CROSSES the labelled try line in the arrow direction but there is NO try yet. Pause here: what must A3 do to score?",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 413,
+              "y": 170,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 589,
+              "y": 180,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 745,
+              "y": 94,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 352,
+              "y": 202,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 553,
+              "y": 194,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 758,
+              "y": 82,
+              "rot": 0,
+              "ownerId": "o2",
+              "carrySide": "left"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "try923-notyet",
+              "actorId": "o2",
+              "text": "NOT A TRY YET!",
+              "kind": "speech",
+              "at": 0.88,
+              "displaySeconds": 0.9
+            }
+          ]
+        },
+        {
+          "name": "Ground the ball · NOW it is a try",
+          "seconds": 1.2,
+          "notes": "A3 slows safely inside the attacking in-goal and deliberately grounds the ball at 65% of this step. The automatic TRY! appears only now, because A3 crossed in the scoring direction with possession and then authored a legal grounding.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 421,
+              "y": 168,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 604,
+              "y": 174,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 745,
+              "y": 72,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 352,
+              "y": 202,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 553,
+              "y": 194,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 758,
+              "y": 59,
+              "rot": 0,
+              "ownerId": "o2",
+              "carrySide": "left"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "try923-ground",
+              "actorId": "o2",
+              "text": "GROUND IT!",
+              "kind": "shout",
+              "at": 0.12,
+              "displaySeconds": 0.65
+            }
+          ],
+          "tryGroundings": [
+            {
+              "id": "try923-grounding",
+              "actorId": "o2",
+              "at": 0.65
+            }
+          ]
+        },
+        {
+          "name": "Celebrate, review the decision, rotate",
+          "seconds": 1.5,
+          "notes": "One TRY is now recorded. A1 and A2 recognise the space they created. Review the two moments where a defender was fixed; ask why the crossing alone did not score. Rotate the ball carrier and both defenders. Keep celebrations and grounding controlled.",
+          "objects": [
+            {
+              "id": "o0",
+              "type": "attacker",
+              "label": "A1",
+              "x": 435,
+              "y": 170,
+              "rot": 0
+            },
+            {
+              "id": "o1",
+              "type": "attacker",
+              "label": "A2",
+              "x": 628,
+              "y": 172,
+              "rot": 0
+            },
+            {
+              "id": "o2",
+              "type": "attacker",
+              "label": "A3",
+              "x": 745,
+              "y": 72,
+              "rot": 0
+            },
+            {
+              "id": "o3",
+              "type": "defender",
+              "label": "D1",
+              "x": 352,
+              "y": 202,
+              "rot": 180
+            },
+            {
+              "id": "o4",
+              "type": "defender",
+              "label": "D2",
+              "x": 553,
+              "y": 194,
+              "rot": 180
+            },
+            {
+              "id": "o5",
+              "type": "ball",
+              "label": "",
+              "x": 758,
+              "y": 59,
+              "rot": 0,
+              "ownerId": "o2",
+              "carrySide": "left"
+            },
+            {
+              "id": "c0",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c1",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 85,
+              "rot": 0
+            },
+            {
+              "id": "c2",
+              "type": "cone",
+              "label": "",
+              "x": 80,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "c3",
+              "type": "cone",
+              "label": "",
+              "x": 820,
+              "y": 455,
+              "rot": 0
+            },
+            {
+              "id": "try923line",
+              "type": "tryLine",
+              "label": "TRY LINE",
+              "x": 450,
+              "y": 135,
+              "rot": 0,
+              "diagram": {
+                "length": 17.5,
+                "width": 2,
+                "color": "#d8f5aa",
+                "opacity": 100,
+                "fill": false,
+                "fillOpacity": 12,
+                "dashed": false,
+                "scoringSide": "negative",
+                "labelAnchor": "end",
+                "labelSide": "left"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ],
+      "attackDirection": "up",
+      "showAttack": true,
+      "revision": 1,
+      "savedAt": "2026-11-20T12:10:32.144Z"
     }
   ]
 }
