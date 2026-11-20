@@ -401,7 +401,8 @@ function initPublicBoard(){
     Math.round(box.left/window.innerWidth*1000)/1000,
     Math.round(box.top/window.innerHeight*1000)/1000];
   }
-  try{localStorage.setItem(layoutKey,JSON.stringify({...settings,positions,opacity:panelOpacity.value}))}catch{}
+  settings.positions=positions;settings.opacity=panelOpacity.value;
+  try{localStorage.setItem(layoutKey,JSON.stringify(settings))}catch{}
  }
  function positionPanel(node,left,top){
   const rect=node.getBoundingClientRect(),w=rect.width||200,h=rect.height||50;
@@ -467,12 +468,22 @@ function initPublicBoard(){
    positionPanel(item.node,r.left+delta[0],r.top+delta[1]);savePanelPositions();
   });
  }
- if(settings.positions&&window.innerWidth>700)requestAnimationFrame(()=>{
-  for(const item of movablePanels){
-   const p=settings.positions[item.key];
-   if(Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))positionPanel(item.node,p[0]*window.innerWidth,p[1]*window.innerHeight);
+ function reflowPanels(){
+  if(window.innerWidth<=700){
+   for(const item of movablePanels){
+    delete item.node.dataset.floating;
+    for(const prop of ['left','top','right','bottom','transform'])item.node.style.removeProperty(prop);
+   }
+   return;
   }
- });
+  for(const item of movablePanels){
+   const p=settings.positions?.[item.key];
+   if(Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))
+    positionPanel(item.node,p[0]*window.innerWidth,p[1]*window.innerHeight);
+  }
+ }
+ requestAnimationFrame(reflowPanels);
+ window.addEventListener('resize',reflowPanels);
  // Fold-away rails leave the pitch clear without removing useful functions.
  const dock=document.createElement('nav');dock.className='public-board-dock';
  dock.setAttribute('aria-label','Show or hide Blackboard panels');
@@ -500,7 +511,7 @@ function initPublicBoard(){
  document.getElementById('presentation-panel-step')?.append(shortcuts);
  window.addEventListener('keydown',event=>{
   if(!document.body.classList.contains('public-blackboard')||event.altKey||event.ctrlKey||event.metaKey||event.repeat)return;
-  if(document.querySelector('dialog[open]')||event.target.closest('input,textarea,select,button,[contenteditable="true"],summary'))return;
+  if(document.querySelector('dialog[open]')||event.target.closest?.('input,textarea,select,button,[contenteditable="true"],summary'))return;
   if(event.code==='Space'){event.preventDefault();$('play').click()}
   else if(event.key==='ArrowLeft'){event.preventDefault();$('previousStep').click()}
   else if(event.key==='ArrowRight'){event.preventDefault();$('nextStep').click()}
