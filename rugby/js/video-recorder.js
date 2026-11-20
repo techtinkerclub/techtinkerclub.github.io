@@ -193,7 +193,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   }
   progress(1,'Finalising video…');await delay(120);check();recorder.stop();
   const blob=await recorded;check();if(!blob.size)throw Error('Video encoder returned an empty file.');
-  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,chapters:story.clips.length};
+  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,chapters:story.clips.length,encoder:'compatibility-live'};
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}
  finally{for(const track of stream.getTracks())track.stop()}
 }
