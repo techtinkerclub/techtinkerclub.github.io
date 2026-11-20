@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\\.js\\?v=0\\.20\\.69/);
+ assert.match(html,/player\.js\?v=0\.20\.69/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
