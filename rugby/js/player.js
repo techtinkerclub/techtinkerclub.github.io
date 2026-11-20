@@ -11,7 +11,7 @@ import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} fr
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
-import {teachingOverlay,keyMoments,loopStepBounds,loopProgress} from './blackboard-coaching.js?v=2';
+import {teachingOverlay,keyMoments,loopStepBounds,loopProgress,followFramingViewport} from './blackboard-coaching.js?v=2';
 import {stepLocation} from './step-timeline.js?v=1';
 import {transitionObjects} from './possession.js?v=0.19.1';
 const $=id=>document.getElementById(id);
@@ -103,7 +103,7 @@ function render(){
  $('playerFollow').classList.toggle('selected',opts.framing==='follow');
  const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
- board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
+ board.innerHTML=s.svg;viewBase=publicBoard?.cameraView(s)||s.camera;applyZoom();shownStep=s.index;
  publicBoard?.refresh(s);
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';renderStepRoute(s.index);$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
@@ -385,10 +385,22 @@ function initPublicBoard(){
  function showNotice(value){notice.textContent=value;}
  const focus=document.createElement('section');focus.className='public-board-focus';
  focus.innerHTML='<label>Spotlight <select id="publicSpotlight" aria-label="Spotlight player"><option value="">Off</option></select></label>'+
+  '<label>Camera follows <select id="publicCameraTarget" aria-label="Coaching camera focus"><option value="action">Whole action</option><option value="ball">Ball</option><option value="player">Chosen player</option></select></label>'+ 
+  '<label id="publicCameraPlayerLabel" hidden>Follow player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+ 
+  '<label>Framing <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>'+ 
   '<label>Ghost <select id="publicGhost" aria-label="Show past or next positions"><option value="off">Off</option><option value="start">Previous</option><option value="next">Next</option><option value="both">Both</option></select></label>';
  // Teaching-only settings belong in the existing View drawer, not the canvas.
  document.getElementById('presentation-panel-view')?.prepend(focus);
- const local={spot:'',ghost:'off'};
+ const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard'};
+ const cameraTarget=focus.querySelector('#publicCameraTarget');
+ const cameraPlayer=focus.querySelector('#publicCameraPlayer');
+ cameraTarget.addEventListener('change',()=>{
+  local.camera=cameraTarget.value;
+  focus.querySelector('#publicCameraPlayerLabel').hidden=local.camera!=='player';
+  resetZoom();render();
+ });
+ cameraPlayer.addEventListener('change',()=>{local.cameraPlayer=cameraPlayer.value;resetZoom();render()});
+ focus.querySelector('#publicCameraFraming').addEventListener('change',e=>{local.cameraFraming=e.target.value;resetZoom();render()});
  focus.querySelector('#publicSpotlight').addEventListener('change',e=>{local.spot=e.target.value;render()});
  focus.querySelector('#publicGhost').addEventListener('change',e=>{local.ghost=e.target.value;render()});
  const ink=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -451,6 +463,12 @@ function initPublicBoard(){
   const select=focus.querySelector('#publicSpotlight'),current=select.value;
   const names=scene.frame.objects.filter(o=>['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type));
   const signature=names.map(o=>o.id+':'+o.label).join('|');
+  if(cameraPlayer.dataset.signature!==signature){
+   const previous=cameraPlayer.value;cameraPlayer.dataset.signature=signature;cameraPlayer.replaceChildren();
+   for(const o of names){const option=document.createElement('option');option.value=o.id;option.textContent=o.label||o.id;cameraPlayer.append(option)}
+   if(names.some(o=>o.id===previous))cameraPlayer.value=previous;
+   local.cameraPlayer=cameraPlayer.value;
+  }
   if(select.dataset.signature!==signature){
    select.dataset.signature=signature;select.innerHTML='<option value="">Off</option>';
    for(const o of names){const opt=document.createElement('option');opt.value=o.id;opt.textContent=o.label||o.id;select.append(opt)}
@@ -506,7 +524,18 @@ function initPublicBoard(){
   if(stepLoop){loopIndex=Math.max(1,shownStep);if(shownStep===0)jumpStep(1);}
   refreshPlaybackTools();
  });
- return {refresh,syncView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,loopIndex):null};
+ function cameraView(scene){
+  if(!d||local.camera==='action'||local.cameraFraming==='full')return null;
+  const g=drillGeometry(d,opts.orientation),loc=stepLocation(d,t),i=scene.index;
+  const prev=d.frames[Math.max(0,i-1)],objects=i>0?transitionObjects(prev,scene.frame,loc.p,g):scene.frame.objects;
+  const target=local.camera==='ball'?objects.find(o=>o.type==='ball'):objects.find(o=>o.id===local.cameraPlayer);
+  if(!target)return null;
+  const p=g.toView(target.x,target.y),width=g.viewWidth*.42,height=g.viewHeight*.42;
+  const view={x:Math.max(0,Math.min(g.viewWidth-width,p.x-width/2)),
+   y:Math.max(0,Math.min(g.viewHeight-height,p.y-height/2)),width,height};
+  return followFramingViewport(view,g,local.cameraFraming);
+ }
+ return {refresh,syncView,cameraView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,loopIndex):null};
 }
 
 publicBoard=initPublicBoard();
