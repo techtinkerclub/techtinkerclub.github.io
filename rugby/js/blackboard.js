@@ -12,7 +12,16 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
  launch.type='button';launch.id='blackboardLaunch';launch.className='blackboard-launch';
  launch.textContent='▤ Blackboard';launch.title='Full-pitch interactive coaching blackboard (B)';
  launch.setAttribute('aria-keyshortcuts','B');launch.setAttribute('aria-controls','blackboardUI');
+ launch.setAttribute('aria-pressed','false');
  $('details')?.parentElement?.insertBefore(launch,$('details').nextSibling);
+ const viewPanel=document.querySelector('#viewMenu .view-menu-panel');
+ if(viewPanel){
+  const entry=document.createElement('button');entry.id='blackboardFromView';entry.type='button';
+  entry.textContent='▤ Open full-screen Blackboard';
+  entry.title='Open the live editable pitch with floating blackboard tools';
+  viewPanel.appendChild(entry);
+  entry.addEventListener('click',()=>{$('viewMenu').open=false;open()});
+ }
  const ui=document.createElement('div');ui.id='blackboardUI';ui.className='blackboard-ui';ui.hidden=true;
  ui.innerHTML=
  '<div class="bb-title" aria-live="polite"><strong id="bbName">Rugby blackboard</strong><small id="bbStep">Select and move a player</small></div>'+
@@ -219,6 +228,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
   launch.focus({preventScroll:true});
  }
  launch.addEventListener('click',open);
+ if(new URLSearchParams(location.search).get('blackboard')==='1')requestAnimationFrame(open);
  document.addEventListener('keydown',event=>{
   if(event.target.closest('input,textarea,select,[contenteditable]')||document.querySelector('dialog[open]'))return;
   if(!active&&event.key.toLowerCase()==='b'&&!event.altKey&&!event.ctrlKey&&!event.metaKey){
