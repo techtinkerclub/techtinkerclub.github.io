@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {chromium} from 'playwright';
+import {movieOptions} from '../js/movie.js';
 
 const origin=process.env.RUGBY_TEST_ORIGIN||'http://127.0.0.1:8765';
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-fake-ui-for-media-stream']});
@@ -12,6 +13,12 @@ const track=page=>{
  page.on('console',message=>{if(message.type()==='error')errors.push('Console: '+message.text())});
 };
 try{
+ // Regression: normalisation must preserve the selected camera mode. This
+ // previously discarded 'follow' and silently exported a fixed whole pitch.
+ assert.equal(movieOptions({framing:'follow'}).framing,'follow');
+ assert.equal(movieOptions({framing:'action'}).framing,'action');
+ assert.equal(movieOptions({framing:'field'}).framing,'field');
+ assert.equal(movieOptions({framing:'invalid'}).framing,'action');
  // Public library: a preselected regular drill should offer one tidy export.
  const pub=await browser.newPage({viewport:{width:920,height:900},acceptDownloads:true});
  track(pub);
