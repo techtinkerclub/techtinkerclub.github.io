@@ -81,5 +81,5 @@ test('Native editor has scoring direction and grounding controls; Blackboard kee
  assert.match(blackboard,/data-bb="open-library"/);
  assert.match(blackboard,/data-bb="save-library"/);
  assert.match(blackboard,/data-bb="publish-saved"/);
- assert.match(html,/ANIMATED LIBRARY v0\.20\.61/);
+ assert.match(html,/ANIMATED LIBRARY v0\.20\.63/);
 });
