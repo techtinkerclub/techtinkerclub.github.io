@@ -1,12 +1,12 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.78';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.83';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=12';
 import {decisionList,decisionText} from './training.js?v=0.18.8';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
-import {recordCoachingMovie} from './video-recorder.js?v=0.20.81';
+import {recordCoachingMovie} from './video-recorder.js?v=0.20.83';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.82';
+import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.83';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
