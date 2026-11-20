@@ -37,7 +37,7 @@ import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
 import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, objectPose, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.20.78';
 import {createCamera} from './camera.js?v=0.5.2';
-import {actionViewport,followActionViewport} from './action-camera.js?v=3';
+import {actionViewport,followActionViewport} from './action-camera.js?v=4';
 import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.20.75';
 import {inspectedPose} from './pose-inspector.js?v=0.12.17';
 import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.34';
@@ -52,8 +52,8 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.78';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.82';
+import {renderScene} from './scene.js?v=0.20.83';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.83';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.81';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
@@ -2825,7 +2825,7 @@ $('shareOpen').onclick=async()=>{const w=window.open('about:blank','_blank');if(
 $('shareMovie').onclick=async()=>{if(sharingBusy)return;shareBusy(true);$('shareStatus').textContent='';try{if(!videoSequence.length)throw Error('Choose at least one drill for the video.');
  const sequence=videoSequence.map(item=>item.current?clone(drill):clone(item.drill));
  const settings={...shareOptions(),...getMovieSettings(),cartoonMode:$('shareVideoStyle').value==='ruckus',sequenceDrills:sequence,movieTitle:$('movieTitle').value.trim()},name=outputName({title:$('movieTitle').value.trim()||drill.title});
- const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{shareBusy(false)}};
+ const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(sequence[0],settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,name+'.'+result.extension);return result});if(result)$('shareStatus').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'+(result.encoder==='compatibility-live'?' Compatibility recorder used: for smoother video try Chrome/Edge on a computer.':'')}finally{shareBusy(false)}};
 $('sharePrint').onclick=()=>{const opts=shareOptions();$('shareDialog').close();printDrill(drill,opts)};
 // Close board options when returning to the pitch or leaving with Escape.
 document.addEventListener('pointerdown',e=>{const menu=$('viewMenu');if(menu.open&&!menu.contains(e.target)&&!e.target.closest('#mobileViewOptions'))menu.open=false});

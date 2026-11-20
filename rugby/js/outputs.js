@@ -1,12 +1,12 @@
 import {esc} from './model.js?v=0.5.3';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.78';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.83';
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {outcomeCardsMarkup} from './branching-visual.js?v=12';
 import {decisionList,decisionText} from './training.js?v=0.18.8';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
-import {recordCoachingMovie} from './video-recorder.js?v=0.20.81';
+import {recordCoachingMovie} from './video-recorder.js?v=0.20.83';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.82';
+import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.83';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
@@ -113,7 +113,7 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
    await delay(Math.max(0,1000/fps-(performance.now()-begin)));
   }
   checkAbort();progress(1,'Finalising video…');await delay(120);checkAbort();recorder.stop();const blob=await recorded;checkAbort();if(!blob.size)throw Error('No video data was produced.');
-  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total};
+  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,encoder:'compatibility-live'};
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}finally{for(const track of stream.getTracks())track.stop()}
 }
 export function printMarkup(raw,opts={}){

@@ -1,7 +1,7 @@
-import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.82';
+import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.83';
 import {bindMovieSettings} from './movie.js?v=0.20.81';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
-import {playbackData} from './scene.js?v=0.20.78';
+import {playbackData} from './scene.js?v=0.20.83';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Uses only the published catalogue. No editable drill or GitHub write access.
 export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
@@ -93,7 +93,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
     if(!signal.aborted)saveBlob(video.blob,outputName({title})+'.'+video.extension);
     return video;
    });
-   get('videoStatus').textContent=file?'Video exported · '+file.width+' × '+file.height+' · '+file.extension.toUpperCase():'Export not completed. See the export status.';
+   get('videoStatus').textContent=file?'Video exported · '+file.width+' × '+file.height+' · '+file.extension.toUpperCase()+(file.encoder==='compatibility-live'?' · Compatibility recorder; desktop Chrome/Edge usually exports more smoothly.':''):'Export not completed. See the export status.';
   }catch(err){get('videoStatus').textContent='Export failed: '+err.message}
   finally{busy=false;render()}
  };

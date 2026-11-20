@@ -1,10 +1,10 @@
 // Story-led movie renderer. Uses the exact shared pitch/animation renderer;
 // title/decision/option cards freeze a real scene without changing the drill.
-import {playbackData,renderScene} from './scene.js?v=0.20.78';
+import {playbackData,renderScene} from './scene.js?v=0.20.83';
 import {movieStoryboard,storyboardClip,storyboardTime} from './movie-storyboard.js?v=0.20.79';
 import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.82';
+import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.83';
 import {wrapCanvas,cardEntries,cardLinks} from './coaching-output.js?v=0.13.10';
 
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -193,7 +193,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   }
   progress(1,'Finalising video…');await delay(120);check();recorder.stop();
   const blob=await recorded;check();if(!blob.size)throw Error('Video encoder returned an empty file.');
-  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,chapters:story.clips.length};
+  return {blob,extension:blob.type.includes('mp4')?'mp4':'webm',width:W,height:H,seconds:total,chapters:story.clips.length,encoder:'compatibility-live'};
  }catch(e){if(recorder?.state==='recording')recorder.stop();throw e}
  finally{for(const track of stream.getTracks())track.stop()}
 }

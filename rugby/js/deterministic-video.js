@@ -69,26 +69,54 @@ function muxWebM(samples,width,height,fps,seconds){
  const length=segments.reduce((n,part)=>n+part.byteLength,0);
  return new Blob([header,hexBytes('18538067'),vint(length),...segments],{type:'video/webm'});
 }
+
+// Prefer the existing deterministic WebM path where supported; Safari can use
+// WebCodecs H.264 + a local MP4 muxer instead of the stuttering live recorder.
 export async function encodeDeterministicVideo({canvas,draw,seconds,fps=30,bitrate=6000000,signal=null,progress=()=>{}}){
- // Encoded frames are retained until the WebM is assembled. On very long or
- // very high-bitrate films, prefer the bounded-memory MediaRecorder fallback.
  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined'||!Number.isFinite(seconds)||
   seconds<=0||bitrate*seconds/8>140000000)return null;
- const {width,height}=canvas,config={codec:'vp8',width,height,framerate:fps,bitrate};
- let supported;
- try{supported=await VideoEncoder.isConfigSupported(config)}catch{return null}
- if(!supported?.supported)return null;
- const packets=[];let encoderError=null;
- const encoder=new VideoEncoder({
-  output:chunk=>{
-   const data=new Uint8Array(chunk.byteLength);
-   chunk.copyTo(data);packets.push({timestamp:chunk.timestamp,key:chunk.type==='key',data});
+ const {width,height}=canvas;
+ // Levels are matched to maximum raster size. Reject a configuration rather
+ // than silently encoding video at a lower resolution than the user selected.
+ const avcLevel=Math.max(width,height)>2048?'avc1.640033':
+  Math.max(width,height)>1280?'avc1.42E028':'avc1.42E01F';
+ const candidates=[
+  {kind:'webm',config:{codec:'vp8',width,height,framerate:fps,bitrate}},
+  {kind:'mp4',config:{codec:avcLevel,width,height,framerate:fps,bitrate,avc:{format:'avc'}}},
+  {kind:'mp4',config:{codec:Math.max(width,height)>2048?'avc1.640033':
+   Math.max(width,height)>1280?'avc1.4D4028':'avc1.4D401F',
+   width,height,framerate:fps,bitrate,avc:{format:'avc'}}}
+ ];
+ let chosen=null;
+ for(const candidate of candidates){
+  try{
+   const result=await VideoEncoder.isConfigSupported(candidate.config);
+   if(result?.supported){chosen=candidate;break}
+  }catch{}
+ }
+ if(!chosen)return null;
+ const packets=[];let encoderError=null,mp4Muxer=null,encoder=null;
+ if(chosen.kind==='mp4'){
+  // Loaded only when Safari/another browser needs MP4, with no external CDN.
+  const {Muxer,ArrayBufferTarget}=await import('./vendor/mp4-muxer.min.mjs');
+  mp4Muxer=new Muxer({target:new ArrayBufferTarget(),
+   video:{codec:'avc',width,height,frameRate:fps},fastStart:'in-memory'});
+ }
+ encoder=new VideoEncoder({
+  output:(chunk,meta)=>{
+   try{
+    if(mp4Muxer)mp4Muxer.addVideoChunk(chunk,meta);
+    else{
+     const data=new Uint8Array(chunk.byteLength);
+     chunk.copyTo(data);packets.push({timestamp:chunk.timestamp,key:chunk.type==='key',data});
+    }
+   }catch(e){encoderError=e}
   },
   error:err=>{encoderError=err||Error('Video encoding failed.')}
  });
  try{
-  // Some browsers advertise a configuration but reject it when configuring.
-  try{encoder.configure(config)}catch{return null}
+  // A browser can report WebCodecs support while refusing this exact encoder.
+  try{encoder.configure(chosen.config)}catch{return null}
   const count=Math.max(1,Math.ceil(seconds*fps));
   for(let i=0;i<count;i++){
    if(signal?.aborted)throw new DOMException('Export cancelled','AbortError');
@@ -99,15 +127,20 @@ export async function encodeDeterministicVideo({canvas,draw,seconds,fps=30,bitra
    const frame=new VideoFrame(canvas,{timestamp:Math.round(i*1e6/fps),duration:Math.round(1e6/fps)});
    try{encoder.encode(frame,{keyFrame:i%(fps*2)===0})}finally{frame.close()}
    if(encoder.encodeQueueSize>4)await encoder.flush();
+   if(encoderError)throw encoderError;
    if(i%10===0||i===count-1){
     progress((i+1)/count,t);
-    // Give cancellation and browser controls an opportunity to run.
     await new Promise(resolve=>setTimeout(resolve,0));
    }
   }
   await encoder.flush();
   if(encoderError)throw encoderError;
-  const blob=muxWebM(packets,width,height,fps,seconds);
-  return {blob,extension:'webm',width,height,seconds};
+  if(mp4Muxer){
+   mp4Muxer.finalize();
+   return {blob:new Blob([mp4Muxer.target.buffer],{type:'video/mp4'}),
+    extension:'mp4',width,height,seconds,encoder:'deterministic-mp4'};
+  }
+  return {blob:muxWebM(packets,width,height,fps,seconds),
+   extension:'webm',width,height,seconds,encoder:'deterministic-webm'};
  }finally{encoder.close()}
 }
