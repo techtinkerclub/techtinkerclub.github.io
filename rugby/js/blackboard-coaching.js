@@ -53,6 +53,25 @@ export function targetViewport(objects,g,id){
  const width=Math.min(210,g.viewWidth*.46),height=Math.min(150,g.viewHeight*.46);
  return {x:p.x-width/2,y:p.y-height/2,width,height};
 }
+// Shared, view-only Blackboard field-of-view presets. The scale factor is
+// relative to the existing tracking target; a higher factor reveals more of
+// the pitch. "full" uses the true pitch viewport and never changes drill data.
+export const FOLLOW_FRAMING=Object.freeze({
+ close:.72,standard:1,wide:1.6,veryWide:2.35,full:null
+});
+export function followFramingViewport(view,g,preset='standard'){
+ if(!view||!g||![g.viewWidth,g.viewHeight].every(v=>Number.isFinite(v)&&v>0))return view;
+ const factor=Object.prototype.hasOwnProperty.call(FOLLOW_FRAMING,preset)?FOLLOW_FRAMING[preset]:1;
+ if(factor===null)return {x:0,y:0,width:g.viewWidth,height:g.viewHeight};
+ if(!Number.isFinite(view.x)||!Number.isFinite(view.y)||!(view.width>0)||!(view.height>0))return view;
+ const cx=view.x+view.width/2,cy=view.y+view.height/2;
+ const width=Math.min(g.viewWidth,Math.max(1,view.width*factor));
+ const height=Math.min(g.viewHeight,Math.max(1,view.height*factor));
+ return {x:Math.max(0,Math.min(g.viewWidth-width,cx-width/2)),
+  y:Math.max(0,Math.min(g.viewHeight-height,cy-height/2)),
+  width,height};
+}
+
 const circle=(p,r,colour,caption)=>'<circle cx="'+p.x.toFixed(2)+'" cy="'+p.y.toFixed(2)+'" r="'+r+'" fill="none" stroke="'+colour+'" stroke-width="2.4" stroke-dasharray="6 4"/><text x="'+p.x.toFixed(2)+'" y="'+(p.y-r-6).toFixed(2)+'" fill="'+colour+'" paint-order="stroke" stroke="#12321d" stroke-width="3" font-size="11" font-weight="700" text-anchor="middle">'+safe(caption)+'</text>';
 export function teachingOverlay({objects=[],previous=null,next=null,g,spotlightIds=[],ghostMode='off',ghostIds=[]}={}){
  if(!g?.toView)return '';
