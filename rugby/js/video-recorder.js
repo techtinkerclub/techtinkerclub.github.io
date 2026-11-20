@@ -1,6 +1,6 @@
 // Story-led movie renderer. Uses the exact shared pitch/animation renderer;
 // title/decision/option cards freeze a real scene without changing the drill.
-import {playbackData,renderScene} from './scene.js?v=0.20.76';
+import {playbackData,renderScene} from './scene.js?v=0.20.77';
 import {movieStoryboard,storyboardClip,storyboardTime} from './movie-storyboard.js?v=0.20.45';
 import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.45';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
