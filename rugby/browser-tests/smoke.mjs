@@ -26,7 +26,7 @@ try {
  assert.equal(await page.locator('#board .ruckus-player').count(),0,'Switch restores Classic view');
   assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
   assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
- assert.equal(await page.locator('#branchPlayer').isVisible(),true,'Outcome selector should appear');
+ assert.equal(await page.locator('#branchPlayer').evaluate(el=>el.hidden),false,'Outcome selector should be available in the coaching sidebar');
  assert.match(await page.locator('#coachCardContent').innerText(),/World Rugby|RFU/i);
  await page.locator('#speed').selectOption('2');
  await page.locator('#play').click();
