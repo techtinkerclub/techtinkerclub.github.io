@@ -42,11 +42,11 @@ test('Ink is explicitly ephemeral and separate from real routes and passes',()=>
 test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
-  assert.match(s,path==='index.html'?/assets\/blackboard\.css\?v=4/:/assets\/blackboard\.css\?v=2/);
-  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.57/:/js\/app\.js\?v=0\.20\.48/);
+  assert.match(s,path==='index.html'?/assets\/blackboard\.css\?v=5/:/assets\/blackboard\.css\?v=2/);
+  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.58/:/js\/app\.js\?v=0\.20\.48/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=9'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=10'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
 });
