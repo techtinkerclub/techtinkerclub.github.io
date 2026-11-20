@@ -2,13 +2,13 @@ import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=5';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
-import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=3';
+import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=4';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.20.60';
 import {headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=40';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=41';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=12';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
