@@ -2,7 +2,7 @@
 // title/decision/option cards freeze a real scene without changing the drill.
 import {playbackData,renderScene} from './scene.js?v=0.20.78';
 import {movieStoryboard,storyboardClip,storyboardTime} from './movie-storyboard.js?v=0.20.79';
-import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.45';
+import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
 import {wrapCanvas,cardEntries,cardLinks} from './coaching-output.js?v=0.13.10';
 
@@ -99,7 +99,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
    const playingClip=clip.kind==='motion'||clip.kind==='rewind';
    const showArrows=clip.kind==='motion'&&clip.pass==='replay';
    const options={orientation:opts.orientation||'up',scaleMode:opts.scaleMode||'realistic',
-    framing:opts.framing||'field',offside:opts.offside===true,
+    framing:settings.framing,offside:opts.offside===true,
     teachingGuides:opts.teachingGuides!==false,markups:opts.markups!==false,
     labels:opts.labels!==false,decisions:opts.decisions!==false,
     runs:showArrows,passes:showArrows,cartoonMode:opts.cartoonMode===true};
