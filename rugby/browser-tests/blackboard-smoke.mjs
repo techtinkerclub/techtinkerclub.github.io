@@ -21,6 +21,21 @@ try{
   assert(startingPlayers>0,'existing players present');
   const first=page.locator('[data-bb="add"]').first();
   await first.click();
+  const liveTypes=await page.locator('#palette button[data-type], #rugbyPalette button[data-type]').evaluateAll(els=>
+   els.map(el=>el.dataset.type).sort());
+  const boardTypes=await page.locator('#bbAddPalette button[data-bb-add]').evaluateAll(els=>
+   els.map(el=>el.dataset.bbAdd).sort());
+  assert.deepEqual(boardTypes,liveTypes,
+   'Blackboard Add mirrors every supported Studio object, never obsolete tools');
+  assert.equal(await page.locator('#bbAddPalette button[data-bb-add] svg').count(),boardTypes.length,
+   'Every Blackboard add tile has its original Studio SVG icon');
+  for(const old of ['maul','scrum','decision'])
+   assert.equal(await page.locator('#bbAddPalette [data-bb-add="'+old+'"]').count(),0,
+    'Obsolete standalone diagram tool '+old+' must not appear');
+  assert.equal(await page.locator('#bbAddPalette [data-bb-add="tryLine"]').count(),1,
+   'Try line is available as a supported labelled marking');
+  assert.equal(await page.locator('#bbAddPalette .bb-native-palette-group[open]').count(),1,
+   'Only the first category opens initially to avoid clutter');
   await page.locator('[data-bb-add="attacker"]').click();
   assert.equal(await page.locator('#pitch .obj[data-id]').count(),startingPlayers+1,
    'adding a blackboard player uses original Studio model');
@@ -30,6 +45,18 @@ try{
   await page.keyboard.press('Escape');
   await page.waitForFunction(()=>document.getElementById('objectMenu')?.hidden===true);
 
+  // One Drills shelf controls Open/New/Save/Publish, without permanent button clutter.
+  await page.locator('[data-bb="drills"]').click();
+  assert(await page.locator('#bbDrillsMenu').isVisible());
+  for(const choice of ['open-library','new-board','save-library','publish-saved'])
+   assert.equal(await page.locator('#bbDrillsMenu [data-bb="'+choice+'"]').count(),1);
+  assert.equal(await page.locator('#bbDrillsMenu [data-bb="publish-saved"]').isDisabled(),true,
+   'A changed unsaved drill must never publish automatically');
+  await page.locator('#bbDrillsMenu [data-bb="open-library"]').click();
+  assert(await page.locator('#libraryDialog').isVisible(),'Open displays the original drill library');
+  assert.equal(await page.locator('body.blackboard-mode').count(),1,
+   'Library browsing must remain inside Blackboard');
+  await page.locator('#closeLibrary').click();
   const selectedId=await page.locator('#objectPicker').inputValue();
   assert(selectedId,'Newly added player should be the selected editor object');
   const before=Number(await page.locator('#objRot').inputValue());
