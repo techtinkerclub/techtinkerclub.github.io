@@ -65,7 +65,8 @@ test('coaching literature is complete and linked to current, primary rugby guida
   'regression','progression','questions','notes','provenance','review'];
  for(const key of fields){
   const value=editor[key];
-  assert(value!==undefined&&String(value).trim().length>=3,'Missing '+key);
+  if(key==='minutes')assert(Number.isFinite(value)&&value>=5&&value<=30,'Missing sensible duration');
+  else assert(value!==undefined&&String(value).trim().length>=3,'Missing '+key);
  }
  for(const f of editor.frames)assert(f.notes?.length>=65,'Step needs useful coaching narration: '+f.name);
  assert(editor.instructions.includes('A1')&&editor.instructions.includes('A2')&&editor.instructions.includes('A3'));
