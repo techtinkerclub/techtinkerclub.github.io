@@ -100,14 +100,14 @@ test('floating boards can move, retract and adjust opacity without editing drill
  assert.match(js,/pointermove/);
  assert.match(js,/publicPanelOpacity/);
  assert.match(js,/public-board-dock/);
- assert.match(js,/data\.collapsed/);
+ assert.match(js,/dataset\.collapsed/);
  assert.match(blackboard,/public-panel-alpha/);
  assert.match(blackboard,/data-collapsed="true"/);
 });
 test('mobile can open a compact tools menu and bottom-sheet coaching notes',()=>{
  const blackboard=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
  assert.match(js,/public-board-mobile-menu/);
- assert.match(js,/data\.mobileOpen/);
+ assert.match(js,/dataset\.mobileOpen/);
  assert.match(blackboard,/max-width:700px/);
  assert.match(blackboard,/transform:translateY\(105%\)/);
  assert.match(blackboard,/data-mobile-open="true"/);
