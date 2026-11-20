@@ -1,11 +1,12 @@
 import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=2';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
+import {tryLineEvents,tryFeedbackSVG} from './try-scoring.js?v=1';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.12.8';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
-import {esc,types,shape,clamp} from './model.js?v=0.18.8';
+import {esc,types,shape,clamp} from './model.js?v=0.20.60';
 import {headSettings} from './player-gaze.js?v=3';
 import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=38';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
@@ -52,7 +53,10 @@ export function playbackData(d){
    const t=f.timing?.[o.id];if(t&&Object.hasOwn(f.timing,o.id)){const start=num(t.start,0,99,0);timing[o.id]={start,end:num(t.end,start+1,100,100)}}
    if(f.paths&&Object.hasOwn(f.paths,o.id))paths[o.id]=f.paths[o.id];return sanitizeSkills(copyLayoutMarker(o,copyTraining(o,q)));
   });
-  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):num(f.seconds,0,30,0),notes:str(f.notes),objects,timing,paths,guide:f.guide};if(Array.isArray(f.callouts)){result.callouts=f.callouts;cleanCallouts(result)}const guides=cleanTeachingGuides(f.teachingGuides);if(guides.length)result.teachingGuides=guides;const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);if(Array.isArray(f.interactions))result.interactions=f.interactions;sanitizeInteractions(result);return result;
+  const result={name:str(f.name,160)||'Step '+(i+1),seconds:i?num(f.seconds,.5,30,2):num(f.seconds,0,30,0),notes:str(f.notes),objects,timing,paths,guide:f.guide};
+  if(Array.isArray(f.tryGroundings)){
+   result.tryGroundings=f.tryGroundings.slice(0,25).filter(v=>v&&objects.some(o=>o.id===v.actorId&&o.type==='attacker')&&Number.isFinite(Number(v.at))).map(v=>({id:str(v.id,80)||'ground-'+v.actorId,actorId:v.actorId,at:num(v.at,0,1,.85)}));
+  }if(Array.isArray(f.callouts)){result.callouts=f.callouts;cleanCallouts(result)}const guides=cleanTeachingGuides(f.teachingGuides);if(guides.length)result.teachingGuides=guides;const cue=signalForFrame({...f,objects});if(cue)result.signal=cue;cleanGuide(result);cleanTraining(result);if(Array.isArray(f.interactions))result.interactions=f.interactions;sanitizeInteractions(result);return result;
  });
  cleanContacts(out.frames);cleanBreakdowns(out.frames);sanitizeRoutes(out.frames);normaliseRecoveryPoses(out.frames);syncPossession(out.frames,pitchGeometry(out.length,out.width,'up'));
  if(hasOutcomes(d)){const b=branchInfo(d),views=outcomeViews(d).map(v=>({id:v.id,clean:playbackData(v.drill)}));out.branching={version:1,fork:b.fork,question:b.question,active:b.active,...(typeof b.markerId==='string'?{markerId:b.markerId}:{}),context:str(b.context,500),watchFor:str(b.watchFor,500),choices:b.choices.map(v=>({id:v.id,label:v.label,explanation:str(v.explanation,500),watchFor:str(v.watchFor,500),frames:views.find(w=>w.id===v.id).clean.frames.slice(b.fork+1)}))};out.frames=views.find(v=>v.id===b.active).clean.frames;}
@@ -83,6 +87,8 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  const caption=labels?contactLabels(objects,focused?{...g,viewWidth:camera.width}:g,esc,[...new Set(changes)],cartoonMode):'';
  const placedCaption=focused&&caption?'<g transform="translate('+camera.x+' '+camera.y+')">'+caption+'</g>':caption;
  let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i,cartoonMode})+ripOverlay(fr,old,objects,g,time===null?1:p,ink,cartoonMode)+calloutOverlay(d.frames,i,objects,g,time===null?1:p,{cartoonMode,ink,editing:time===null})+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null,cartoonMode})+contestResultOverlay(fr,objects,g,p,ink,cartoonMode)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
+ const tryMark=tryFeedbackSVG(tryLineEvents(d,g),time===null?d.frames.slice(1,i+1).reduce((sum,step)=>sum+(Number(step.seconds)||0),0):time,{...g,viewWidth:camera.width,viewHeight:camera.height},{cartoonMode,ink});
+ if(tryMark)body+='<g transform="translate('+camera.x+' '+camera.y+')">'+tryMark+'</g>';
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');
  return {svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+camera.x+' '+camera.y+' '+camera.width+' '+camera.height+'" width="'+camera.width+'" height="'+camera.height+'" font-family="Arial,sans-serif">'+body+'</svg>',g:{...g,viewWidth:camera.width,viewHeight:camera.height},camera,index:i,frame:fr};
 }
