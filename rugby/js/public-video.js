@@ -1,4 +1,4 @@
-import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.78';
+import {recordDrill,saveBlob,outputName,printProgression} from './outputs.js?v=0.20.79';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
 import {playbackData} from './scene.js?v=0.20.78';
