@@ -70,3 +70,18 @@ test('follow camera is reachable in Studio, both library players and video expor
   'public library video options must not override the chosen camera; printing may still use action framing');
  assert.match(video,/framing:settings\.framing/);
 });
+
+
+test('follow view retains nearby tactical context and starts the first movement without a camera jump',()=>{
+ const d=playbackData(raw),g=pitchGeometry(d.length,d.width,'up');
+ const setup=followActionViewport(d,g,0),entry=followActionViewport(d,g,1,0);
+ assert(Math.abs(setup.x-entry.x)<1e-6&&Math.abs(setup.y-entry.y)<1e-6);
+ assert(Math.abs(setup.width-entry.width)<1e-6,
+  'first moving frame must not jump in zoom relative to the setup card');
+ for(const p of [.1,.25,.5,.75,1]){
+  const view=followActionViewport(d,g,1,p);
+  assert(view.width>=g.viewWidth/1.75-1e-6,
+   'camera must not crop so close that supporting runners disappear');
+  assert(rectangle(view,g),'camera must remain within the pitch boundaries');
+ }
+});
