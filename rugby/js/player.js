@@ -353,6 +353,8 @@ function initPublicBoard(){
  make('≡ Steps','Step-by-step coaching sequence',()=>openPanel('steps'));
  make('◎ View','Camera, overlays and pitch options',()=>openPanel('view'));
  make('↗ Share','Links, coaching sheets and videos',()=>openPanel('share'));
+ const focusButton=make('◎ Focus','Tap a player to spotlight them without editing',()=>setPickFocus(!pickFocus));
+ focusButton.setAttribute('aria-pressed','false');
  const inkButton=make('✎ Ink','Draw temporary marks on the pitch',()=>setInk(!inkEnabled));
  inkButton.setAttribute('aria-pressed','false');
  const fullButton=make('⛶ Fullscreen','Enter or exit fullscreen presentation',async()=>{
@@ -570,12 +572,41 @@ function initPublicBoard(){
  ink.setAttribute('aria-label','Temporary coaching ink');ink.classList.add('public-board-ink');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');
  board.append(ink);
- let inkEnabled=false,activePath=null,paths=[],previousScene=null,stepLoop=false,loopIndex=1;
+ let pickFocus=false,inkEnabled=false,activePath=null,paths=[],previousScene=null,stepLoop=false,loopIndex=1;
  const colour=inkTools.querySelector('#publicInkColour'),width=inkTools.querySelector('#publicInkWidth');
+ function setPickFocus(value){
+  pickFocus=!!value;focusButton.setAttribute('aria-pressed',String(pickFocus));
+  board.classList.toggle('public-picking-focus',pickFocus);
+  if(pickFocus){setInk(false);showNotice('Tap a player to spotlight them. Nothing in the drill is changed.')}
+  else showNotice('');
+ }
+ board.addEventListener('click',event=>{
+  if(!pickFocus||!d||!document.body.classList.contains('public-blackboard'))return;
+  if(event.target.closest('.public-board-ink'))return;
+  const svg=board.querySelector('svg:not(.public-board-ink)');
+  if(!svg)return;
+  const ctm=svg.getScreenCTM();if(!ctm)return;
+  const point=svg.createSVGPoint();point.x=event.clientX;point.y=event.clientY;
+  const p=point.matrixTransform(ctm.inverse());
+  const i=Math.max(0,shownStep),g=drillGeometry(d,opts.orientation);
+  const loc=stepLocation(d,t),before=d.frames[Math.max(0,i-1)];
+  const candidates=i?transitionObjects(before,d.frames[i],loc.p,g):d.frames[0].objects;
+  let nearest=null,distance=Infinity;
+  for(const o of candidates){
+   if(!['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type))continue;
+   const position=g.toView(o.x,o.y),delta=Math.hypot(p.x-position.x,p.y-position.y);
+   if(delta<distance){distance=delta;nearest=o}
+  }
+  if(nearest&&distance<Math.max(38,g.scale*.7)){
+   local.spot=nearest.id;focus.querySelector('#publicSpotlight').value=nearest.id;
+   showNotice('Spotlight: '+(nearest.label||nearest.id)+' · use View to switch it off');
+   setPickFocus(false);render();
+  }else showNotice('Tap nearer to a player to spotlight them.');
+ });
  function setInk(enabled){
   inkEnabled=!!enabled;inkTools.hidden=!inkEnabled;inkButton.setAttribute('aria-pressed',String(inkEnabled));
   board.classList.toggle('public-inking',inkEnabled);
-  if(inkEnabled){stop();toolbar.dataset.mobileOpen='false';mobileMenu.setAttribute('aria-expanded','false');showNotice('Draw with your mouse, finger or pen. Marks stay local to this board.')}
+  if(inkEnabled){pickFocus=false;focusButton.setAttribute('aria-pressed','false');board.classList.remove('public-picking-focus');stop();toolbar.dataset.mobileOpen='false';mobileMenu.setAttribute('aria-expanded','false');showNotice('Draw with your mouse, finger or pen. Marks stay local to this board.')}
   else showNotice('');
  }
  function syncView(){
