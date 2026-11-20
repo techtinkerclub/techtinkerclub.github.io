@@ -6,8 +6,21 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.55** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.57** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.56–0.20.57 — Blackboard teaching workflow and smarter View menus (20 November 2026)
+
+- Editor: /rugby/ remains authoritative for object data, route timings, playback, camera and decisions. Blackboard is not another drill engine; Classic gameplay and visuals stay unchanged.
+- Loop/replay: Steps & timing now includes 0.25×, 0.5×, 1×, 2× speed; Replay step; Loop step. Bounds use actual movement timestamps without changing saved step lengths. The Play/Pause control remains Studio's original.
+- Camera: Follow whole action, selected player or ball, using existing interpolated player objects and original camera. The selected-player choice is disabled until a player is selected and ball follow is disabled without a ball. Manual camera changes still disable follow.
+- Spotlight and ghost positions: optional view-only overlays; spotlight dims other players, ghosts compare start and next positions for selected/grouped players. Neither changes saved drill data or exported movies. Exiting Blackboard clears temporary effects and step-loop state.
+- Persistent layouts: device-local Editing and Coaching presets remember panel positions and visibility. Coaching layout hides redundant chrome and reduces idle opacity. Switching to a new preset keeps the selector open; Reset affects only the selected preset.
+- Key moments: optional collapsible timeline jump buttons for authored whistle, tackle, ruck, pass, release and decision moments; uses the native step navigator and caps the number for large drills.
+- Decision controls: conditional ◆ Decision shortcut and A/B choices use actual authored outcomes and existing comparison/editor dialogs. Duplicate native A/B controls are hidden only in the embedded Blackboard timeline. Comparison presentation is compact and responsive.
+- Menus: The View popover prioritises properly aligned Follow action and pitch visibility controls. Object scale, grid and snapping, and workspace layout are now collapsed under More display & alignment, avoiding the screenshot's awkward checkbox/text wrapping and excessive scrolling. Mobile uses the same controls.
+- Implementation: new js/blackboard-coaching.js; updated blackboard.js, app.js, index.html, assets/blackboard.css and assets/workflow.css. Added tests/blackboard-teaching.test.mjs, expanded browser-tests/blackboard-smoke.mjs; adjusted video-export-ux.mjs selector to target the outer View summary.
+- QA: The expanded Blackboard browser test passed on desktop 1380×850, phone 390×844 and tablet 920×520 in the v0.20.57 run. The full Node suite still has 12 existing failures in old catalogue, animation, publication and rules fixtures; the newly added Blackboard tests pass. Verify the final browser-video and Pages checks for the latest commit before asserting end-to-end certification.
 
 ## 0.20.55 — Align Follow action throughout the coaching UI (20 November 2026)
 
