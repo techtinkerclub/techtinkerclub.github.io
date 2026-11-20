@@ -99,3 +99,15 @@ test('View options is an above-pitch scrollable sheet with a tappable backdrop',
  assert.match(css,/\.inspector-body > \.board-actions/);
  assert.match(css,/\.board-actions \.zoom-tools\{display:none!important\}/);
 });
+
+
+test('Desktop hides injected mobile camera toolbar instead of showing a ghost bar behind the pitch',()=>{
+ const css=read('assets/mobile-editor.css');
+ const firstMedia=css.indexOf('@media');
+ const hide=css.indexOf('.mobile-camera-controls{display:none}');
+ assert.ok(hide>0&&hide<firstMedia,'The display:none rule must be global, not inside the <=1100px media query');
+ assert.match(css,/body\.mobile-workspace \.mobile-camera-controls\{\s*display:flex/,'Mobile controls must remain visible in mobile mode');
+ for(const page of ['index.html','coach/index.html']){
+  assert.match(read(page),/assets\/mobile-editor\.css\?v=0\.1\.7/,'Both editions must load refreshed CSS');
+ }
+});
