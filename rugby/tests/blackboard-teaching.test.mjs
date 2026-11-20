@@ -79,3 +79,18 @@ test('Blackboard uses two existing panels; decisions only appear for authored br
  assert.match(src,/localStorage\.setItem\(layoutKey/);
  assert.match(src,/onCoachTool\('reset-ephemeral',true\)/);
 });
+
+test('Blackboard Editing/Coaching use separate remembered layouts; Ruckus stays legible when off',()=>{
+ const blackboard=read('js/blackboard.js'),css=read('assets/blackboard.css'),index=read('index.html');
+ assert.match(index,/blackboard\.css\?v=5/);
+ assert.match(blackboard,/savedLayouts\[layoutPreset\]=\{panels,camera:cameraOpen,timeline:timelineOpen\}/);
+ assert.match(blackboard,/ui\.classList\.toggle\('bb-coaching-layout',name==='coaching'\)/);
+ assert.match(blackboard,/id="bbLayoutHint"/);
+ assert.match(blackboard,/Coaching hides Undo, Redo and Save/);
+ assert.match(blackboard,/Editing shows Undo, Redo and Save/);
+ assert.match(blackboard,/data-bb="ruckus" id="bbRuckus"[^>]*aria-pressed="false"/);
+ assert.match(blackboard,/ruckus\.setAttribute\('aria-pressed',String\(!!state\.cartoonMode\)\)/);
+ assert.match(css,/\.bb-top-actions \[data-bb="ruckus"\]\{\s*color:#f3edcc;\s*background:#314939e8/);
+ assert.match(css,/\.bb-top-actions \[data-bb="ruckus"\]\.is-active/);
+ assert.match(css,/\.blackboard-ui\.bb-coaching-layout \.bb-top-actions\.bb-movable/);
+});
