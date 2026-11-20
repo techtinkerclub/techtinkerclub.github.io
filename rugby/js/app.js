@@ -19,6 +19,7 @@ import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
+import {initBlackboard} from './blackboard.js?v=1';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
@@ -2662,3 +2663,24 @@ $('offsideGuides').onchange=()=>{render();note($('offsideGuides').checked?'Appro
 $('validationFindings').onclick=e=>{const b=e.target.closest('[data-finding]'),issue=b&&validationResult?.findings[Number(b.dataset.finding)];if(!issue)return;$('validationDialog').close();choose(issue.step);validationHighlight=new Set(issue.ids);const id=issue.ids.find(id=>f().objects.some(o=>o.id===id));if(id)selectObject(id);else render();if(issue.group==='offside'){$('offsideGuides').checked=true;render()}note(issue.message);focusPitch()};
 
 window.addEventListener('beforeunload',e=>{if(dirty||setupPending||githubSaving||stagedImports.length){e.preventDefault();e.returnValue=''}});resetHistory();syncGrid();refresh();updateGitHubControls();refreshPublicationData();
+// Blackboard wraps this SAME renderer and its existing editor controls.
+// Never create a parallel drill, event model, or selection state.
+const blackboard=initBlackboard({
+ getState:()=>({
+  title:drill.title,stepName:f().name||f().notes||'Edit positions and movement',
+  idx,total:drill.frames.length,
+  selection:selected?(()=>{const o=f().objects.find(item=>item.id===selected);return o?{id:o.id,label:o.label||types[o.type]?.[0]||o.type,type:o.type}:null})():null,
+  canRun:!$('drawRouteSide').disabled,
+  canPass:!$('passBallSide').disabled,
+  routeDrawing,cartoonMode,preview,playing
+ }),
+ fit:()=>camera.fit(),
+ rotate:delta=>{
+  if(!selected||preview!==null||playing)return;
+  const control=$('objRot');if(!control||control.disabled)return;
+  control.value=String(Math.max(-360,Math.min(360,(Number(control.value)||0)+delta)));
+  control.dispatchEvent(new Event('change',{bubbles:true}));
+ },
+ openDetails:()=>{$('tabObject').click();}
+});
+
