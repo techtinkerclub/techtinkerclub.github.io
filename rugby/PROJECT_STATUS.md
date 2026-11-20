@@ -1,13 +1,24 @@
 # Rugby Coaching Studio — project status and handover
 
-Updated 19 November 2026. This document is the maintained handover between chats and development sessions.
+Updated 20 November 2026. This document is the maintained handover between chats and development sessions.
 
 ## Current release
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.45** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.47** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.46–0.20.47 — Immersive live Blackboard for coaches (20 November 2026)
+
+- **Goal:** User wanted a full-screen interactive Rugby Blackboard, modelled on the 99 Club Studio manipulatives whiteboard (`techtinkerclub/99club`, `/whiteboard/`): pitch takes priority, minimal transparent floating tools, touch/pen/mouse direct interaction, selection-aware actions. Unlike **Presentation** (read-only), this mode must edit the SAME actual drill.
+- **Entry:** Auto-created **▤ Blackboard** header action in both Library and Coach editions; also **Open full-screen Blackboard** in View options and a direct URL `/rugby/?blackboard=1`; keyboard `B` (outside inputs). Exit button or Esc restores existing editor. Optional native Fullscreen button where browser supports it; CSS fullscreen works independently on iOS Safari.
+- **Implementation:** `js/blackboard.js` and `assets/blackboard.css`, initialised once at the end of `js/app.js`. Uses the EXISTING `#pitch` SVG, selection, history, saved frames, palette, play and action handlers. The normal editor is only visually hidden; do not create separate board state or fork Classic mode.
+- **Floating controls:** semi-transparent narrow tool rail: Select, Run (click points to draw real movement), Pass (tap receiver), Ink (temporary teaching annotations), Add (blue/red player, ball, cone, marker and line marking), Details (opens the ORIGINAL Object/Step/Drill inspector). Selected-object popover: Run, Pass, ±15° via the original rotation inspector, Edit details. Top actions: Undo/Redo, Fit, browser Fullscreen, Classic/Ruckus, Save through original GitHub workflow and Exit. Bottom navigation: previous/next step, add new step, playback. State labels reflect real `idx`, `selected`, `cartoonMode`, `playing` and original button eligibility.
+- **Ink boundaries:** separate overlay SVG, mapped to actual pitch SVG viewBox/zoom and screen-to-SVG coordinates, touch/pointer-enabled. Explicitly TEMPORARY, not saved or exported as drill/video and clearable with Undo mark/Clear ink. Rugby runs, passes, player moves, rotations, objects and steps remain normal persistent editor operations. Never claim temporary ink is persisted.
+- **Mobile:** Fullscreen 390×844 and tablet 920×520 covered by responsive CSS; menu actions do not require right-click. Drawer reveals original full inspector only when selected; blackboard should not override mobile navigation outside this mode.
+- Tests: `tests/blackboard-mode.test.mjs` checks real-editor reuse, no duplicate drill state and temporary ink, `browser-tests/blackboard-smoke.mjs` tests fullscreen, add, player rotation, ink, new step, and exit in 1380×850, 390×844 and 920×520. Browser QA workflow executes the new test BEFORE its existing video/mobile/decision checks. The latest browser Blackboard test passed all three viewports on latest candidate. Node new Blackboard tests passed; other pre-existing QA failures must be reported separately. Check release SHA/deployment before claiming live availability.
+- **Future expansion (not yet built):** decide whether temporary pen strokes should be optionally persisted as proper diagram annotations; add presentation-mode read-only Blackboard when expressly requested. Avoid implying existing temporary strokes are permanently part of saved frames. Keep Classic editor intact.
 
 ## 0.20.45 — Smooth Follow action camera across editor, libraries and exported video (19 November 2026)
 
