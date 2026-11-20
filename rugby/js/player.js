@@ -543,6 +543,7 @@ function initPublicBoard(){
    const hide=node.dataset.collapsed!=='true';
    node.dataset.collapsed=String(hide);
    button.setAttribute('aria-pressed',String(!hide));
+   if(hide&&key==='camera')setCameraSettingsOpen(false);
   });
   dock.append(button);
  }
