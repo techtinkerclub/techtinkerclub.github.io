@@ -5,12 +5,17 @@ import {encodeDeterministicVideo} from '../js/deterministic-video.js';
 // Exercise Safari's H.264 route without depending on WebCodecs or a GPU in CI.
 // The muxer must produce a real MP4 container with frame-accurate timestamps.
 test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 is unavailable',async()=>{
- const original={encoder:globalThis.VideoEncoder,frame:globalThis.VideoFrame,doc:globalThis.document};
+ const original={encoder:globalThis.VideoEncoder,frame:globalThis.VideoFrame,doc:globalThis.document,chunk:globalThis.EncodedVideoChunk};
  const avcConfig=Uint8Array.from([
   1,66,224,31,255,225,0,10,103,66,224,31,149,168,20,1,110,155,1,0,4,104,206,60,128
  ]);
  const nalu=Uint8Array.from([0,0,0,4,101,136,132,33]);
  const drawing=[];
+ class FakeEncodedVideoChunk{
+  constructor({timestamp,duration,type}){this.byteLength=nalu.length;this.timestamp=timestamp;
+   this.duration=duration;this.type=type}
+  copyTo(destination){destination.set(nalu)}
+ }
  class FakeVideoFrame{
   constructor(surface,{timestamp,duration}){this.timestamp=timestamp;this.duration=duration}
   close(){}
@@ -20,13 +25,14 @@ test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 i
   constructor({output,error}){this.output=output;this.error=error;this.encodeQueueSize=0}
   configure(config){this.config=config}
   encode(frame,{keyFrame}){
-   this.output({byteLength:nalu.length,timestamp:frame.timestamp,duration:frame.duration,
-    type:keyFrame?'key':'delta',copyTo:destination=>destination.set(nalu)},
+   this.output(new FakeEncodedVideoChunk({timestamp:frame.timestamp,duration:frame.duration,
+    type:keyFrame?'key':'delta'}),
     {decoderConfig:{codec:this.config.codec,description:avcConfig}});
   }
   async flush(){}
   close(){}
  }
+ globalThis.EncodedVideoChunk=FakeEncodedVideoChunk;
  globalThis.VideoFrame=FakeVideoFrame;
  globalThis.VideoEncoder=FakeVideoEncoder;
  globalThis.document={hidden:false};
@@ -52,5 +58,6 @@ test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 i
   if(original.encoder===undefined)delete globalThis.VideoEncoder;else globalThis.VideoEncoder=original.encoder;
   if(original.frame===undefined)delete globalThis.VideoFrame;else globalThis.VideoFrame=original.frame;
   if(original.doc===undefined)delete globalThis.document;else globalThis.document=original.doc;
+  if(original.chunk===undefined)delete globalThis.EncodedVideoChunk;else globalThis.EncodedVideoChunk=original.chunk;
  }
 });
