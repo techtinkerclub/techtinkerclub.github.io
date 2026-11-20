@@ -94,6 +94,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="grid" aria-pressed="false" title="Toggle grid">▦ Grid</button>'+
   '<button type="button" data-bb="paths" aria-pressed="false" title="Show running and passing routes">↝ Paths</button>'+
   '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
+  '<button type="button" data-bb="follow" aria-pressed="false" title="Automatically follow moving players and the ball during playback">◎ Follow</button>'+
   '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button>'+
  '</section>'+
  '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
@@ -230,6 +231,14 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    if(control&&original){const pressed=original.getAttribute('aria-pressed')==='true'||original.classList.contains('selected');
     control.setAttribute('aria-pressed',String(pressed));control.classList.toggle('is-active',pressed)}
   }
+  // The follow setting belongs to Studio's original camera, not a Blackboard copy.
+  // Manual pan/zoom/fit in Studio switches it off; always reflect that here.
+  const follow=btn('follow'),originalFollow=$('followAction');
+  if(follow&&originalFollow){
+   const enabled=originalFollow.checked===true;
+   follow.setAttribute('aria-pressed',String(enabled));
+   follow.classList.toggle('is-active',enabled);
+  }
   const tracks=btn('tracks');if(tracks)tracks.setAttribute('aria-expanded',String($('toggleTracks')?.getAttribute('aria-expanded')==='true'));
   $('bbSelected').textContent=state.selection?.label||'Selected object';
   const showSelection=!!state.selection&&!state.playing&&state.preview===null&&!pen;
@@ -301,6 +310,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'zoom-in':click('zoomIn');break;
    case 'zoom-out':click('zoomOut');break;
    case 'pan':setPen(false);click('panMode');break;
+   case 'follow':if(!click('followAction'))hint('Follow action is unavailable in this view.');break;
    case 'grid':click('grid');break;
    case 'paths':click('trails');break;
    case 'markings':click('markups');break;
