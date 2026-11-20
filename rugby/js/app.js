@@ -2646,6 +2646,31 @@ function donutInspector(o){
  const selectedPlayer=picking?trainingPick.tackler:(impact||down?o.donutTacklerId||draft.tackler:draft.tackler);
  const disabled=down||impact;
  panel.innerHTML='<div class="decision-inspector"><h3>Tackle donut</h3><label>Name<input id="donutName" value="'+esc(o.label)+'"></label><label>Rolling heading (degrees)<input id="donutRot" type="number" min="0" max="359" step="1" value="'+wrapAngle(o.rot)+'" '+(picking||disabled?'disabled':'')+'></label><div class="facing-buttons" aria-label="Quick rolling directions">'+[[0,'↑'],[90,'→'],[180,'↓'],[270,'←']].map(([a,t])=>'<button type="button" data-donut-facing="'+a+'" '+(picking||disabled?'disabled':'')+'>'+t+'</button>').join('')+'</div><small>Heading sets the donut axis, not the travel direction.</small><label>Roll direction<select id="donutDirection" '+(picking||disabled?'disabled':'')+'><option value="auto" '+(draft.direction==='auto'?'selected':'')+'>Either way · click either side</option><option value="forward" '+(draft.direction==='forward'?'selected':'')+'>Forward · along heading</option><option value="reverse" '+(draft.direction==='reverse'?'selected':'')+'>Reverse · opposite heading</option></select></label><label>Intercepting player<select id="donutTackler"><option value="">None · roll only</option>'+allowed.map(p=>'<option value="'+esc(p.id)+'" '+(selectedPlayer===p.id?'selected':'')+'>'+esc(objectName(p))+'</option>').join('')+'</select></label><label>Interception point (% of planned roll)<input id="donutFraction" type="number" min="10" max="95" value="'+(picking?trainingPick.fraction*100:draft.fraction)+'"></label><label>Full duration of new roll (s)<input id="donutSeconds" type="number" min=".5" max="30" step=".5" value="'+(picking?trainingPick.seconds:draft.seconds)+'"></label><button id="donutRoll" class="'+(roll?'':'primary')+'" '+(disabled?'disabled':'')+'>'+ (picking?'Cancel target selection':'Choose roll end on pitch')+'</button>'+(roll?'<button id="donutIntercept" class="primary">Intercept this existing roll</button><small>This uses the movement from the previous step and adds a stopped-donut step.</small>':'')+'<small id="donutActionHelp"></small><button id="donutReset">Stand donut upright</button><button id="donutDelete" class="danger-action">Delete donut</button><small>Coach-controlled equipment practice; not a live player tackle.</small></div>';
+ // The coach can overlap a ready donut in the setup step, making direct
+ // dragging awkward. These precise nudges move the actual starting point
+ // through following stationary frames, stopping before its authored roll.
+ if(o.donutState==='ready'&&!picking){
+  const nudges=document.createElement('div');
+  nudges.className='donut-start-nudge';
+  nudges.innerHTML='<div class="label-option">Starting point · move 0.5 m</div>'+
+   '<div class="flex">'+
+   [['up','↑'],['right','→'],['down','↓'],['left','←']].map(([dir,glyph])=>
+    '<button type="button" data-donut-nudge="'+dir+'" title="Move ready donut '+dir+' by half a metre">'+glyph+'</button>').join('')+'</div>'+
+   '<small>Moves this ready donut and matching later setup positions. An already planned roll and tackle destination are protected. Useful if the coach overlaps the donut.</small>';
+  panel.querySelector('.decision-inspector')?.insertBefore(nudges,$('donutRot')?.closest('label')||null);
+  for(const button of nudges.querySelectorAll('[data-donut-nudge]'))button.onclick=()=>{
+   const unit={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[button.dataset.donutNudge];
+   if(!unit||o.donutState!=='ready')return;
+   const g=geometry(),old={x:o.x,y:o.y},p=g.toView(o.x,o.y);
+   const target=placement(g.fromView(p.x+unit[0]*g.scale*.5,p.y+unit[1]*g.scale*.5));
+   if(Math.hypot(target.x-o.x,target.y-o.y)<1e-6)return;
+   o.x=target.x;o.y=target.y;
+   const ripple=propagatePosition(drill.frames,idx,o.id,old,'onward');
+   if(!ripple.ok){Object.assign(o,old);note('Could not shift the starting point: '+ripple.reason);return}
+   changed();render();inspector();tracks();
+   note('Donut start moved half a metre.'+rippleFeedback(ripple)+' Undo restores the original start.');
+  };
+ }
  const locked=()=>trainingPick?.kind==='roll'&&trainingPick.id===o.id;
  const fields=['donutTackler','donutFraction','donutSeconds','donutName','donutDirection'];
  const remember=()=>{draft.tackler=$('donutTackler').value;draft.fraction=clamp(Number($('donutFraction').value)||65,10,95);draft.seconds=clamp(Number($('donutSeconds').value)||2,.5,30);draft.direction=['forward','reverse'].includes($('donutDirection').value)?$('donutDirection').value:'auto'};
