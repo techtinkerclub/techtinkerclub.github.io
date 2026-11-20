@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\.js\?v=0\.20\.67/);
+ assert.match(html,/player\\.js\\?v=0\\.20\\.69/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
@@ -47,4 +47,37 @@ test('blackboard mode displays the actual drill flow and coaching menu',()=>{
  assert.match(css,/chalk-route-step/);
  assert.match(css,/aria-current="step"/);
  assert.match(html,/player-workspace\.css\?v=2/);
+});
+
+test('published drills open as fullscreen read-only blackboards',()=>{
+ const stylesheet=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
+ assert.match(html,/public-blackboard\.css\?v=2/);
+ assert.match(js,/function initPublicBoard\(\)/);
+ assert.match(js,/document\.body\.classList\.add\('public-blackboard'\)/);
+ assert.match(stylesheet,/\.read-only-player\.public-blackboard>header\{display:none\}/);
+ assert.match(stylesheet,/height:100dvh/);
+ assert.match(stylesheet,/\.public-board-toolbar/);
+ assert.match(js,/fullscreenElement/);
+ assert.match(js,/requestFullscreen/);
+});
+
+test('the public board offers coaching tools without editor mutations',()=>{
+ for(const keyword of ['publicInkColour','publicInkUndo','publicInkClear','publicSnapshotPng',
+  'publicSpotlight','publicGhost','publicCameraTarget','publicCameraFraming',
+  'publicReplayStep','publicLoopStep','publicKeyMoments']){
+  assert.ok(js.includes(keyword),keyword+' exists');
+ }
+ assert.match(js,/const overlay=teachingOverlay/);
+ assert.match(js,/saveBlob\(png,outputName\(d\)/);
+ assert.match(js,/Temporary marks/);
+ assert.match(js,/local\s*to this board/);
+ assert.match(js,/stepLoop=false/);
+ assert.match(js,/new URLSearchParams\(location\.search\)\.has\('drill'\)/);
+});
+
+test('fullscreen board leaves standard share and published frames alone',()=>{
+ assert.match(js,/publicBoard\?\.cameraView\(s\)\|\|s\.camera/);
+ assert.match(js,/publicBoard\?\.refresh\(s\)/);
+ assert.match(js,/saveBlob\(png/);
+ assert.match(js,/document\.body\.classList\.contains\('public-blackboard'\)/);
 });
