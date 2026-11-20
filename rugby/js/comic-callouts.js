@@ -34,63 +34,129 @@ function wrapped(value,max=23){
  if(rows.length>4){rows.length=4;rows[3]=rows[3].slice(0,Math.max(1,max-1))+'…';}
  return rows.length?rows:['…'];
 }
-// The tail points to the speaker's position. This is always outside the player
-// sprite, keeping faces, rugby balls and tag strips visible.
-export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent='#f7d765'}){
- const rows=wrapped(text),size=comic?13:11.5,step=comic?17:15;
- const width=Math.max(104,Math.min(252,Math.max(...rows.map(r=>r.length))*size*.62+28));
- const height=rows.length*step+20;
- const limitX=Math.max(8,(g?.viewWidth||900)-width-8);
- const minX=(g?.margin??0)+5,maxX=Math.max(minX,(g?.viewWidth||900)-width-(g?.margin??0)-5);
- const left=Math.min(maxX,Math.max(minX,x-width/2)),right=left+width;
- const topEdge=(g?.margin??0)+5;
- const above=y-height-29>=topEdge,top=above?y-height-26:y+28;
- const attachX=Math.min(right-22,Math.max(left+22,x));
- const tailTipY=above?y-17:y+17,tailStartY=above?top+height:top;
- const tail=comic?'<path d="M'+(attachX-12)+' '+tailStartY+' Q'+(attachX-6)+' '+(above?tailStartY+16:tailStartY-16)+' '+x+' '+tailTipY+' Q'+(attachX+7)+' '+(above?tailStartY+10:tailStartY-10)+' '+(attachX+13)+' '+tailStartY+'Z" fill="'+(ink?'#fff':comic?'#fff8da':'#18382d')+'" stroke="'+(ink?'#222':'#172b23')+'" stroke-width="3" stroke-linejoin="round"/>':'<path d="M'+attachX+' '+tailStartY+'L'+x+' '+tailTipY+'" stroke="'+(ink?'#555':accent)+'" stroke-width="2" stroke-dasharray="3 4"/>';
- const fill=ink?'#fff':comic?(kind==='shout'?'#fff1a9':kind==='thought'?'#e8f8ff':'#fff8da'):'#18382d';
- const stroke=ink?'#252525':comic?'#172b23':accent;
- const shadow=comic&&!ink?'<rect x="'+(left+4)+'" y="'+(top+5)+'" width="'+width+'" height="'+height+'" rx="15" fill="#122b1c" opacity=".38"/>':'';
- let surface;
- if(comic&&kind==='shout'){
-  const cx=left+width/2,cy=top+height/2,rx=width/2,ry=height/2;
-  const pts=Array.from({length:28},(_,i)=>{const angle=-Math.PI/2+i*Math.PI/14,scale=i%2?.89:1.08;return (cx+Math.cos(angle)*rx*scale).toFixed(1)+','+(cy+Math.sin(angle)*ry*scale).toFixed(1)}).join(' ');
-  surface='<polygon points="'+pts+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="3.4" stroke-linejoin="round"/>';
- }else surface='<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" rx="'+(comic?kind==='thought'?24:16:7)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(comic?3.4:1.7)+'"/>';
- const thought=comic&&kind==='thought'?'<circle cx="'+(x+3)+'" cy="'+(above?y-21:y+21)+'" r="5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"/><circle cx="'+(x+9)+'" cy="'+(above?y-12:y+12)+'" r="2.7" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>':'';
- const texts=rows.map((line,i)=>'<text x="'+(left+width/2)+'" y="'+(top+18+i*step)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+size+'" font-weight="'+(comic?'900':'700')+'" fill="'+(comic||ink?'#162922':'#fff9df')+'" letter-spacing="'+(comic?.25:0)+'">'+esc(line)+'</text>').join('');
- return '<g class="'+(comic?'graphic-novel-bubble':'standard-speech-bubble')+'" pointer-events="none"><title>'+esc(text)+'</title>'+shadow+(kind==='thought'&&comic?'':tail)+surface+thought+texts+'</g>';
+// One spatial planner for authored speech and automatic rugby action cues.
+// Callouts always remain detached from the speaker and avoid nearby characters.
+// All coordinates are in SVG pixels; neither Classic nor Ruckus alters drills.
+const overlap=(a,b)=>{
+ const w=Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x));
+ const h=Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+ return w*h;
+};
+const bubbleBounds=(g,width,height)=>{
+ const margin=Math.min(45,Math.max(8,Number(g?.margin)||12));
+ const vw=Math.max(width+16,Number(g?.viewWidth)||900),vh=Math.max(height+16,Number(g?.viewHeight)||540);
+ const minX=Math.min(margin,(vw-width)/2),minY=Math.min(margin,(vh-height)/2);
+ return {minX,minY,maxX:Math.max(minX,vw-margin-width),maxY:Math.max(minY,vh-margin-height)};
+};
+export function planBubble({x,y,width,height,g,avoid=[],reserved=[]}){
+ const b=bubbleBounds(g,width,height);
+ const candidates=[
+  {left:x+51,top:y-height-35,side:'right',rank:0},
+  {left:x-51-width,top:y-height-35,side:'left',rank:1},
+  {left:x+51,top:y+37,side:'right',rank:2},
+  {left:x-51-width,top:y+37,side:'left',rank:3},
+  {left:x-width/2,top:y-height-65,side:'top',rank:4},
+  {left:x-width/2,top:y+65,side:'bottom',rank:5}
+ ];
+ const points=[...avoid,{x,y,id:'speaker'}];
+ const evaluated=candidates.map(c=>{
+  const left=Math.min(b.maxX,Math.max(b.minX,c.left)),top=Math.min(b.maxY,Math.max(b.minY,c.top));
+  const r={x:left,y:top,w:width,h:height};
+  const overflow=Math.abs(left-c.left)+Math.abs(top-c.top);
+  let penalty=overflow*16+c.rank*3;
+  for(const p of points){
+   if(!Number.isFinite(p?.x)||!Number.isFinite(p?.y))continue;
+   const region={x:p.x-33,y:p.y-34,w:66,h:68};
+   penalty+=overlap(r,region)*(p.id==='speaker'?25:11);
+  }
+  for(const other of reserved)penalty+=overlap(r,other)*38;
+  return {...c,left,top,width,height,penalty};
+ });
+ evaluated.sort((a,b)=>a.penalty-b.penalty||a.rank-b.rank);
+ const best=evaluated[0];
+ const bottom=best.top+height,right=best.left+width;
+ const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+ const attach=best.side==='right'?{x:best.left,y:clamp(y,best.top+9,bottom-9)}:
+  best.side==='left'?{x:right,y:clamp(y,best.top+9,bottom-9)}:
+  best.side==='top'?{x:clamp(x,best.left+15,right-15),y:bottom}:
+  {x:clamp(x,best.left+15,right-15),y:best.top};
+ const dx=attach.x-x,dy=attach.y-y,len=Math.max(.001,Math.hypot(dx,dy));
+ const tip={x:x+dx/len*26,y:y+dy/len*26};
+ return {...best,attach,tip,rect:{x:best.left,y:best.top,w:width,h:height}};
 }
-
-// Automatic action cues use a small comic caption placed beside the player.
-// Unlike a user's authored speech, this must not obscure the contact/ball.
-export function compactActionBubbleSVG({x,y,text,kind='speech',g,accent='#efc989'}){
- const escaped=String(text??'').trim().replace(/\s+/g,' ').slice(0,68);
- if(!escaped)return '';
- const words=escaped.split(' '),lines=[];let line='';
- for(const word of words){
-  if(line&&(line+' '+word).length>20){lines.push(line);line=word}
+const bubbleText=(rows,plan,{step=16,size=12,fontWeight=750,colour='#172c23',spacing=0}={})=>{
+ const start=plan.top+plan.height/2-(rows.length-1)*step/2;
+ return rows.map((line,i)=>'<text x="'+(plan.left+plan.width/2).toFixed(2)+'" y="'+(start+i*step).toFixed(2)+
+  '" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+size+
+  '" font-weight="'+fontWeight+'" fill="'+colour+'" letter-spacing="'+spacing+'">'+esc(line)+'</text>').join('');
+};
+const tailSVG=(plan,{fill='#fff9e6',stroke='#173329',width=2}={})=>{
+ const a=plan.attach,t=plan.tip,dx=t.x-a.x,dy=t.y-a.y,len=Math.max(.001,Math.hypot(dx,dy));
+ const nx=-dy/len*6,ny=dx/len*6;
+ return '<path d="M'+(a.x+nx).toFixed(1)+' '+(a.y+ny).toFixed(1)+'L'+t.x.toFixed(1)+' '+t.y.toFixed(1)+
+  'L'+(a.x-nx).toFixed(1)+' '+(a.y-ny).toFixed(1)+'Z" fill="'+fill+'" stroke="'+stroke+
+  '" stroke-width="'+width+'" stroke-linejoin="round"/>';
+};
+const starburst=(plan,fill,stroke)=>{
+ const {left,top,width,height}=plan,cx=left+width/2,cy=top+height/2;
+ const pts=Array.from({length:24},(_,i)=>{
+  const angle=-Math.PI/2+i*Math.PI/12;
+  const factor=i%2===0?.98:.87;
+  return (cx+Math.cos(angle)*width/2*factor).toFixed(1)+','+(cy+Math.sin(angle)*height/2*factor).toFixed(1);
+ }).join(' ');
+ return '<polygon points="'+pts+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2.4" stroke-linejoin="round"/>';
+};
+// Graphic-novel style for Ruckus; restrained sport-tactics styling in Classic.
+// No shadow under either mode. The caller can pass already reserved bubbles
+// so sequential callouts do not cover each other.
+export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent='#9ed3ae',avoid=[],reserved=[],onPlace}){
+ const rows=wrapped(text,comic?20:23),size=comic?12.5:11.5,step=comic?17:15;
+ const width=Math.max(comic?108:98,Math.min(240,Math.max(...rows.map(r=>r.length))*size*.64+(comic?38:30)));
+ const height=Math.max(38,rows.length*step+(comic?24:20));
+ const plan=planBubble({x,y,width,height,g,avoid,reserved});
+ onPlace?.(plan.rect);
+ const fill=ink?'#fff':comic?(kind==='shout'?'#fff0b9':kind==='thought'?'#e9f6fa':'#fff8df'):'#19392d';
+ const border=ink?'#252525':comic?'#203429':accent;
+ const font=ink?'#1b2b21':comic?'#162c24':'#f5ffe9';
+ const shape=comic&&kind==='shout'?starburst(plan,fill,border):
+  '<rect x="'+plan.left.toFixed(1)+'" y="'+plan.top.toFixed(1)+'" width="'+width.toFixed(1)+
+  '" height="'+height.toFixed(1)+'" rx="'+(comic?(kind==='thought'?20:12):8)+'" fill="'+fill+
+  '" stroke="'+border+'" stroke-width="'+(comic?2.6:1.9)+'"/>';
+ const thought=comic&&kind==='thought'
+  ?'<circle cx="'+((plan.attach.x+plan.tip.x)/2).toFixed(1)+'" cy="'+((plan.attach.y+plan.tip.y)/2).toFixed(1)+'" r="4" fill="'+fill+'" stroke="'+border+'" stroke-width="1.8"/>'+
+   '<circle cx="'+plan.tip.x.toFixed(1)+'" cy="'+plan.tip.y.toFixed(1)+'" r="2.3" fill="'+fill+'" stroke="'+border+'" stroke-width="1.3"/>'
+  :tailSVG(plan,{fill,stroke:border,width:comic?2.4:1.8});
+ return '<g class="'+(comic?'graphic-novel-bubble':'standard-speech-bubble')+'" data-callout-side="'+plan.side+'" pointer-events="none"><title>'+
+  esc(text)+'</title>'+tail+shape+thought+bubbleText(rows,plan,{step,size,fontWeight:comic?850:700,colour:font,spacing:comic?.1:0})+'</g>';
+}
+// Auto-action captions now use the same palette, collision planner and centred
+// text as authored bubbles. The smaller label avoids obscuring contact poses.
+export function compactActionBubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent='#b9de9b',avoid=[],reserved=[],onPlace}){
+ const value=String(text??'').trim().replace(/\s+/g,' ').slice(0,64);
+ if(!value)return '';
+ const words=value.split(' '),rows=[];let line='';
+ for(let word of words){
+  while(word.length>19){if(line){rows.push(line);line='';}rows.push(word.slice(0,19));word=word.slice(19)}
+  if(!word)continue;
+  if(line&&(line+' '+word).length>19){rows.push(line);line=word}
   else line+=(line?' ':'')+word;
  }
- if(line)lines.push(line);
- if(lines.length>2){lines.length=2;lines[1]=lines[1].slice(0,18)+'…'}
- const longest=Math.max(...lines.map(t=>t.length),8);
- const width=Math.min(173,Math.max(86,longest*7+20)),height=lines.length*15+12;
- const margin=(g?.margin??0)+7,maxX=(g?.viewWidth||900)-margin,maxY=(g?.viewHeight||540)-margin;
- const right=x+42+width<=maxX;
- let left=right?x+41:x-41-width;
- left=Math.max(margin,Math.min(maxX-width,left));
- const top=Math.max(margin,Math.min(maxY-height,y-height-29));
- const edge=right?left:left+width,tipX=x+(right?17:-17),tipY=y-12;
- const sideY=Math.max(top+8,Math.min(top+height-8,tipY-7));
- const tail='<path d="M'+edge+' '+(sideY-5)+'L'+tipX+' '+tipY+'L'+edge+' '+(sideY+6)+'Z" fill="'+(kind==='shout'?'#fff0c2':'#fff9e6')+'" stroke="#173329" stroke-width="2.4" stroke-linejoin="round"/>';
- const fill=kind==='shout'?'#fff0c2':'#fff9e6';
- const content=lines.map((t,i)=>'<text x="'+(left+width/2)+'" y="'+(top+18+i*15)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="#153022">'+esc(t)+'</text>').join('');
- return '<g class="graphic-novel-bubble compact-action-bubble" pointer-events="none"><title>'+esc(escaped)+'</title>'+
-  '<rect x="'+(left+2)+'" y="'+(top+3)+'" width="'+width+'" height="'+height+'" rx="9" fill="#10251b" opacity=".23"/>'+
-  tail+'<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" rx="9" fill="'+fill+'" stroke="#173329" stroke-width="2.4"/>'+
-  '<path d="M'+(left+11)+' '+(top+height-3)+'H'+(left+width-11)+'" stroke="'+accent+'" stroke-width="1.6" opacity=".75"/>'+
-  content+'</g>';
+ if(line)rows.push(line);
+ if(rows.length>2){rows.length=2;rows[1]=rows[1].slice(0,18)+'…'}
+ const width=Math.max(78,Math.min(170,Math.max(...rows.map(t=>t.length))*6.6+28));
+ const height=rows.length*15+16;
+ const plan=planBubble({x,y,width,height,g,avoid,reserved});
+ onPlace?.(plan.rect);
+ const fill=ink?'#fff':comic?(kind==='shout'?'#fff0bc':'#fff8df'):'#19392d';
+ const stroke=ink?'#292929':comic?'#203429':accent;
+ const colour=ink?'#202820':comic?'#182e23':'#f5ffe9';
+ const tail=tailSVG(plan,{fill,stroke,width:comic?2.2:1.6});
+ const shape='<rect x="'+plan.left.toFixed(1)+'" y="'+plan.top.toFixed(1)+'" width="'+width.toFixed(1)+
+  '" height="'+height.toFixed(1)+'" rx="'+(comic?10:7)+'" fill="'+fill+'" stroke="'+stroke+
+  '" stroke-width="'+(comic?2.3:1.8)+'"/>';
+ return '<g class="'+(comic?'graphic-novel-bubble':'standard-speech-bubble')+
+  ' compact-action-bubble" data-callout-side="'+plan.side+'" pointer-events="none"><title>'+esc(value)+'</title>'+
+  tail+shape+bubbleText(rows,plan,{step:15,size:11.8,fontWeight:comic?850:700,colour})+'</g>';
 }
 
 // A timed callout can remain visible after the step it was authored in.
@@ -110,12 +176,12 @@ export function calloutOverlay(frames,index,objects,g,progress=1,{cartoonMode=fa
    if((editing&&i===index)||(age>=-1e-6&&age<duration-1e-6))entries.push(a);
   }
  }
- const seen=[];
- return '<g class="authored-speech-callouts" pointer-events="none">'+entries.slice(-12).map(a=>{
+ const reserved=[],avoid=[...positions.values()].filter(o=>players.has(o.type)).map(o=>({...g.toView(o.x,o.y),id:o.id}));
+ return '<g class="authored-speech-callouts" pointer-events="none">'+entries.slice(-8).map(a=>{
   const actor=positions.get(a.actorId),pos=g.toView(actor.x,actor.y);
-  const nearby=seen.filter(p=>Math.hypot(p.x-pos.x,p.y-pos.y)<125).length;
-  seen.push(pos);
-  const accent=actor.type==='defender'?'#ffc58a':'#9bd7ff';
-  return bubbleSVG({x:pos.x,y:pos.y-nearby*48,text:String(a.text).slice(0,120),kind:CALLOUT_KINDS.includes(a.kind)?a.kind:'speech',g,comic:cartoonMode&&!ink,ink,accent});
+  const accent=actor.type==='defender'?'#e4af82':'#a5d9f3';
+  return bubbleSVG({x:pos.x,y:pos.y,text:String(a.text).slice(0,120),
+   kind:CALLOUT_KINDS.includes(a.kind)?a.kind:'speech',g,comic:cartoonMode&&!ink,ink,accent,
+   avoid,reserved,onPlace:rect=>reserved.push(rect)});
  }).join('')+'</g>';
 }
