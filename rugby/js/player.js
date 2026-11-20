@@ -100,7 +100,7 @@ function render(){
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
  board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
- if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
+ if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';renderStepRoute(s.index);$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
  $('time').textContent=t.toFixed(1)+' / '+visualDuration().toFixed(1)+' s';$('seek').value=t;
  $('previousStep').disabled=t<=0;$('nextStep').disabled=t>=visualDuration();$('play').disabled=d.frames.length<2;
 }
@@ -200,6 +200,31 @@ $('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video'
 // One-screen public presentation layout. Move the EXISTING functional controls
 // rather than duplicating them; all playback, camera, branch and export handlers
 // above keep their original element identities and event listeners.
+// Mini drill-flow chalkboard: a readable current-step sequence with clickable
+// surrounding steps. This is presentation UI only; it never edits the drill.
+function renderStepRoute(index){
+ const list=$('presentationStepRoute');
+ if(!list||!d)return;
+ list.replaceChildren();
+ const heading=document.createElement('div');heading.className='chalk-route-head';
+ const label=document.createElement('strong');label.textContent='DRILL FLOW';
+ const progress=document.createElement('span');progress.textContent=(index+1)+' OF '+d.frames.length;
+ heading.append(label,progress);list.append(heading);
+ const start=Math.max(0,Math.min(index-1,Math.max(0,d.frames.length-4)));
+ const end=Math.min(d.frames.length,start+4);
+ for(let i=start;i<end;i++){
+  const button=document.createElement('button');
+  button.type='button';button.className='chalk-route-step';
+  button.setAttribute('aria-current',i===index?'step':'false');
+  button.setAttribute('aria-label','Jump to step '+(i+1)+': '+d.frames[i].name);
+  const number=document.createElement('span');number.className='chalk-route-number';number.textContent=String(i+1).padStart(2,'0');
+  const name=document.createElement('span');name.className='chalk-route-name';name.textContent=d.frames[i].name;
+  const state=document.createElement('span');state.className='chalk-route-state';state.textContent=i===index?'●':i<index?'✓':'›';
+  button.append(number,name,state);
+  button.addEventListener('click',()=>jumpStep(i));
+  list.append(button);
+ }
+}
 function initPresentationWorkspace(){
  const main=document.querySelector('.read-only-player main');
  if(!main||document.querySelector('.presentation-workspace'))return;
@@ -217,7 +242,7 @@ function initPresentationWorkspace(){
  const close=document.createElement('button');close.type='button';close.className='presentation-sidebar-close';close.textContent='Close';close.setAttribute('aria-label','Close coaching panel');
  top.append(tabs,close);sidebar.append(top);
  const panels={};
- const entries=[['step','Step'],['coach','Coaching'],['steps','All steps'],['view','View'],['share','Share']];
+ const entries=[['step','On pitch'],['coach','Coach notes'],['steps','Sequence'],['view','Display'],['share','Export']];
  for(const [key,label] of entries){
   const button=document.createElement('button');
   button.type='button';button.id='presentation-tab-'+key;button.textContent=label;
@@ -253,9 +278,10 @@ function initPresentationWorkspace(){
  for(const id of ['empty','branchDecisionPanel']){const item=$(id);if(item)stage.append(item)}
  const branch=$('branchPlayer');if(branch)panels.step.append(branch);
  const summary=document.createElement('p');summary.className='presentation-step-summary';
- summary.textContent='Follow the animation. Read the current step here, or open the full coaching card.';
+ summary.textContent='THE COACH’S BLACKBOARD';
  panels.step.append(summary);
  panels.step.append($('stepReading'));
+ const route=document.createElement('nav');route.id='presentationStepRoute';route.className='chalk-route';route.setAttribute('aria-label','Nearby steps in this drill');panels.step.append(route);
  const coach=$('coachResources'),allSteps=$('coachSequenceContent').closest('.coach-resource');
  allSteps.open=true;
  panels.steps.append(allSteps);
