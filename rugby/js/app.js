@@ -1314,6 +1314,7 @@ function openObjectMenu(e){
  visible('menuWhistle',o.type==='coach');
  visible('menuAction',canCarry(o)||o.type==='ball');
  visible('menuSpeech',canCarry(o));
+ visible('menuBreakdown',f().objects.some(m=>validPhase(m.breakdown?.phase)&&(m.id===o.id||(m.members||[]).some(member=>member.id===o.id))));
  visible('menuConeColour',o.type==='cone');
  visible('menuManageActions',!!f().interactions?.length||!!(idx&&f().objects.some(p=>p.type==='ball'&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)))));
 
@@ -1354,6 +1355,7 @@ $('objectMenu').addEventListener('click',e=>{
  else if(command==='cone-colour'){openInspector('Object',true);$('coneColour')?.focus()}
  else if(command==='manage-actions')openStepActions();
  else if(command==='speech')openSpeechDialog();
+ else if(command==='edit-breakdown'){const linked=f().objects.find(m=>validPhase(m.breakdown?.phase)&&(m.id===selected||(m.members||[]).some(a=>a.id===selected)));if(linked){breakdownPreferred=linked.id;selected=linked.id;render();inspector();revealBreakdown()}}
  else if(command==='decision')beginDecisionPlacement();
  else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
  else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
