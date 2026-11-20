@@ -2763,6 +2763,12 @@ const blackboard=initBlackboard({
    if(!Object.hasOwn(FOLLOW_FRAMING,value))return false;
    bbFollowFraming=value;
    try{localStorage.setItem('rugby-blackboard-follow-framing-v1',value)}catch{}
+   // Selecting a framing preset is itself an explicit request to follow;
+   // reuse the native Studio switch instead of adding a second camera mode.
+   if(!$('followAction').checked){
+    $('followAction').checked=true;
+    $('followAction').dispatchEvent(new Event('change',{bubbles:true}));
+   }
    render();
    return true;
   }
