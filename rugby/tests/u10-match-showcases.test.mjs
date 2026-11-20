@@ -78,3 +78,42 @@ test('each changed owner receives backwards, not forwards, and the decision is a
  assert.equal(d.frames.length,d.branching.fork+1+d.branching.choices[0].frames.length);
  assert.notDeepEqual(d.branching.choices[0].frames,d.branching.choices[1].frames);
 });
+
+test('all U10 ruck arrivals engage at realistic close range, with ball presented nearby',()=>{
+ const metres=(a,b)=>Math.hypot((a.x-b.x)*35/816,(a.y-b.y)*60/466);
+ for(const d of pack.drills)for(const route of options(d)){
+  let rucks=0,contests=0;
+  for(let i=1;i<route.frames.length;i++){
+   const f=route.frames[i],marker=f.objects.find(x=>x.type==='ruck');
+   if(!marker)continue;
+   const involved=marker.members.filter(m=>m.pose==='bound');
+   assert.equal(involved.length,2,'U10 ruck supports are limited to one from each team');
+   const [first,second]=involved.map(m=>obj(f,m.id));
+   assert.notEqual(first.type,second.type,'ruck has attacker and defender');
+   assert.ok(metres(first,second)<=1.35,d.id+' '+route.name+' '+f.name+' · players metres apart');
+   const carrier=obj(f,marker.breakdown.carrierId),presented=ball(f);
+   assert.ok(!presented.ownerId,'the ruck ball remains unowned until it is picked up');
+   assert.ok(metres(carrier,presented)<=1.5,d.id+' '+route.name+' ball too far from grounded carrier');
+   if(marker.breakdown.phase==='contest'){
+    contests++;
+    const preceding=route.frames[i-1].objects.find(x=>x.id===marker.id);
+    assert.ok(preceding&&preceding.breakdown?.phase==='ruck',
+      'contesting the ball requires a preceding formed ruck');
+    assert.equal(marker.breakdown.winner,'attack');
+   }else assert.equal(marker.breakdown.phase,'ruck');
+   rucks++;
+  }
+  assert.ok(rucks>=2&&contests>=1,'sequence contains a formed ruck and a distinct contest');
+ }
+});
+
+test('the close-range showcase collects ball before each pass away from the ruck',()=>{
+ const d=pack.drills.find(x=>x.id==='seed-972');
+ const collectionSteps=d.frames.filter(f=>/A1 (collects at the back|picks up secured ball)/.test(f.name));
+ assert.equal(collectionSteps.length,2,'both rucks end with an explicit pickup');
+ for(const frame of collectionSteps){
+  assert.equal(ball(frame).ownerId,'a1');
+  assert.equal(ball(frame).transferKind,'pickup');
+  assert.ok(!frame.objects.some(o=>o.type==='ruck'),'no ruck marker persists after collection');
+ }
+});
