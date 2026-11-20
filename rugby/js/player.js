@@ -101,9 +101,11 @@ function render(){
  if(!d)return;
  $('playerFollow').setAttribute('aria-pressed',String(opts.framing==='follow'));
  $('playerFollow').classList.toggle('selected',opts.framing==='follow');
- const s=renderScene(d,{...opts,time:t}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
+ const stepIndex=stepLocation(d,t).i;
+ const cameraOverride=publicBoard?.cameraView({index:stepIndex,frame:d.frames[stepIndex]});
+ const s=renderScene(d,{...opts,time:t,cameraOverride}),ratio=s.g.viewWidth/s.g.viewHeight,board=$('board');
  if(ratio!==pitchRatio){board.style.setProperty('--pitch-ratio',String(ratio));pitchRatio=ratio}
- board.innerHTML=s.svg;viewBase=publicBoard?.cameraView(s)||s.camera;applyZoom();shownStep=s.index;
+ board.innerHTML=s.svg;viewBase=s.camera;applyZoom();shownStep=s.index;
  publicBoard?.refresh(s);
  const key=(hasOutcomes(d)?d.branching.active:'single')+':'+s.index+':'+opts.decisions;
  if(notesKey!==key){notesKey=key;$('phase').textContent=(s.index+1)+' / '+d.frames.length+' · '+s.frame.name;$('notes').textContent=s.frame.notes||'';$('decisionNow').innerHTML=opts.decisions?(hasOutcomes(d)&&s.index===d.branching.fork?branchDecisionMarkup(d.branching):decisionMarkup(s.frame)):'';renderStepRoute(s.index);$('stepReading').hidden=!s.frame.notes&&!$('decisionNow').innerHTML}
