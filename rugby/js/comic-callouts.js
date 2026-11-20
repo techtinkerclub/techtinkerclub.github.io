@@ -61,6 +61,38 @@ export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent=
  const texts=rows.map((line,i)=>'<text x="'+(left+width/2)+'" y="'+(top+18+i*step)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+size+'" font-weight="'+(comic?'900':'700')+'" fill="'+(comic||ink?'#162922':'#fff9df')+'" letter-spacing="'+(comic?.25:0)+'">'+esc(line)+'</text>').join('');
  return '<g class="'+(comic?'graphic-novel-bubble':'standard-speech-bubble')+'" pointer-events="none"><title>'+esc(text)+'</title>'+shadow+(kind==='thought'&&comic?'':tail)+surface+thought+texts+'</g>';
 }
+
+// Automatic action cues use a small comic caption placed beside the player.
+// Unlike a user's authored speech, this must not obscure the contact/ball.
+export function compactActionBubbleSVG({x,y,text,kind='speech',g,accent='#efc989'}){
+ const escaped=String(text??'').trim().replace(/\s+/g,' ').slice(0,68);
+ if(!escaped)return '';
+ const words=escaped.split(' '),lines=[];let line='';
+ for(const word of words){
+  if(line&&(line+' '+word).length>20){lines.push(line);line=word}
+  else line+=(line?' ':'')+word;
+ }
+ if(line)lines.push(line);
+ if(lines.length>2){lines.length=2;lines[1]=lines[1].slice(0,18)+'…'}
+ const longest=Math.max(...lines.map(t=>t.length),8);
+ const width=Math.min(173,Math.max(86,longest*7+20)),height=lines.length*15+12;
+ const margin=(g?.margin??0)+7,maxX=(g?.viewWidth||900)-margin,maxY=(g?.viewHeight||540)-margin;
+ const right=x+42+width<=maxX;
+ let left=right?x+41:x-41-width;
+ left=Math.max(margin,Math.min(maxX-width,left));
+ const top=Math.max(margin,Math.min(maxY-height,y-height-29));
+ const edge=right?left:left+width,tipX=x+(right?17:-17),tipY=y-12;
+ const sideY=Math.max(top+8,Math.min(top+height-8,tipY-7));
+ const tail='<path d="M'+edge+' '+(sideY-5)+'L'+tipX+' '+tipY+'L'+edge+' '+(sideY+6)+'Z" fill="'+(kind==='shout'?'#fff0c2':'#fff9e6')+'" stroke="#173329" stroke-width="2.4" stroke-linejoin="round"/>';
+ const fill=kind==='shout'?'#fff0c2':'#fff9e6';
+ const content=lines.map((t,i)=>'<text x="'+(left+width/2)+'" y="'+(top+18+i*15)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="#153022">'+esc(t)+'</text>').join('');
+ return '<g class="graphic-novel-bubble compact-action-bubble" pointer-events="none"><title>'+esc(escaped)+'</title>'+
+  '<rect x="'+(left+2)+'" y="'+(top+3)+'" width="'+width+'" height="'+height+'" rx="9" fill="#10251b" opacity=".23"/>'+
+  tail+'<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" rx="9" fill="'+fill+'" stroke="#173329" stroke-width="2.4"/>'+
+  '<path d="M'+(left+11)+' '+(top+height-3)+'H'+(left+width-11)+'" stroke="'+accent+'" stroke-width="1.6" opacity=".75"/>'+
+  content+'</g>';
+}
+
 // A timed callout can remain visible after the step it was authored in.
 // During static editing we deliberately display all bubbles for that step.
 export function calloutOverlay(frames,index,objects,g,progress=1,{cartoonMode=false,ink=false,editing=false}={}){
