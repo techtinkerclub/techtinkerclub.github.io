@@ -172,3 +172,5 @@
  background:#3e5a36;border:1px solid #bfd991;color:#efffd0
 }
 }
+
+@media screen{.read-only-player:not(.public-blackboard) #board .public-board-ink{display:none!important}}
