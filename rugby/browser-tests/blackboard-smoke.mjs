@@ -113,12 +113,18 @@ try{
   assert.equal(await page.locator('#bbAdvancedView').evaluate(el=>el.open),false);
   await page.locator('#bbAdvancedView > summary').click();
   assert(await page.locator('#bbFollowTarget').isVisible(),'Follow target has a compact advanced control');
-  await page.locator('#pitch .obj[data-id="'+selectedId+'"]').click({force:true});
+  // A floating panel may cover part of the pitch on phones. Close it before
+  // selecting the real player, then reopen without losing our advanced state.
+  await page.locator('[data-bb="close-camera"]').click();
+  await page.locator('#pitch .obj[data-id="'+selectedId+'"]').click();
+  await page.locator('[data-bb="camera"]').click();
+  if(!await page.locator('#bbAdvancedView').evaluate(el=>el.open))
+   await page.locator('#bbAdvancedView > summary').click();
   await page.locator('#bbFollowTarget').selectOption('selected');
   assert.equal(await page.locator('#followAction').isChecked(),true,'Follow selected uses native camera follower');
   await page.locator('#bbCameraPanel [data-bb="spotlight"]').click();
-  assert.equal(await page.locator('#pitch .bb-spotlight-mask').count(),0,
-   'No redundant second pitch or independent model is created');
+  assert.equal(await page.locator('#pitch #bb-spotlight-mask').count(),1,
+   'Spotlight uses one view-only SVG mask');
   assert.equal(await page.locator('#pitch .bb-teaching-overlay').count(),1,
    'Spotlight is a temporary SVG view overlay');
   await page.locator('#bbGhostMode').selectOption('start');
