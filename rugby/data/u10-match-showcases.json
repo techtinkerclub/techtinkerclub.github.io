@@ -936,7 +936,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Controlled tackle",
+              "label": "TACKLE",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1142,7 +1142,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1344,7 +1344,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1546,7 +1546,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one arrival each team",
+              "label": "RUCK · ONE EACH SIDE",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -1806,7 +1806,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck contest · attack secures",
+              "label": "CONTEST · BALL SECURED",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -2752,7 +2752,7 @@
             {
               "id": "contact2",
               "type": "tackle",
-              "label": "Controlled tackle",
+              "label": "TACKLE",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -2958,7 +2958,7 @@
             {
               "id": "contact2",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -3160,7 +3160,7 @@
             {
               "id": "contact2",
               "type": "ruck",
-              "label": "U10 ruck · one arrival each team",
+              "label": "RUCK · ONE EACH SIDE",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -3420,7 +3420,7 @@
             {
               "id": "contact2",
               "type": "ruck",
-              "label": "U10 ruck contest · attack secures",
+              "label": "CONTEST · BALL SECURED",
               "x": 614,
               "y": 256,
               "rot": 0,
@@ -5516,7 +5516,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Controlled tackle",
+              "label": "TACKLE",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -5722,7 +5722,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -5924,7 +5924,7 @@
             {
               "id": "contact1",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -6126,7 +6126,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck · one arrival each team",
+              "label": "RUCK · ONE EACH SIDE",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -6386,7 +6386,7 @@
             {
               "id": "contact1",
               "type": "ruck",
-              "label": "U10 ruck contest · attack secures",
+              "label": "CONTEST · BALL SECURED",
               "x": 460,
               "y": 344,
               "rot": 0,
@@ -11718,7 +11718,7 @@
             {
               "id": "redContact1",
               "type": "tackle",
-              "label": "Controlled tackle",
+              "label": "TACKLE",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -11924,7 +11924,7 @@
             {
               "id": "redContact1",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -12126,7 +12126,7 @@
             {
               "id": "redContact1",
               "type": "ruck",
-              "label": "U10 ruck · one arrival each team",
+              "label": "RUCK · ONE EACH SIDE",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -12368,7 +12368,7 @@
             {
               "id": "redContact1",
               "type": "ruck",
-              "label": "U10 ruck contest · attack secures",
+              "label": "CONTEST · BALL SECURED",
               "x": 463,
               "y": 308,
               "rot": 0,
@@ -13170,7 +13170,7 @@
             {
               "id": "redContact2",
               "type": "tackle",
-              "label": "Controlled tackle",
+              "label": "TACKLE",
               "x": 556,
               "y": 224,
               "rot": 0,
@@ -13376,7 +13376,7 @@
             {
               "id": "redContact2",
               "type": "tackle",
-              "label": "Release and present",
+              "label": "RELEASE · PRESENT",
               "x": 556,
               "y": 224,
               "rot": 0,
@@ -13578,7 +13578,7 @@
             {
               "id": "redContact2",
               "type": "ruck",
-              "label": "U10 ruck · one arrival each team",
+              "label": "RUCK · ONE EACH SIDE",
               "x": 556,
               "y": 224,
               "rot": 0,
@@ -13838,7 +13838,7 @@
             {
               "id": "redContact2",
               "type": "ruck",
-              "label": "U10 ruck contest · attack secures",
+              "label": "CONTEST · BALL SECURED",
               "x": 556,
               "y": 224,
               "rot": 0,
