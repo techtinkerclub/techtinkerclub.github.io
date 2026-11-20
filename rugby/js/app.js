@@ -21,7 +21,7 @@ import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,d
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
 import {initBlackboard} from './blackboard.js?v=10';
-import {loopStepBounds,loopProgress,targetViewport,teachingOverlay} from './blackboard-coaching.js?v=1';
+import {loopStepBounds,loopProgress,targetViewport,teachingOverlay,followFramingViewport,FOLLOW_FRAMING} from './blackboard-coaching.js?v=2';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
@@ -77,6 +77,7 @@ document.querySelector('.head-actions .save-control')?.insertAdjacentElement('af
 let cartoonMode=false,autoFollow=false;
 // Ephemeral Blackboard teaching controls; these never enter drill frames or exports.
 let bbLoop=false,bbLoopStep=1,bbFollowTarget='action',bbTargetPlayer=null,bbSpotlightIds=[],bbGhostMode='off';
+let bbFollowFraming=(()=>{try{const value=localStorage.getItem('rugby-blackboard-follow-framing-v1');return Object.hasOwn(FOLLOW_FRAMING,value)?value:'standard'}catch{return 'standard'}})();
 let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drillSeconds(drill),at=i=>i===0?0:stepEndSeconds(drill,i);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);for(const fr of drill.frames){fr.objects.forEach(sanitizeSkills);sanitizeInteractions(fr);cleanCallouts(fr)}if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){return stepLocation(drill,t)}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
@@ -150,7 +151,11 @@ function render(){
  if(autoFollow&&!(drag||routeDrawing||ballPicking||trainingPick)){
   const p=preview===null?1:locate(preview).p;
   const target=bbFollowTarget==='ball'?objects.find(o=>o.type==='ball')?.id:bbFollowTarget==='selected'?bbTargetPlayer:null;
-  camera.focusView((document.body.classList.contains('blackboard-mode')&&target?targetViewport(objects,g,target):null)||followActionViewport(drill,g,lineIndex,p));
+  const blackboardActive=document.body.classList.contains('blackboard-mode');
+  const defaultView=followActionViewport(drill,g,lineIndex,p);
+  const targetView=blackboardActive&&target?targetViewport(objects,g,target):null;
+  camera.focusView(blackboardActive?
+   followFramingViewport(targetView||defaultView,g,bbFollowFraming):defaultView);
  }
  if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
  if(lineIndex>0){
@@ -2729,7 +2734,7 @@ const blackboard=initBlackboard({
  getState:()=>({
   title:drill.title,stepName:f().name||f().notes||'Edit positions and movement',
   idx,total:drill.frames.length,stepSeconds:f().seconds,frames:drill.frames,branching:hasOutcomes(drill)?branchInfo(drill):null,playhead:preview??at(idx),
-  loop:bbLoop,loopStep:bbLoopStep,speed:Number($('speed').value),followTarget:bbFollowTarget,ghostMode:bbGhostMode,spotlight:bbSpotlightIds.length>0,
+  loop:bbLoop,loopStep:bbLoopStep,speed:Number($('speed').value),followTarget:bbFollowTarget,followFraming:bbFollowFraming,ghostMode:bbGhostMode,spotlight:bbSpotlightIds.length>0,
   selection:selected?(()=>{const o=f().objects.find(item=>item.id===selected);return o?{id:o.id,label:o.label||types[o.type]?.[0]||o.type,type:o.type}:null})():null,
   canRun:!$('drawRouteSide').disabled,
   canPass:!$('passBallSide').disabled,
@@ -2753,6 +2758,13 @@ const blackboard=initBlackboard({
    const step=Math.max(1,Math.min(drill.frames.length-1,preview===null?idx:locate(preview).i));
    bbLoopStep=step;
    stop();preview=at(step-1);render();$('play').click();return true;
+  }
+  if(kind==='follow-framing'){
+   if(!Object.hasOwn(FOLLOW_FRAMING,value))return false;
+   bbFollowFraming=value;
+   try{localStorage.setItem('rugby-blackboard-follow-framing-v1',value)}catch{}
+   render();
+   return true;
   }
   if(kind==='follow-target'){
    if(value==='selected'){
