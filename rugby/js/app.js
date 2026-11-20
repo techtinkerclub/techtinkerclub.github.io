@@ -1,7 +1,8 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=36';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=37';
+import {cleanCallouts,calloutOverlay,CALLOUT_KINDS} from './comic-callouts.js?v=1';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=8';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=0.13.4';
@@ -73,7 +74,7 @@ pubUI.innerHTML='<button id="pubPublish" type="button" title="Explicitly publish
 document.querySelector('.head-actions .save-control')?.insertAdjacentElement('afterend',pubUI);
 
 let cartoonMode=false,autoFollow=false;
-let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drillSeconds(drill),at=i=>i===0?0:stepEndSeconds(drill,i);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);for(const fr of drill.frames){fr.objects.forEach(sanitizeSkills);sanitizeInteractions(fr)}if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){return stepLocation(drill,t)}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
+let drill=freshSeed(MAIN_SAMPLE),idx=0,selected=null,selectedPathId=null,showPaths=true,showMarkups=true,showGrid=gridPrefs.visible,orientation='up',playing=false,preview=null,clock=0,raf=0,drag=null,dirty=false;const pitch=$('pitch'),f=()=>drill.frames[idx],duration=()=>drillSeconds(drill),at=i=>i===0?0:stepEndSeconds(drill,i);function note(s){$('status').textContent=s;$('status').title=s}function changed(record=true){validationHighlight.clear();validationResult=null;drill.frames.forEach(fr=>{cleanGuide(fr);cleanTraining(fr)});cleanContacts(drill.frames);cleanBreakdowns(drill.frames);for(const fr of drill.frames){fr.objects.forEach(sanitizeSkills);sanitizeInteractions(fr);cleanCallouts(fr)}if(record)normaliseRecoveryPoses(drill.frames);syncPossession(drill.frames,geometry());syncActiveOutcome(drill);dirty=true;saveFeedback='';syncSaveState();if(record){history.record(drill);historyButtons()}}function stop(){playing=false;cancelAnimationFrame(raf);$('play').textContent='▶ Play'}function locate(t){return stepLocation(drill,t)}function tween(t,g=geometry()){if(!drill.frames.length||t<=0)return frameObjects(drill.frames[0],g);const {i,p}=locate(t);return i?trainingTransition(transitionObjects(drill.frames[i-1],drill.frames[i],p,g),drill.frames[i-1],drill.frames[i],p,g):frameObjects(drill.frames[0],g)}
 const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
 function preferCoachingForFullField(){if(drill.pitchContext?.mode!=='field')return false;if(scaleMode==='coaching')return false;scaleMode='coaching';$('scaleMode').value='coaching';try{localStorage.setItem('rugby-symbol-scale','coaching')}catch{}return true}
@@ -173,7 +174,7 @@ function render(){
   const sel=(selected===o.id||groupIds.has(o.id))&&preview===null,p=g.toView(o.x,o.y),pose=poses.get(o.id),radius=symbolRadius(o,g,pose);
   const graphic=isDiagramObject(o)?`<g transform="rotate(${o.rot+g.rotation})">${diagramSVG(o,g)}</g>`:o.type==='label'?textLabelSVG(o,{baseline:labelOffset(o,g)}):`<g transform="rotate(${o.rot+g.rotation}) ${symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':pose)}">${playerAppearance(o,pose,posedShape(o,pose,contactMarkerShape(o,donutShape(o,shape(o.type,o.coneColor))),types[o.type][1]),objects,g,drill.frames[lineIndex-1],drill.frames[lineIndex],preview===null?1:locate(preview).p,{cartoonMode})}${(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))}</g>${o.label&&!contactType(o.type)?`<text x="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).x}" y="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).y}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="3" font-size="${symbolLabelSize(g)}" font-weight="600">${esc(o.label)}</text>`:''}`;
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${Math.max(o.type==='ball'?5:8,radius+2)}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="'+Math.max(10,radius+5)+'" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}${graphic}</g>`;
- }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p)+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
+ }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex,cartoonMode})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+calloutOverlay(drill.frames,lineIndex,objects,g,preview===null?1:locate(preview).p,{cartoonMode,editing:preview===null})+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[])])]):'');
  // Playback may change a player's pose without changing the selected step.
  // Keep the read-only inspector aligned with the frame actually on screen.
  if(preview!==null){const selector=$('playerPose');if(selector?.disabled&&selected)selector.value=poses.get(selected)||'standing'}
@@ -665,6 +666,7 @@ function updateSkillActionsPanel(){
  const panel=$('skillActionsPanel'),list=$('skillActionsList');
  if(!panel||!list)return;
  const events=f().interactions||[],prior=drill.frames[idx-1];
+ const callouts=cleanCallouts(f());
  const name=id=>{const o=f().objects.find(p=>p.id===id);return o?.label||o?.type||'Object'};
  const eventRows=events.map((event,i)=>'<div class="skill-action-row" data-skill-index="'+i+'"><strong>'+esc(event.kind==='tag'?'TAG! · '+event.side:event.kind==='tag-return'?'Tag returned · '+event.side:event.targetId&&canCarry(f().objects.find(o=>o.id===event.targetId))?'Player touch':'Touch target')+'</strong><small>'+esc(name(event.actorId))+' → '+esc(name(event.targetId))+'</small><label>At (%) <input type="number" data-skill-at="'+i+'" min="10" max="95" step="5" value="'+Math.round(event.at*100)+'"></label><label>Callout (s) <input type="number" data-callout-seconds="'+i+'" min=".2" max="8" step=".1" value="'+(event.displaySeconds??(event.kind==='tag'?1.6:1.2))+'"></label><button type="button" data-skill-delete="'+i+'" class="danger-action">Remove action</button></div>').join('');
  const balls=idx?f().objects.filter(o=>o.type==='ball'&&prior?.objects.some(b=>b.id===o.id&&(b.ownerId||null)!==(o.ownerId||null))):[];
@@ -677,9 +679,56 @@ function updateSkillActionsPanel(){
    (ball.transferKind==='rip'?'<label>Label <input type="text" data-rip-label="'+esc(ball.id)+'" maxlength="100" value="'+esc(ball.ripLabel||'Rip ball')+'"></label>':'')+
    '<button type="button" data-ball-delete="'+esc(ball.id)+'" class="danger-action">Undo transfer</button></div>';
  }).join('');
- list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No authored actions in this step. Select a player and tap the Actions button (or right-click on desktop) to add one.</p>');
+ list.innerHTML=eventRows+ballRows+(events.length||balls.length?'':'<p class="muted">No touch, tag or ball actions in this step.</p>');
+ const speechList=$('speechCalloutRows');
+ if(speechList)speechList.innerHTML=callouts.map((a,i)=>'<div class="skill-action-row speech-row"><strong>'+esc(a.text)+'</strong><small>'+esc(name(a.actorId))+' · '+esc(a.kind)+' · '+Math.round(a.at*100)+'% · '+Number(a.displaySeconds).toFixed(1)+' s</small><div class="flex"><button type="button" data-speech-edit="'+i+'">Edit bubble</button><button type="button" class="danger-action" data-speech-delete="'+i+'">Remove</button></div></div>').join('')+(callouts.length?'':'<p class="muted">No custom speech bubbles in this step.</p>');
  panel.hidden=false;
 }
+
+let speechEditingId=null;
+function openSpeechDialog(index=null){
+ if(!canEditObjects())return;
+ const roster=f().objects.filter(canCarry);
+ if(!roster.length){note('Add a player or coach to this step before adding a speech bubble.');return}
+ const existing=Number.isInteger(index)?f().callouts?.[index]:null;
+ speechEditingId=existing?.id||null;
+ $('speechSpeaker').innerHTML=roster.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');
+ const pick=roster.find(o=>o.id===(existing?.actorId||selected))||roster[0];
+ $('speechSpeaker').value=pick.id;
+ $('speechText').value=existing?.text||'';
+ $('speechKind').value=existing?.kind||'speech';
+ $('speechAt').value=existing?Math.round(existing.at*100):50;
+ $('speechDuration').value=existing?.displaySeconds??2;
+ $('speechError').textContent='';
+ $('speechTitle').textContent=existing?'Edit speech bubble':'Add a timed speech bubble';
+ $('speechCalloutDialog').showModal();$('speechText').focus();
+}
+$('addSpeechCallout').onclick=()=>openSpeechDialog();
+$('speechCancel').onclick=()=>$('speechCalloutDialog').close();
+$('speechSave').onclick=()=>{
+ const actorId=$('speechSpeaker').value,body=$('speechText').value.trim();
+ const at=Number($('speechAt').value),seconds=Number($('speechDuration').value),kind=$('speechKind').value;
+ const valid=f().objects.some(o=>o.id===actorId&&canCarry(o));
+ if(!valid||!body||body.length>120||!Number.isFinite(at)||at<0||at>100||!Number.isFinite(seconds)||seconds<.2||seconds>8||!CALLOUT_KINDS.includes(kind)){
+  $('speechError').textContent='Choose a player, enter up to 120 characters, use 0–100% and 0.2–8 seconds.';return;
+ }
+ const entry={id:speechEditingId||uid(),actorId,text:body.slice(0,120),kind,at:at/100,displaySeconds:seconds};
+ const entries=f().callouts||[],i=entries.findIndex(c=>c.id===speechEditingId);
+ if(i<0&&entries.length>=24){$('speechError').textContent='Maximum 24 bubbles per step.';return}
+ if(i>=0)entries[i]=entry;else entries.push(entry);
+ f().callouts=entries;cleanCallouts(f());
+ $('speechCalloutDialog').close();changed();refresh();openInspector('Step',true);
+ note('Speech bubble saved for '+at+'% of this step; it can remain visible into the next step.');
+};
+$('speechCalloutRows').addEventListener('click',event=>{
+ const edit=event.target.closest('[data-speech-edit]');
+ if(edit){openSpeechDialog(Number(edit.dataset.speechEdit));return}
+ const remove=event.target.closest('[data-speech-delete]');if(!remove)return;
+ const i=Number(remove.dataset.speechDelete);
+ if(!f().callouts?.[i])return;
+ f().callouts.splice(i,1);changed();refresh();note('Speech bubble removed. Undo restores it.');
+});
+
 $('skillActionsList').addEventListener('change',event=>{
  const durationInput=event.target.closest('[data-callout-seconds]');
  if(durationInput){
@@ -1264,6 +1313,7 @@ function openObjectMenu(e){
  visible('menuEditDecision',decision||annotation);
  visible('menuWhistle',o.type==='coach');
  visible('menuAction',canCarry(o)||o.type==='ball');
+ visible('menuSpeech',canCarry(o));
  visible('menuConeColour',o.type==='cone');
  visible('menuManageActions',!!f().interactions?.length||!!(idx&&f().objects.some(p=>p.type==='ball'&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)))));
 
@@ -1303,6 +1353,7 @@ $('objectMenu').addEventListener('click',e=>{
  if(command==='actions')openActionChooser(groupIds.size>=2);
  else if(command==='cone-colour'){openInspector('Object',true);$('coneColour')?.focus()}
  else if(command==='manage-actions')openStepActions();
+ else if(command==='speech')openSpeechDialog();
  else if(command==='decision')beginDecisionPlacement();
  else if(command==='edit-decision'){if(hasOutcomes(drill))openOutcomeDialog(true);else openOutcomeDialog()}
  else if(command==='whistle'){openInspector('Object',true);$('coachWhistleDuration')?.focus()}
