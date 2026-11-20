@@ -1,3 +1,4 @@
+import {bubbleCameraSpace} from './annotation-camera.js?v=1';
 // Timed, user-authored speech bubbles. These are annotations, not rugby actions.
 // Shared by Studio, read-only playback, movie frames and coaching outputs.
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -111,6 +112,14 @@ const starburst=(plan,fill,stroke)=>{
 // No shadow under either mode. The caller can pass already reserved bubbles
 // so sequential callouts do not cover each other.
 export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent='#9ed3ae',avoid=[],reserved=[],onPlace}){
+ const camera=bubbleCameraSpace(g,x,y,avoid,reserved);
+ if(camera?.hidden)return '';
+ if(camera){
+  const svg=bubbleSVG({x:camera.x,y:camera.y,text,kind,g:camera.geometry,comic,ink,accent,
+   avoid:camera.avoid,reserved:camera.reserved,
+   onPlace:r=>onPlace?.(camera.toWorld(r))});
+  return camera.opening+svg+camera.closing;
+ }
  const rows=wrapped(text,comic?20:23),size=comic?12.5:11.5,step=comic?17:15;
  const width=Math.max(comic?108:98,Math.min(240,Math.max(...rows.map(r=>r.length))*size*.64+(comic?38:30)));
  const height=Math.max(38,rows.length*step+(comic?24:20));
@@ -133,6 +142,14 @@ export function bubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent=
 // Auto-action captions now use the same palette, collision planner and centred
 // text as authored bubbles. The smaller label avoids obscuring contact poses.
 export function compactActionBubbleSVG({x,y,text,kind='speech',g,comic=true,ink=false,accent='#b9de9b',avoid=[],reserved=[],onPlace}){
+ const camera=bubbleCameraSpace(g,x,y,avoid,reserved);
+ if(camera?.hidden)return '';
+ if(camera){
+  const svg=compactActionBubbleSVG({x:camera.x,y:camera.y,text,kind,g:camera.geometry,comic,ink,accent,
+   avoid:camera.avoid,reserved:camera.reserved,
+   onPlace:r=>onPlace?.(camera.toWorld(r))});
+  return camera.opening+svg+camera.closing;
+ }
  const value=String(text??'').trim().replace(/\s+/g,' ').slice(0,64);
  if(!value)return '';
  const words=value.split(' '),rows=[];let line='';
