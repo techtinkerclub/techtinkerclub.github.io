@@ -79,10 +79,25 @@ try{
   assert.equal(await page.locator('#bbTimelinePanel').isVisible(),false);
   await page.locator('[data-bb="camera"]').click();
   assert(await page.locator('#bbCameraPanel').isVisible(),'Camera controls are accessible');
+  const follow=page.locator('#bbCameraPanel [data-bb="follow"]');
+  assert.equal(await follow.getAttribute('aria-pressed'),'false','Follow starts off');
+  await follow.click();
+  assert.equal(await page.locator('#followAction').isChecked(),true,
+   'Blackboard activates the native Studio camera follower');
+  assert.equal(await follow.getAttribute('aria-pressed'),'true','Follow is visibly active');
+  assert.equal(await follow.evaluate(el=>el.classList.contains('is-active')),true);
+  await follow.click();
+  assert.equal(await page.locator('#followAction').isChecked(),false,'Follow switches off');
+  await follow.click();
+  assert.equal(await page.locator('#followAction').isChecked(),true,'Follow re-enables');
   const beforeZoom=await page.locator('#pitch').getAttribute('viewBox');
   await page.locator('[data-bb="zoom-in"]').click();
   const afterZoom=await page.locator('#pitch').getAttribute('viewBox');
   assert.notEqual(beforeZoom,afterZoom,'Zoom works inside Blackboard');
+  assert.equal(await page.locator('#followAction').isChecked(),false,
+   'Native manual zoom automatically turns follow off');
+  assert.equal(await follow.getAttribute('aria-pressed'),'false',
+   'Blackboard reflects the disabled follower immediately');
   await page.locator('#bbCameraPanel [data-bb="fit"]').click();
   await page.locator('[data-bb="pan"]').click();
   assert.equal(await page.locator('#panMode').getAttribute('aria-pressed'),'true',
