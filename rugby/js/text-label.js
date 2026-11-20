@@ -1,3 +1,4 @@
+import {cameraTextPlacement} from './annotation-camera.js?v=1';
 // Text annotations are overlays, not moving players. The same SVG is used in
 // editing, playback, printed coaching sheets and rendered movie frames.
 const color=(value,fallback)=>typeof value==='string'&&/^#[0-9a-fA-F]{6}$/.test(value)?value.toLowerCase():fallback;
@@ -18,7 +19,7 @@ export function normaliseTextStyle(input={}){
 }
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // The label's anchor is the same as in older drill files, keeping placements stable.
-export function textLabelSVG(o,{baseline=4,ink=false}={}){
+export function textLabelSVG(o,{baseline=4,ink=false,g=null,anchor=null}={}){
  const s=normaliseTextStyle(o?.textStyle),value=String(o?.label||'Text').slice(0,160);
  // Approximate text width; actual SVG glyphs stay text so they remain crisp in PDFs.
  const characters=Array.from(value),units=characters.reduce((a,c)=>a+(c===' '?0.35:/[ilI1.,'!:;]/.test(c)?.34:/[MW@#%]/.test(c)?.9:.63),0);
@@ -29,7 +30,10 @@ export function textLabelSVG(o,{baseline=4,ink=false}={}){
  const hit='<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" rx="5" fill="transparent" pointer-events="all"/>';
  const outline=hasSurface?'':' paint-order="stroke" stroke="'+(ink?'#ffffff':'#234f38')+'" stroke-width="3"';
  const text='<text x="0" y="'+baseline+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+s.fontSize+'" font-weight="650" fill="'+s.color+'"'+outline+' pointer-events="none">'+esc(value)+'</text>';
- return '<g class="text-annotation">'+rect+hit+text+'</g>';
+ const place=g&&anchor?cameraTextPlacement(g,anchor,width,height):{visible:true,scale:1,dx:0,dy:0};
+ if(!place.visible)return '';
+ const transform=place.scale<.999?' transform="translate('+place.dx+' '+place.dy+') scale('+place.scale+')"':'';
+ return '<g class="text-annotation"'+transform+'>'+rect+hit+text+'</g>';
 }
 export function textVisible(timing,progress){
  const s=number(timing?.start,0,0,99)/100,e=number(timing?.end,100,1,100)/100,p=number(progress,1,0,1);
