@@ -64,8 +64,7 @@ test('the actual full-pitch U10 showcase has responsive follow labels and score 
 
 test('camera override is applied before rendering annotations, in both public board and video renderer',()=>{
  const d=hero();
- const base=renderScene(d,{index:4,framing:'field'});
- const crop={x:200,y:170,width:base.camera.width/3,height:base.camera.height/3};
+ const crop=renderScene(d,{index:4,framing:'follow'}).camera;
  const closer=renderScene(d,{index:4,framing:'field',cameraOverride:crop,cartoonMode:true});
  assert.deepEqual(closer.camera,crop);
  assert.match(closer.svg,/camera-readable-bubble/);
