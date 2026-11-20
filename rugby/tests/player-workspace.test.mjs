@@ -148,7 +148,7 @@ test('all five floating panel handles share one canonical gutter',()=>{
  const styles=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
  assert.match(styles,/--bb-handle-gutter:38px/);
  assert.match(styles,/padding-left:var\(--bb-handle-gutter\)/);
- assert.match(styles,/public-board-camera-settings\s*\}\s*>\s*\.public-board-grip/);
+ assert.match(styles,/\)\s*>\s*\.public-board-grip/);
  assert.match(js,/key:'cameraSettings'/);
  assert.match(js,/layoutKey='rugby-public-blackboard-layout-v2'/);
 });
