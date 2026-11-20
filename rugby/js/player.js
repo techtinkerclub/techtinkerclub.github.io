@@ -415,7 +415,7 @@ function initPublicBoard(){
   try{const raw=JSON.parse(localStorage.getItem(layoutKey)||'{}');return raw&&typeof raw==='object'?raw:{}}catch{return {}}
  })();
  function savePanelPositions(){
-  const positions={};
+  const positions={...(settings.positions||{})};
   for(const item of movablePanels){
    if(item.node.hidden)continue;
    const box=item.node.getBoundingClientRect();
@@ -435,6 +435,7 @@ function initPublicBoard(){
   node.style.setProperty('transform','none');
  }
  function resetPanelPositions(){
+  settings.positions={};
   for(const item of movablePanels){
    delete item.node.dataset.floating;
    for(const prop of ['left','top','right','bottom','transform'])item.node.style.removeProperty(prop);
