@@ -1,7 +1,7 @@
 import {drillSeconds,stepEndSeconds,stepLocation} from './step-timeline.js?v=1';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {HEAD_MODES,headSettings} from './player-gaze.js?v=3';
-import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=38';
+import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=39';
 import {cleanCallouts,calloutOverlay,CALLOUT_KINDS} from './comic-callouts.js?v=2';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=10';
@@ -17,11 +17,11 @@ import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annota
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.20.51';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=12';
 import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
-import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.18.8';
+import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.20.60';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
-import {initBlackboard} from './blackboard.js?v=11';
+import {initBlackboard} from './blackboard.js?v=12';
 import {loopStepBounds,loopProgress,targetViewport,teachingOverlay,followFramingViewport,FOLLOW_FRAMING} from './blackboard-coaching.js?v=2';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
@@ -51,8 +51,8 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.51';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.51';
+import {renderScene} from './scene.js?v=0.20.60';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.60';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
