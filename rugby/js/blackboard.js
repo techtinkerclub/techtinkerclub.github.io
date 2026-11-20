@@ -31,7 +31,7 @@ export function initBlackboard({getState,fit,rotate,openDetails}){
   '<button type="button" data-bb-add="ball">Rugby ball</button>'+
   '<button type="button" data-bb-add="cone">Cone</button>'+
   '<button type="button" data-bb-add="markerDisc">Marker</button>'+
-  '<button type="button" data-bb-add="line">Line marking</button>'+
+  '<button type="button" data-bb-add="fieldLine">Line marking</button>'+
  '</div><small>Added to the same editable drill</small></section>'+
  '<section id="bbSelection" class="bb-selection" aria-label="Selected player actions" hidden>'+
   '<strong id="bbSelected">Player</strong>'+
