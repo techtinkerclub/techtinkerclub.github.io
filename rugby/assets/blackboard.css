@@ -350,3 +350,53 @@ body.blackboard-mode .bb-native-timeline #outcomeBar{display:none!important}
  font-size:10px;line-height:1.4;max-width:100%;
 }
 
+/* Blackboard shelf: one small Drills entry, no extra permanent toolbar. */
+.blackboard-ui .bb-top-actions [data-bb="drills"]{color:#e6f4d8;border-color:#8fb19a75}
+.blackboard-ui .bb-top-actions [data-bb="drills"].is-active{color:#1a3528;background:#c4e493;border-color:#daf5b4}
+.blackboard-ui .bb-drills-menu{position:absolute;z-index:7;top:100px;right:20px;width:276px;
+ max-width:calc(100vw - 16px);padding:11px;background:#122a21ee;
+ border:1px solid #96bc9c66;border-radius:14px;box-shadow:0 12px 35px #0008;
+ pointer-events:auto;backdrop-filter:blur(15px)}
+.blackboard-ui .bb-drills-menu .bb-menu-hint{font-size:11px;line-height:1.4;color:#c3d9bc;margin:4px 0 9px}
+.blackboard-ui .bb-drill-menu-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.blackboard-ui .bb-drill-menu-actions button{min-width:0;min-height:39px;padding:6px 8px;font-size:11px;line-height:1.35}
+.blackboard-ui .bb-drill-menu-actions [data-bb="save-library"]{background:#395943;color:#edffd9;border-color:#93c08e}
+.blackboard-ui .bb-drill-menu-actions [data-bb="publish-saved"]:disabled{opacity:.44}
+.blackboard-ui #bbDrillStatus{display:block;color:#c6d8c0;margin-top:9px;line-height:1.45;font-size:10.5px}
+body.blackboard-mode #libraryDialog.bb-library-style[open]{
+ box-sizing:border-box;width:min(1100px,calc(100vw - 20px));max-width:1100px;
+ height:min(87dvh,850px);max-height:87dvh;padding:17px;
+ background:#10281feF;color:#eef9de;border:1px solid #a6cda282;border-radius:18px;
+ box-shadow:0 25px 70px #0009;overflow:auto;
+}
+body.blackboard-mode #libraryDialog.bb-library-style::backdrop{background:#07140dd1;backdrop-filter:blur(5px)}
+body.blackboard-mode #libraryDialog.bb-library-style h2{font-size:19px;color:#e4f8c9}
+body.blackboard-mode #libraryDialog.bb-library-style .note{padding:9px 11px;margin:8px 0!important;
+ border-radius:9px;border-color:#64866a55;font-size:11px;line-height:1.45}
+body.blackboard-mode #libraryDialog.bb-library-style .filters{display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
+body.blackboard-mode #libraryDialog.bb-library-style .filters :is(input,select){min-width:0;width:100%;font-size:12px;min-height:37px}
+body.blackboard-mode #libraryDialog.bb-library-style .libgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px;align-content:start}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard{background:#203c2cf0;color:#ecf6dc;
+ border:1px solid #8fb99468;border-radius:13px;padding:11px;min-width:0}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard .mini{max-height:155px}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard h3{font-size:14px;line-height:1.3}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard p{font-size:11px;line-height:1.4}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard button{min-height:29px;font-size:11px;padding:5px 8px}
+body.blackboard-mode #libraryDialog.bb-library-style .drillcard [data-load]{background:#accb7a;color:#203525}
+body.blackboard-mode .bb-save-complete[open],.bb-save-complete[open]{
+ box-sizing:border-box;width:min(440px,calc(100vw - 26px));border-radius:17px;
+ background:#162d24;color:#f4fbe9;border:1px solid #b3d49a;padding:20px;
+ box-shadow:0 20px 60px #0008
+}
+.bb-save-complete h2{font-size:19px;margin:0 0 10px}
+.bb-save-complete p{font-size:13px;line-height:1.5}
+.bb-save-complete-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:18px}
+.bb-save-complete-actions button{min-height:37px}
+@media(max-width:740px){
+ .blackboard-ui .bb-drills-menu{top:100px;right:8px;width:min(276px,calc(100vw - 16px))}
+ body.blackboard-mode #libraryDialog.bb-library-style[open]{padding:12px;max-height:92dvh;height:92dvh}
+ body.blackboard-mode #libraryDialog.bb-library-style .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.blackboard-mode #libraryDialog.bb-library-style .filters input{grid-column:span 2}
+ body.blackboard-mode #libraryDialog.bb-library-style .libgrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
