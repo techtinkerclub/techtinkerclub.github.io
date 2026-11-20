@@ -155,3 +155,91 @@ body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-top-actions{righ
  .blackboard-ui .bb-selection{top:50%;bottom:auto;transform:translateY(-50%)}
  .blackboard-ui .bb-notice{display:none}
 }
+
+/* v4: Blackboard has movable, subtle overlays; grips sit ON panels, not in
+   their layout flow. This keeps the control/button sizes unchanged. */
+.blackboard-ui .bb-movable{opacity:.81;transition:opacity .16s ease;will-change:auto}
+.blackboard-ui .bb-movable:hover,.blackboard-ui .bb-movable:focus-within,
+.blackboard-ui .bb-movable.is-dragging{opacity:1}
+.blackboard-ui .bb-movable.is-moved{transform:none!important;max-width:calc(100vw - 12px)}
+.blackboard-ui .bb-grip,.blackboard-ui .bb-grip:hover{
+ position:absolute;top:-7px;left:8px;z-index:3;display:flex;align-items:center;justify-content:center;
+ flex:none;width:22px;height:18px;min-width:22px!important;min-height:18px!important;
+ padding:0!important;border:1px solid #ffffff44!important;border-radius:7px!important;
+ background:#273e32de!important;color:#ddebcf!important;font:14px/1 system-ui,sans-serif!important;
+ box-shadow:0 2px 6px #0005;cursor:grab;touch-action:none;user-select:none
+}
+.blackboard-ui .bb-grip:active{cursor:grabbing}
+.blackboard-ui .bb-rail>.bb-grip{top:-9px;left:50%;transform:translateX(-50%);}
+.blackboard-ui .bb-selection>.bb-grip,.blackboard-ui .bb-add-menu>.bb-grip,
+.blackboard-ui .bb-ink-controls>.bb-grip{top:5px;right:5px;left:auto}
+.blackboard-ui .bb-panel-heading>.bb-grip{position:static;transform:none;flex:none;align-self:center}
+.blackboard-ui .bb-title{padding-left:19px}
+.blackboard-ui .bb-steps{max-width:calc(100vw - 42px)}
+.blackboard-ui .bb-steps [data-bb="timeline"].is-active,
+.blackboard-ui .bb-top-actions [data-bb="camera"].is-active{border-color:#bdeaa3;background:#3b5945;color:#ecffd7}
+.blackboard-ui .bb-camera-panel,.blackboard-ui .bb-timeline-panel{pointer-events:auto;
+ position:absolute;z-index:5;padding:11px;background:#11281de0;border:1px solid #ffffff34;border-radius:14px;
+ box-shadow:0 10px 38px #0008;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.blackboard-ui .bb-camera-panel{top:max(70px,calc(env(safe-area-inset-top) + 66px));
+ right:max(14px,env(safe-area-inset-right));width:268px;max-width:calc(100vw - 16px)}
+.blackboard-ui .bb-timeline-panel{bottom:max(90px,calc(env(safe-area-inset-bottom) + 82px));
+ left:92px;width:min(555px,calc(100vw - 112px));max-width:calc(100vw - 16px);
+ max-height:calc(100dvh - 132px);display:flex;flex-direction:column;gap:9px;overflow:hidden}
+.blackboard-ui .bb-panel-heading{display:flex;align-items:center;gap:7px;min-height:22px}
+.blackboard-ui .bb-panel-heading strong{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blackboard-ui .bb-panel-heading [data-bb="tracks"]{font-size:11px;min-height:28px;min-width:0;padding:3px 8px}
+.blackboard-ui .bb-panel-close{min-height:26px!important;min-width:27px!important;padding:0 5px!important;font-size:19px!important}
+.blackboard-ui .bb-camera-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:11px 0 8px}
+.blackboard-ui .bb-view-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.blackboard-ui .bb-camera-buttons button,.blackboard-ui .bb-view-buttons button{
+ min-width:0;min-height:37px;padding:6px 3px;font-size:12px}
+.blackboard-ui .bb-view-buttons button.is-active{background:#a7cb6f;color:#15281f;border-color:#dafa9d}
+.blackboard-ui .bb-reset-panels{width:100%;margin-top:10px;min-height:30px;font-size:11px;opacity:.85}
+.blackboard-ui .bb-duration-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blackboard-ui .bb-duration-row label{font-size:11px;color:#dceecb}
+.blackboard-ui #bbStepSeconds{width:75px;min-width:70px;padding:5px 7px;min-height:32px;
+ background:#1a3227;color:#f6ffe8;border:1px solid #557a60;border-radius:8px;font-size:13px}
+.blackboard-ui .bb-duration-row button{min-height:32px;min-width:0;padding:6px 9px;font-size:11px}
+.blackboard-ui .bb-timeline-panel>small{font-size:10px;line-height:1.4}
+.blackboard-ui .bb-native-timeline{min-width:0;min-height:0;overflow:hidden;display:block}
+.blackboard-ui .bb-native-timeline #timelinePanel{position:static!important;
+ display:flex!important;flex-direction:column;gap:7px;min-width:0;width:100%;height:auto!important;
+ max-height:calc(100dvh - 275px);margin:0;padding:0;background:transparent;border:0;
+ overflow:auto;box-shadow:none}
+.blackboard-ui .bb-native-timeline :is(#splitTimeline,.timeline-top){display:none!important}
+.blackboard-ui .bb-native-timeline #scrub{display:block!important;flex:none;
+ width:100%;min-height:20px;margin:0!important;accent-color:#bfe88a}
+.blackboard-ui .bb-native-timeline #outcomeBar{flex:none}
+.blackboard-ui .bb-native-timeline #scenes{display:flex;flex:none;min-width:0;
+ min-height:61px;max-height:82px;overflow-x:auto;overflow-y:hidden;padding:4px 0;gap:5px}
+.blackboard-ui .bb-native-timeline .scene{min-width:115px;max-width:152px;font-size:11px;padding:6px}
+.blackboard-ui .bb-native-timeline .track-area{display:grid;flex:1 1 auto;
+ min-height:72px;max-height:200px;overflow:auto;gap:5px}
+.blackboard-ui .bb-native-timeline .tracks{min-height:50px;max-height:174px;overflow:auto}
+.blackboard-ui .bb-native-timeline .track{min-width:230px}
+.blackboard-ui .bb-native-timeline .track-heading{gap:5px;flex-wrap:wrap}
+.blackboard-ui .bb-native-timeline .track-heading small{font-size:9px}
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-camera-panel,
+body.blackboard-mode.blackboard-details-open .blackboard-ui .bb-timeline-panel{display:none!important}
+@media(max-width:700px){
+ .blackboard-ui .bb-camera-panel{right:8px;top:104px}
+ .blackboard-ui .bb-timeline-panel{left:8px;bottom:85px;width:calc(100vw - 16px);
+  max-height:calc(100dvh - 172px);padding:9px}
+ .blackboard-ui .bb-native-timeline #timelinePanel{max-height:calc(100dvh - 305px)}
+ .blackboard-ui .bb-steps{max-width:calc(100vw - 10px)!important}
+ .blackboard-ui .bb-steps [data-bb="timeline"] span{display:none}
+ .blackboard-ui .bb-steps [data-bb="new-step"],.blackboard-ui .bb-steps [data-bb="delete-step"]{
+  font-size:0!important;min-width:34px;padding:5px 7px!important}
+ .blackboard-ui .bb-steps [data-bb="new-step"]::after{content:"+";font-size:20px}
+ .blackboard-ui .bb-steps [data-bb="delete-step"]::after{content:"−";font-size:20px}
+}
+@media(max-height:450px){
+ .blackboard-ui .bb-timeline-panel{top:8px;bottom:auto;left:80px;
+  max-height:calc(100dvh - 17px);width:min(500px,calc(100vw - 92px))}
+ .blackboard-ui .bb-native-timeline #timelinePanel{max-height:calc(100dvh - 142px)}
+ .blackboard-ui .bb-camera-panel{top:8px;right:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .blackboard-ui .bb-movable{transition:none}
+}
