@@ -8,7 +8,7 @@ const css=readFileSync(new URL('../assets/player-workspace.css',import.meta.url)
 
 test('public player loads the one-screen workspace styles',()=>{
  assert.match(html,/player-workspace\.css\?v=/);
- assert.match(html,/player\.js\?v=0\.20\.69/);
+ assert.match(html,/player\.js\?v=0\.20\.70/);
  assert.match(css,/height:100dvh/);
  assert.match(css,/overflow:hidden/);
  assert.match(css,/\.presentation-panel/);
@@ -51,7 +51,7 @@ test('blackboard mode displays the actual drill flow and coaching menu',()=>{
 
 test('published drills open as fullscreen read-only blackboards',()=>{
  const stylesheet=readFileSync(new URL('../assets/public-blackboard.css',import.meta.url),'utf8');
- assert.match(html,/public-blackboard\.css\?v=2/);
+ assert.match(html,/public-blackboard\.css\?v=3/);
  assert.match(js,/function initPublicBoard\(\)/);
  assert.match(js,/document\.body\.classList\.add\('public-blackboard'\)/);
  assert.match(stylesheet,/\.read-only-player\.public-blackboard>header\{display:none\}/);
@@ -80,4 +80,14 @@ test('fullscreen board leaves standard share and published frames alone',()=>{
  assert.match(js,/publicBoard\?\.refresh\(s\)/);
  assert.match(js,/saveBlob\(png/);
  assert.match(js,/document\.body\.classList\.contains\('public-blackboard'\)/);
+});
+
+test('read-only chalk includes non-editing shapes and a visual reference grid',()=>{
+ assert.match(js,/publicInkTool/);
+ assert.match(js,/tool==='arrow'/);
+ assert.match(js,/tool==='circle'/);
+ assert.match(js,/tool==='marker'/);
+ assert.match(js,/publicBoardGrid/);
+ assert.match(js,/public-board-grid/);
+ assert.match(js,/publicSnapshotInk/);
 });
