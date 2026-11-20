@@ -310,7 +310,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'zoom-in':click('zoomIn');break;
    case 'zoom-out':click('zoomOut');break;
    case 'pan':setPen(false);click('panMode');break;
-   case 'follow':if(!click('followAction'))hint('Follow action is unavailable in this view.');break;
+   case 'follow':if(!click('followAction'))hint('Follow action is unavailable in this view.');else sync();break;
    case 'grid':click('grid');break;
    case 'paths':click('trails');break;
    case 'markings':click('markups');break;
