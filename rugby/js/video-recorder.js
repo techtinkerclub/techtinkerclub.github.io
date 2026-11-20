@@ -4,6 +4,7 @@ import {playbackData,renderScene} from './scene.js?v=0.20.78';
 import {movieStoryboard,storyboardClip,storyboardTime} from './movie-storyboard.js?v=0.20.79';
 import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
+import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.82';
 import {wrapCanvas,cardEntries,cardLinks} from './coaching-output.js?v=0.13.10';
 
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -30,7 +31,6 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   {width:1920,height:1080,bitrate:14000000,fps:30};
  const portrait=settings.format==='portrait',W=portrait?quality.height:quality.width,H=portrait?quality.width:quality.height;
  const {canvas,present,ready}=createMovieFrame(W,H),unit=W/(portrait?1080:1920);
- if(!canvas.captureStream)throw Error('Canvas video recording is unavailable.');
  const pad=Math.round((portrait?65:55)*unit),content=W-pad*2;
  const top=Math.round((portrait?225:130)*unit);
  const bottom=Math.round((portrait?345:205)*unit);
@@ -154,6 +154,16 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
   }
  });
  await draw(0);check();
+ // Prefer timestamp-accurate frames, even when complex SVGs take >33 ms to
+ // rasterise. The old live recorder remains the compatibility fallback.
+ const precise=await encodeDeterministicVideo({canvas,draw,seconds:total,
+  fps:quality.fps,bitrate:quality.bitrate,signal,
+  progress:(fraction,t)=>{
+   const current=storyboardClip(story,Math.min(t,Math.max(0,story.total-.0001)));
+   progress(fraction,t>=story.total?'Rendering · Coaching notes':'Rendering · '+(current.heading||current.title));
+  }});
+ if(precise)return {...precise,chapters:story.clips.length};
+ if(!canvas.captureStream)throw Error('Canvas video recording is unavailable.');
  const stream=canvas.captureStream(quality.fps),types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
  let recorder,recorded;
  try{
