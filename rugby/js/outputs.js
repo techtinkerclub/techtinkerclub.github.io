@@ -6,6 +6,7 @@ import {decisionList,decisionText} from './training.js?v=0.18.8';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
 import {recordCoachingMovie} from './video-recorder.js?v=0.20.81';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
+import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.82';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
@@ -44,7 +45,6 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  if(videoDuration>360)throw Error('The complete video exceeds six minutes. Choose normal speed only, a faster replay, or export only the selected outcome.');
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Edge or Chrome.');
  const {width:W,height:H,bitrate,fps}=plan.quality,frame=createMovieFrame(W,H),{canvas,ctx}=frame;
- if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
  // Short-form video uses a distinct layout, not a cropped landscape video.
  const portrait=plan.options.format==='portrait',unit=W/(portrait?1080:1920),pad=Math.round((portrait?72:42)*unit),right=portrait?Math.round(120*unit):pad,content=W-pad-right;
  const top=Math.round((portrait?260:110)*unit),bottom=Math.round((portrait?(plan.options.notes?490:285):(plan.options.notes?190:105))*unit);
@@ -83,6 +83,14 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  });
  await draw(0);checkAbort(); // Start capture only after a complete initial frame exists.
  if(!frame.ready)throw Error('Initial movie frame did not render.');
+ const precise=await encodeDeterministicVideo({canvas,draw,seconds:total,
+  fps,bitrate,signal,progress:(fraction,t)=>{
+   const ch=chapters.find(x=>t<x.end)||chapters.at(-1);
+   const m=movieMoment(ch.plan,Math.max(0,t-ch.start));
+   progress(fraction,t>=videoDuration&&cardPages.length?'Rendering · Coaching card':'Rendering · '+(ch.headline?ch.headline+' · ':'')+m.segment.title);
+  }});
+ if(precise)return precise;
+ if(!canvas.captureStream)throw Error('Canvas video recording is unavailable in this browser.');
  const stream=canvas.captureStream(fps);
  let recorder,recorded;
  try{
