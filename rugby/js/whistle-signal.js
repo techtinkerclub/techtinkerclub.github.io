@@ -1,3 +1,4 @@
+import {bubbleSVG} from './comic-callouts.js?v=1';
 import {stepStartSeconds} from './step-timeline.js?v=1';
 // Coach-authored start signals: independent from player objects and law/decision markers.
 // The whistle lives on the action step it starts and can be carried through
@@ -41,13 +42,14 @@ export function whistleEvents(drill){
 export function crossedWhistles(drill,from,to,{includeStart=false}={}){
  return whistleEvents(drill).filter(e=>e.at<=to+1e-5&&(e.at>from+1e-5||(includeStart&&Math.abs(e.at-from)<1e-5)));
 }
-export function whistleOverlay(frame,g,elapsed=0,{ink=false,staticView=false}={}){
+export function whistleOverlay(frame,g,elapsed=0,{ink=false,staticView=false,cartoonMode=false}={}){
  const signal=signalForFrame(frame);
  if(!signal||(!staticView&&elapsed>=signal.duration))return '';
  const actor=frame.objects.find(o=>o.id===signal.coachId);
  if(!actor)return '';
  const p=g.toView(actor.x,actor.y),x=clamp(p.x+25,g.margin+10,g.margin+g.fw-124),y=clamp(p.y-57,g.margin+9,g.margin+g.fh-41);
  const accent=ink?'#254f3b':'#ffdf86',fill=ink?'#fff':'#1c3329';
+ if(cartoonMode&&!ink)return '<g data-coach-signal="whistle" pointer-events="none">'+bubbleSVG({x:p.x,y:p.y,text:'WHISTLE · GO',kind:'shout',g,comic:true,accent})+'</g>';
  return '<g data-coach-signal="whistle" pointer-events="none">'+
  '<path d="M'+p.x+' '+p.y+'L'+(x+12)+' '+(y+20)+'" stroke="'+accent+'" stroke-width="2" stroke-dasharray="3 3"/>'+
  '<circle cx="'+p.x+'" cy="'+p.y+'" r="25" fill="none" stroke="'+accent+'" stroke-width="2.6" stroke-dasharray="5 5"/>'+
