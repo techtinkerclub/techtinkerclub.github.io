@@ -20,7 +20,7 @@ import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
 import { initWorkspace, openInspector } from './workspace.js?v=0.20.39';
-import {initBlackboard} from './blackboard.js?v=6';
+import {initBlackboard} from './blackboard.js?v=7';
 import { pitchGeometry,drillGeometry,trainingField } from './pitch.js?v=0.16.1';
 import {fieldContext,fieldPreset,fieldAnchor,validateFieldContext} from './field-context.js?v=0.16.1';
 import {pitchSettings,resizeDrill,canPropagate,canEntire,propagatePosition,copyLayoutMarker} from './drill-edit.js?v=0.12.19';
@@ -52,7 +52,7 @@ import {PRESETS} from './presets.js?v=0.6.0';
 import {renderScene} from './scene.js?v=0.20.51';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.51';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
-import {bindMovieSettings} from './movie.js?v=0.20.45';
+import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.12.26';
 initWorkspace();
