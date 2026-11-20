@@ -57,7 +57,25 @@ export async function loadCatalogue(fetcher=fetch){
   // A slow cache/CDN rollout must not make the normal coaching library unusable.
   console.warn('Rugby QA drill pack unavailable:',err);
  }
- return curated.concat(qa);
+ // Curated multi-phase promotional examples use the same Classic editor schema.
+ // Keep these separate from QA fixtures and personal/public override history.
+ let showcase=[];
+ try{
+  const response=await fetcher(new URL('../data/showcase-drills.json?v=1',import.meta.url),{cache:'no-cache'});
+  if(!response.ok)throw Error('Showcase pack HTTP '+response.status);
+  const pack=await response.json();
+  if(pack?.version!==1||pack.kind!=='rugby-showcase'||!Array.isArray(pack.drills))throw Error('Invalid showcase pack');
+  const known=new Set([...curated,...qa].map(d=>d.id));
+  for(const d of pack.drills){
+   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||!CATEGORIES.includes(d.category)||
+     !Array.isArray(d.frames)||d.frames.length<4)throw Error('Invalid or duplicate showcase drill '+d?.id);
+   known.add(d.id);
+  }
+  showcase=pack.drills;
+ }catch(err){
+  console.warn('Rugby showcase pack unavailable:',err);
+ }
+ return curated.concat(showcase,qa);
 }
 export async function copyText(s){
  try{await navigator.clipboard.writeText(s);return true}catch{return false}
