@@ -71,7 +71,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="fit" title="Fit all of the pitch">⊞ <span>Fit</span></button>'+
   '<button type="button" data-bb="camera" title="Open camera and view controls" aria-controls="bbCameraPanel" aria-expanded="false">◎ <span>View</span></button>'+
   '<button type="button" data-bb="fullscreen" title="Use display fullscreen if available">⛶ <span>Fullscreen</span></button>'+
-  '<button type="button" data-bb="ruckus" id="bbRuckus" title="Switch Classic/Ruckus appearance">◉ <span>Ruckus</span></button>'+
+  '<button type="button" data-bb="ruckus" id="bbRuckus" title="Switch to Ruckus cartoon view" aria-pressed="false">◉ <span>Ruckus</span></button>'+
   '<button type="button" data-bb="save" title="Save the current drill through Studio">⬇ <span>Save</span></button>'+
   '<button type="button" data-bb="exit" class="bb-close" title="Return to Studio">× <span>Exit</span></button>'+
  '</nav>'+
@@ -102,9 +102,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="spotlight" aria-pressed="false" title="Dim everyone except selected player or group">◉ Spotlight</button>'+ 
   '<label class="bb-setting">Ghost positions <select id="bbGhostMode" aria-label="Show ghost positions"><option value="off">Off</option><option value="start">Start</option><option value="next">Next</option><option value="both">Start + next</option></select></label>'+ 
   '</div><div class="bb-layout-settings">'+
-  '<label class="bb-setting">Layout <select id="bbLayoutPreset" aria-label="Blackboard layout"><option value="editing">Editing</option><option value="coaching">Coaching</option></select></label>'+ 
+  '<label class="bb-setting">Layout <select id="bbLayoutPreset" aria-label="Blackboard layout"><option value="editing">Editing · build</option><option value="coaching">Coaching · present</option></select></label>'+ 
   '<button type="button" data-bb="save-layout" title="Remember where you placed these panels on this device">Save layout</button>'+
-  '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button></details>'+
+  '</div><small id="bbLayoutHint" class="bb-layout-hint">Editing: all controls visible. Coaching: simpler, quieter panels.</small><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button></details>'+
  '</section>'+
  '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
   '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move timeline panel" title="Drag panel">⠿</button><strong>Steps & timing</strong><button type="button" data-bb="tracks" title="Show or hide player movement tracks">Tracks ▾</button><button type="button" class="bb-panel-close" data-bb="close-timeline" aria-label="Close timeline">×</button></div>'+
@@ -186,6 +186,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   layoutPreset=name;
   ui.classList.toggle('bb-coaching-layout',name==='coaching');
   $('bbLayoutPreset').value=name;
+  $('bbLayoutHint').textContent=name==='coaching'?
+   'Coaching hides Undo, Redo and Save, with quieter panels. It uses the same drill.':
+   'Editing shows Undo, Redo and Save. Prepare and adjust the same drill.';
   const stored=savedLayouts[name];
   clearPanelPositions();
   // When first switching to a new layout, keep the current panel open:
@@ -338,7 +341,10 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   for(const b of ui.querySelectorAll('[data-bb="prev"]'))b.disabled=state.idx===0;
   for(const b of ui.querySelectorAll('[data-bb="next"]'))b.disabled=state.idx>=state.total-1;
   btn('play').textContent=state.playing?'Ⅱ Pause':'▶ Play';
-  btn('ruckus').classList.toggle('is-active',state.cartoonMode);
+  const ruckus=btn('ruckus');
+  ruckus.classList.toggle('is-active',!!state.cartoonMode);
+  ruckus.setAttribute('aria-pressed',String(!!state.cartoonMode));
+  ruckus.title=state.cartoonMode?'Switch to Classic view':'Switch to Ruckus cartoon view';
   btn('run')?.classList.toggle('is-active',state.routeDrawing);
   btn('undo').disabled=$('undoEdit')?.disabled??true;
   btn('redo').disabled=$('redoEdit')?.disabled??true;
