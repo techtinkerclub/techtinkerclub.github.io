@@ -1,4 +1,4 @@
-import {transitionObjects} from './possession.js?v=0.19.1';
+import {transitionObjects} from './possession.js?v=0.20.78';
 // View-only automatic framing: never edits drill dimensions, object positions or paths.
 // The full-field view remains the default for precise offside/distance teaching.
 const ACTIVE=new Set(['attacker','defender','neutral','coach','shield','bagplayer','ball','donut','sausage','bag','ruck','tackle','maul','scrum']);
