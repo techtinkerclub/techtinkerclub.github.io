@@ -375,6 +375,9 @@ function initPublicBoard(){
  backdrop.addEventListener('click',()=>{sidebar.dataset.open='false'});
  document.body.append(backdrop);
  stage.append(toolbar);
+ const boardHeading=document.createElement('div');boardHeading.className='public-board-heading';
+ boardHeading.innerHTML='<small>RUGBY COACHING BLACKBOARD · VIEW ONLY</small><strong id="publicBoardTitle"></strong><p id="publicBoardObjective"></p>';
+ stage.append(boardHeading);
  const shareTools=document.createElement('section');shareTools.className='public-board-share-tools';
  shareTools.innerHTML='<h2>Coaching snapshot</h2><p>Save the current frame for handouts or messages. The exported image can include your temporary chalk, without changing the drill.</p>'+
   '<label><input id="publicSnapshotInk" type="checkbox" checked> Include my chalk marks</label>'+
@@ -491,6 +494,8 @@ function initPublicBoard(){
  inkTools.querySelector('#publicInkUndo').addEventListener('click',()=>paths.pop()?.remove());
  inkTools.querySelector('#publicInkClear').addEventListener('click',()=>{for(const path of paths)path.remove();paths=[]});
  function opened(){
+  boardHeading.querySelector('#publicBoardTitle').textContent=d?.title||'Rugby drill';
+  boardHeading.querySelector('#publicBoardObjective').textContent=d?.objective||'';
   stepLoop=false;loopIndex=1;refreshPlaybackTools();
  }
  function refreshPlaybackTools(){
