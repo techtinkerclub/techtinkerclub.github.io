@@ -97,14 +97,14 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   '<button type="button" data-bb="paths" aria-pressed="false" title="Show running and passing routes">↝ Paths</button>'+
   '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
   '<button type="button" data-bb="follow" aria-pressed="false" title="Follow action during playback. Manual zoom, fit or pan turns it off.">◎ Follow action</button>'+ 
-  '</div><details id="bbAdvancedView" class="bb-advanced-view"><summary>Focus, ghost positions & layouts</summary><div class="bb-teaching-settings">'+
+  '</div><details id="bbAdvancedView" class="bb-advanced-view"><summary>Focus &amp; panel layouts</summary><div class="bb-teaching-settings">'+
   '<label class="bb-setting">Follow <select id="bbFollowTarget" aria-label="Camera follows"><option value="action">Whole action</option><option value="selected">Selected player</option><option value="ball">Ball</option></select></label>'+ 
   '<button type="button" data-bb="spotlight" aria-pressed="false" title="Dim everyone except selected player or group">◉ Spotlight</button>'+ 
   '<label class="bb-setting">Ghost positions <select id="bbGhostMode" aria-label="Show ghost positions"><option value="off">Off</option><option value="start">Start</option><option value="next">Next</option><option value="both">Start + next</option></select></label>'+ 
   '</div><div class="bb-layout-settings">'+
   '<label class="bb-setting">Layout <select id="bbLayoutPreset" aria-label="Blackboard layout"><option value="editing">Editing</option><option value="coaching">Coaching</option></select></label>'+ 
   '<button type="button" data-bb="save-layout" title="Remember where you placed these panels on this device">Save layout</button>'+
-  '</div></details><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button>'+
+  '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button></details>'+
  '</section>'+
  '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
   '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move timeline panel" title="Drag panel">⠿</button><strong>Steps & timing</strong><button type="button" data-bb="tracks" title="Show or hide player movement tracks">Tracks ▾</button><button type="button" class="bb-panel-close" data-bb="close-timeline" aria-label="Close timeline">×</button></div>'+
@@ -417,7 +417,10 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(!onCoachTool('follow-target',event.target.value))event.target.value=getState().followTarget||'action';
   requestAnimationFrame(sync);
  });
- $('bbGhostMode').addEventListener('change',event=>{onCoachTool('ghost',event.target.value);requestAnimationFrame(sync)});
+ $('bbGhostMode').addEventListener('change',event=>{
+  if(!onCoachTool('ghost',event.target.value))event.target.value=getState().ghostMode||'off';
+  requestAnimationFrame(sync);
+ });
  $('bbSpeed').addEventListener('change',event=>{
   const value=Number(event.target.value),source=$('speed');
   if(!source||![.25,.5,1,2].includes(value))return;
