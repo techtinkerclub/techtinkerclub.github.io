@@ -55,6 +55,10 @@ try{
   await page.locator('[data-bb="delete-step"]').click();
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount,
    'Blackboard Delete step uses the original Studio delete action');
+  // Deletion deliberately selects the next existing step. Go back to the
+  // authored setup before copying it again, rather than copying a later step
+  // that did not yet include our newly added (current-step-only) player.
+  await page.locator('[data-bb="prev"]').click();
   await page.locator('[data-bb="new-step"]').click();
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
    'A new step remains editable after deletion');
