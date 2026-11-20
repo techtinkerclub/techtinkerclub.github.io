@@ -14,6 +14,7 @@ test('Blackboard lives in the same Studio pitch and uses existing drill controls
  assert.match(source,/original\.click\(\)/,'adding players must use existing editor palette');
  assert.match(source,/getState\(\)/,'selected objects must be read from live editor state');
  assert.match(source,/openDetails\(\)/,'details must reuse the existing inspector');
+ assert.match(source,/openObjectActions\?\.\(\)/,'all existing contextual rugby actions must be reachable');
  assert.doesNotMatch(source,/\bnewDrill\b|\bcreateHistory\b|\bclone\(drill\)/,
   'Blackboard must not create independent model/history');
 });
@@ -42,10 +43,10 @@ test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
   assert.match(s,/assets\/blackboard\.css\?v=1/);
-  assert.match(s,/js\/app\.js\?v=0\.20\.47/);
+  assert.match(s,/js\/app\.js\?v=0\.20\.48/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=2'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=3'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
 });
