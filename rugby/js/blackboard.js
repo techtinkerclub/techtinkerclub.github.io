@@ -389,7 +389,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'close-timeline':openTimeline(false);break;
    case 'tracks':click('toggleTracks');break;
    case 'replay':onCoachTool('replay',true);break;
-   case 'loop':onCoachTool('loop',!state.loop);break;
+   case 'loop':onCoachTool('loop',!state.loop);sync();break;
    case 'decision':case 'compare-decision':click('compareOutcomes');break;
    case 'edit-decision':click('editOutcomes');break;
    case 'save-layout':saveLayout();hint('Saved '+layoutPreset+' panel layout on this device.');break;
