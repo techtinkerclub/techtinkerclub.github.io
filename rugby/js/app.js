@@ -2233,7 +2233,7 @@ async function reloadPublishedCatalogue(){
  SEEDS.splice(0,SEEDS.length,...latest);
  publishedIds.clear();for(const seed of SEEDS)publishedIds.add(seed.id);
 }
-async function changePublication(id,action){
+async function changePublication(id,action,{confirmed=false}={}){
  if(githubSaving||publicationLoading)return;
  const saved=githubDrills.find(d=>d.id===id);
  if(!saved){note('Save this drill to GitHub before publishing.');return}
@@ -2243,7 +2243,7 @@ async function changePublication(id,action){
  const message=action==='unpublish'?'Unpublish "'+saved.title+'"? Its public link ('+record?.id+') will stop showing the drill. The source and publication history remain recoverable.':
   (currentlyPublic?'Replace the published '+record.id+' with saved '+versionInfo(saved)+' of "'+saved.title+'"? Existing public links will display this new revision.':
    'Publish "'+saved.title+'" ('+versionInfo(saved)+') to the public coaching library? Anyone can view this resource.');
- if(!confirm(message))return;
+ if(!confirmed&&!confirm(message))return;
  githubSaving=true;updatePublicationControls();syncSaveState();
  try{
   const maxId=Math.max(143,...SEEDS.map(d=>Number(d.id.match(/^seed-(\d+)$/)?.[1])||0));
@@ -2268,9 +2268,9 @@ async function refreshGitHubLibrary(){
  catch(e){githubLoaded=false;note('GitHub library: '+e.message)}
  finally{githubLoading=false;updateGitHubControls();if($('libraryDialog').open)renderLibrary();syncSaveState()}
 }
-let saveAfterConnect=false;
-function requestGithubConnection(save=false){
- saveAfterConnect=save;$('githubToken').value='';$('githubConnectStatus').textContent='';$('githubConfirmPublic').checked=false;
+let saveAfterConnect=false,offerPublishAfterConnect=false;
+function requestGithubConnection(save=false,offerPublish=false){
+ saveAfterConnect=save;offerPublishAfterConnect=offerPublish;$('githubToken').value='';$('githubConnectStatus').textContent='';$('githubConfirmPublic').checked=false;
  $('githubConnectSubmit').textContent=save?'Connect and save drill':'Connect for this session';
  $('githubDialog').showModal();
 }
@@ -2279,11 +2279,11 @@ $('githubConnection').onclick=()=>{
  else requestGithubConnection(false);
 };
 $('githubCancel').onclick=()=>$('githubDialog').close();
-$('githubDialog').addEventListener('close',()=>{$('githubToken').value='';saveAfterConnect=false});
+$('githubDialog').addEventListener('close',()=>{$('githubToken').value='';saveAfterConnect=false;offerPublishAfterConnect=false});
 $('githubConnectForm').onsubmit=async e=>{
  e.preventDefault();if(!$('githubConfirmPublic').checked){$('githubConnectStatus').textContent='Confirm that this repository is public.';return}
- const submit=$('githubConnectSubmit'),token=$('githubToken').value.trim(),shouldSave=saveAfterConnect;submit.disabled=true;$('githubToken').value='';$('githubConnectStatus').textContent='Connecting…';
- try{const loaded=await githubStore.connect(token);githubDrills=loaded.data.drills;githubLoaded=true;updateGitHubControls();$('githubDialog').close();if($('libraryDialog').open)renderLibrary();if(shouldSave)await saveToGitHub()}
+ const submit=$('githubConnectSubmit'),token=$('githubToken').value.trim(),shouldSave=saveAfterConnect,shouldOfferPublish=offerPublishAfterConnect;submit.disabled=true;$('githubToken').value='';$('githubConnectStatus').textContent='Connecting…';
+ try{const loaded=await githubStore.connect(token);githubDrills=loaded.data.drills;githubLoaded=true;updateGitHubControls();$('githubDialog').close();if($('libraryDialog').open)renderLibrary();if(shouldSave)await saveToGitHub({offerPublish:shouldOfferPublish})}
  catch(err){$('githubConnectStatus').textContent=err.message}
  finally{submit.disabled=false}
 };
@@ -2306,10 +2306,10 @@ function chooseSaveMode(){
   dialog.showModal();
  });
 }
-async function saveToGitHub(){
+async function saveToGitHub({offerPublish=false}={}){
  if(githubSaving)return;
  if(!requireAppliedSetup()){saveFeedback='Apply settings before saving';syncSaveState();return}
- if(!githubStore.connected()){requestGithubConnection(true);return}
+ if(!githubStore.connected()){requestGithubConnection(true,offerPublish);return}
  const mode=await chooseSaveMode();if(!mode)return;
   const originalId=drill.id,snapshot=clone(drill);
   if(mode!=='revision'){
@@ -2319,19 +2319,51 @@ async function saveToGitHub(){
   }
   const baseline=mode==='revision'&&githubBaseline?.id===snapshot.id?githubBaseline:null;
  githubSaving=true;saveFeedback='';syncSaveState();
+ let committedId=null;
  try{
   const out=await githubStore.save(snapshot,baseline);
   githubDrills=out.data.drills;githubLoaded=true;
   if(mode!=='revision'&&drill.id===originalId){drill.id=snapshot.id;if(snapshot.derivedFrom)drill.derivedFrom=clone(snapshot.derivedFrom);else delete drill.derivedFrom}
    if(drill.id===snapshot.id){githubBaseline=clone(out.snapshot);dirty=JSON.stringify(drill)!==JSON.stringify(snapshot);saveFeedback=''}
   stagedImports=stagedImports.filter(x=>x.id!==snapshot.id);
+  committedId=snapshot.id;
   note('Committed "'+snapshot.title+'" to GitHub · '+out.commit.slice(0,7)+'.');
   updateGitHubControls();if($('libraryDialog').open)renderLibrary();
  }catch(e){saveFeedback='GitHub save not confirmed';note(e.message+' Your current edits remain open. Export JSON as a backup.');if(e.status===401){githubStore.disconnect();updateGitHubControls()}alert(e.message+'\nYour current drill is still open. Export JSON if needed.')}
  finally{githubSaving=false;syncSaveState()}
+ if(committedId&&offerPublish){
+  // This second step is explicitly optional. Nothing is published on Save.
+  const next=await offerPublicationAfterSave(committedId);
+  if(next)await changePublication(committedId,'publish',{confirmed:true});
+ }
+ return !!committedId;
 }
-$('save').onclick=saveToGitHub;
-function confirmLeave(){if(githubSaving){note('Wait for the active GitHub save to finish.');return false}return !(dirty||setupPending)||confirm('You have unsaved or unapplied changes. Continue without saving?')}$('new').onclick=()=>{if(!confirmLeave())return;drill=enrich(blank());dirty=false;selected=null;$('moveScope').value='onward';resetHistory();choose(0);openInspector('Drill',true)};
+function offerPublicationAfterSave(savedId){
+ return new Promise(resolve=>{
+  const saved=githubDrills.find(d=>d.id===savedId);
+  if(!saved){resolve(false);return}
+  const dialog=document.createElement('dialog');
+  dialog.className='bb-save-complete';
+  dialog.innerHTML='<form method="dialog"><h2>Saved to your drill library</h2>'+
+   '<p><strong>'+esc(saved.title)+'</strong> is saved as an editable working drill.</p>'+
+   '<p>The public coaching library is separate. Would you like to publish this saved revision now?</p>'+
+   '<div class="bb-save-complete-actions"><button type="submit" value="keep">Not now</button>'+
+   '<button type="submit" class="primary" value="publish">Publish to public library</button></div></form>';
+  document.body.appendChild(dialog);
+  dialog.addEventListener('close',()=>{const result=dialog.returnValue==='publish';dialog.remove();resolve(result)},{once:true});
+  dialog.showModal();
+ });
+}
+$('save').onclick=()=>saveToGitHub();
+function confirmLeave(){if(githubSaving){note('Wait for the active GitHub save to finish.');return false}return !(dirty||setupPending)||confirm('You have unsaved or unapplied changes. Continue without saving?')}function startBlankBoard({showSetup=true}={}){
+ if(!confirmLeave())return false;
+ drill=enrich(blank());dirty=false;selected=null;githubBaseline=null;
+ $('moveScope').value='onward';resetHistory();choose(0);
+ if(showSetup)openInspector('Drill',true);
+ else note('New blank board ready. Add a player or create a step to begin.');
+ return true;
+}
+$('new').onclick=()=>startBlankBoard();
 function startDerived(source,kind){
  try{
   const next=deriveDrill(source,kind,uid());
@@ -2744,6 +2776,20 @@ const blackboard=initBlackboard({
  onCoachTool:(kind,value)=>{
   const boardActive=document.body.classList.contains('blackboard-mode');
   if(!boardActive)return false;
+  if(kind==='open-library'){
+   if($('libraryDialog').open)return true;
+   const library=$('libraryDialog');
+   library.classList.add('bb-library-style');
+   $('filterMode').value='';$('searchLib').value='';
+   openLibrary();
+   return true;
+  }
+  if(kind==='new-board')return startBlankBoard({showSetup:false});
+  if(kind==='save-library'){void saveToGitHub({offerPublish:true});return true}
+  if(kind==='publish-saved'){
+   void changePublication(drill.id,'publish');return true
+  }
+
   if(kind==='reset-ephemeral'){
    bbLoop=false;bbFollowTarget='action';bbTargetPlayer=null;bbSpotlightIds=[];bbGhostMode='off';
    return true;
