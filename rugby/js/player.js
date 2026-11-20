@@ -491,6 +491,22 @@ function initPublicBoard(){
   dock.append(button);
  }
  stage.append(dock);
+ // Shortcuts work only while the published blackboard is visible, and never
+ // intercept typing, forms, dialogs or buttons.
+ const shortcuts=document.createElement('details');shortcuts.className='public-board-shortcuts';
+ shortcuts.innerHTML='<summary title="Keyboard shortcuts">? Shortcuts</summary>'+
+  '<div><b>Space</b> Play / pause <b>← →</b> Previous / next step '+
+  '<b>R</b> Replay step <b>I</b> Toggle chalk <b>Esc</b> Exit focus or close tools</div>';
+ document.getElementById('presentation-panel-step')?.append(shortcuts);
+ window.addEventListener('keydown',event=>{
+  if(!document.body.classList.contains('public-blackboard')||event.altKey||event.ctrlKey||event.metaKey||event.repeat)return;
+  if(document.querySelector('dialog[open]')||event.target.closest('input,textarea,select,button,[contenteditable="true"],summary'))return;
+  if(event.code==='Space'){event.preventDefault();$('play').click()}
+  else if(event.key==='ArrowLeft'){event.preventDefault();$('previousStep').click()}
+  else if(event.key==='ArrowRight'){event.preventDefault();$('nextStep').click()}
+  else if(event.key.toLowerCase()==='r'){event.preventDefault();$('publicReplayStep')?.click()}
+  else if(event.key.toLowerCase()==='i'){event.preventDefault();inkButton.click()}
+ });
  const mobileMenu=document.createElement('button');mobileMenu.type='button';
  mobileMenu.className='public-board-mobile-menu';mobileMenu.textContent='☰ Tools';
  mobileMenu.setAttribute('aria-expanded','false');mobileMenu.setAttribute('aria-controls','publicBoardFloatingTools');
@@ -736,6 +752,8 @@ function initPublicBoard(){
  window.addEventListener('keydown',event=>{
   if(event.key!=='Escape'||document.activeElement?.closest('dialog'))return;
   if(inkEnabled){setInk(false);return}
+  if(pickFocus){setPickFocus(false);return}
+  if(toolbar.dataset.mobileOpen==='true'){toolbar.dataset.mobileOpen='false';mobileMenu.setAttribute('aria-expanded','false');return}
   if(sidebar.dataset.open==='true'){sidebar.dataset.open='false';return}
  });
  const controls=document.createElement('section');controls.className='public-board-play-tools';
