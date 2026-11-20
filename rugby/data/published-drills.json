@@ -2527,7 +2527,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -2535,7 +2536,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -2543,7 +2545,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -2575,7 +2578,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -2583,7 +2587,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -2591,7 +2596,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -2599,7 +2605,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -2659,7 +2666,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -2667,7 +2675,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -2675,7 +2684,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -2707,7 +2717,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -2715,7 +2726,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -2723,7 +2735,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -2731,7 +2744,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -2855,7 +2869,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -2863,7 +2878,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -2871,7 +2887,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -2903,7 +2920,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -2911,7 +2929,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -2919,7 +2938,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -2927,7 +2947,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3014,7 +3035,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3022,7 +3044,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3030,7 +3053,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3062,7 +3086,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3070,7 +3095,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3078,7 +3104,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3086,7 +3113,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3176,7 +3204,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3184,7 +3213,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3192,7 +3222,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3224,7 +3255,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3232,7 +3264,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3240,7 +3273,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3248,7 +3282,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3348,7 +3383,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3356,7 +3392,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3364,7 +3401,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3396,7 +3434,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3404,7 +3443,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3412,7 +3452,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3420,7 +3461,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3513,7 +3555,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3521,7 +3564,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3529,7 +3573,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3561,7 +3606,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3569,7 +3615,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3577,7 +3624,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3585,7 +3633,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3678,7 +3727,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3686,7 +3736,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3694,7 +3745,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3726,7 +3778,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3734,7 +3787,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3742,7 +3796,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3750,7 +3805,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3847,7 +3903,8 @@
               "label": "",
               "x": 395.6,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ffvqjhooc5",
@@ -3855,7 +3912,8 @@
               "label": "",
               "x": 450,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8fg0e9ahygc",
@@ -3863,7 +3921,8 @@
               "label": "",
               "x": 504.4,
               "y": 223.4,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8ftsmevmydz",
@@ -3895,7 +3954,8 @@
               "label": "",
               "x": 526,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7hy307vnk",
@@ -3903,7 +3963,8 @@
               "label": "",
               "x": 374,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g7x2vjfugd",
@@ -3911,7 +3972,8 @@
               "label": "",
               "x": 526,
               "y": 333,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8g83qp3mae5",
@@ -3919,7 +3981,8 @@
               "label": "",
               "x": 374,
               "y": 143,
-              "rot": 0
+              "rot": 0,
+              "coneColor": "yellow"
             },
             {
               "id": "mwj8h553khg2gb",
@@ -3986,6 +4049,178 @@
               "follow": false
             }
           }
+        },
+        {
+          "name": "Release and present",
+          "seconds": 0.8,
+          "notes": "",
+          "objects": [
+            {
+              "id": "mwj8e2r2oxyqlk",
+              "type": "attacker",
+              "label": "A1",
+              "x": 563.85143,
+              "y": 264.3414285714286,
+              "rot": 0
+            },
+            {
+              "id": "mwj8e34mdkmz60",
+              "type": "attacker",
+              "label": "A2",
+              "x": 545.2,
+              "y": 261.0128571428571,
+              "rot": 180
+            },
+            {
+              "id": "mwj8e3k6cepl43",
+              "type": "attacker",
+              "label": "A3",
+              "x": 405.392,
+              "y": 273.1455,
+              "rot": 0
+            },
+            {
+              "id": "mwj8fey6jkwvcd",
+              "type": "cone",
+              "label": "",
+              "x": 395.6,
+              "y": 223.4,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8ffvqjhooc5",
+              "type": "cone",
+              "label": "",
+              "x": 450,
+              "y": 223.4,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8fg0e9ahygc",
+              "type": "cone",
+              "label": "",
+              "x": 504.4,
+              "y": 223.4,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8ftsmevmydz",
+              "type": "defender",
+              "label": "D1",
+              "x": 448.64,
+              "y": 275.24249999999995,
+              "rot": 0,
+              "playerPose": "standing"
+            },
+            {
+              "id": "mwj8ftzhp158ce",
+              "type": "defender",
+              "label": "D2",
+              "x": 545.2,
+              "y": 287.64142857142855,
+              "rot": 0
+            },
+            {
+              "id": "mwj8fu6ddgwgdi",
+              "type": "defender",
+              "label": "D3",
+              "x": 342.56,
+              "y": 275.24249999999995,
+              "rot": 0,
+              "playerPose": "standing"
+            },
+            {
+              "id": "mwj8g7b2cqyjej",
+              "type": "cone",
+              "label": "",
+              "x": 526,
+              "y": 143,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8g7hy307vnk",
+              "type": "cone",
+              "label": "",
+              "x": 374,
+              "y": 333,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8g7x2vjfugd",
+              "type": "cone",
+              "label": "",
+              "x": 526,
+              "y": 333,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8g83qp3mae5",
+              "type": "cone",
+              "label": "",
+              "x": 374,
+              "y": 143,
+              "rot": 0,
+              "coneColor": "yellow"
+            },
+            {
+              "id": "mwj8h553khg2gb",
+              "type": "ball",
+              "label": "",
+              "x": 395.6,
+              "y": 261.26250000000005,
+              "rot": 180,
+              "carrySide": "left",
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "mwj8l1i048ptc4",
+              "type": "shieldItem",
+              "label": "",
+              "x": 545.2,
+              "y": 282.0494285714285,
+              "rot": 0,
+              "ownerId": "mwj8ftzhp158ce"
+            },
+            {
+              "id": "mwj8qrfncjggvq",
+              "type": "tackle",
+              "label": "Release and present",
+              "x": 395.6,
+              "y": 270,
+              "rot": 180,
+              "members": [
+                {
+                  "id": "mwj8e3k6cepl43",
+                  "pose": "grounded"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "arrivalSide": "defence",
+                "carrierId": "mwj8e3k6cepl43",
+                "tacklerId": "mwj8fu6ddgwgdi",
+                "ballId": "mwj8h553khg2gb",
+                "tacklerIds": [
+                  "mwj8fu6ddgwgdi",
+                  "mwj8ftsmevmydz"
+                ]
+              }
+            }
+          ],
+          "timing": {
+            "mwj8h553khg2gb": {
+              "start": 0,
+              "end": 45
+            }
+          },
+          "paths": {}
         }
       ],
       "players": "6 players: A1 (first carrier), A2 (first attacking support), A3 (next carrier); D1 (first tackler), D2 (passive shield holder), D3 (second defender). One supervising coach; rotate all six roles after each repetition.",
@@ -4031,12 +4266,12 @@
       "attackDirection": "up",
       "showAttack": true,
       "boundary": "line",
-      "revision": 1,
-      "savedAt": "2026-11-20T09:26:39.825Z",
+      "revision": 2,
+      "savedAt": "2026-11-20T09:31:54.679Z",
       "savedFromCoachDrill": "u10-tackle-secure-go-again-v082",
-      "publishedAt": "2026-11-20T09:26:47.702Z",
-      "publishedRevision": 1,
-      "publishedSourceSavedAt": "2026-11-20T09:26:39.825Z"
+      "publishedAt": "2026-11-20T09:32:08.956Z",
+      "publishedRevision": 2,
+      "publishedSourceSavedAt": "2026-11-20T09:31:54.679Z"
     }
   ],
   "unpublishedIds": []
