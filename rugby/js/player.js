@@ -387,6 +387,11 @@ function initPublicBoard(){
  function setCameraSettingsOpen(open){
   cameraContents.hidden=!open;
   cameraMenu.setAttribute('aria-expanded',String(open));
+  cameraMenu.setAttribute('aria-label',open?'Hide camera settings':'Show camera settings');
+  if(open){
+   toolbar.dataset.mobileOpen='false';
+   document.querySelector('.public-board-mobile-menu')?.setAttribute('aria-expanded','false');
+  }
   if(open&&!cameraContents.dataset.floating&&window.innerWidth>700){
    const saved=settings.positions?.cameraSettings;
    if(Array.isArray(saved)&&saved.length===2&&saved.every(Number.isFinite)){
@@ -465,7 +470,7 @@ function initPublicBoard(){
  const narrow=()=>window.matchMedia('(max-width:700px)').matches;
  for(const item of movablePanels){
   const grip=document.createElement('button');grip.type='button';grip.className='public-board-grip';
-  grip.textContent='⠿';grip.title=item.label;grip.setAttribute('aria-label',item.label);
+  grip.textContent='⠿';grip.title=item.label+' (drag or use arrow keys)';grip.setAttribute('aria-label',item.label);
   grip.setAttribute('aria-keyshortcuts','ArrowLeft ArrowRight ArrowUp ArrowDown');
   item.node.prepend(grip);
   let drag=null;
@@ -868,7 +873,7 @@ if(catalogueId!==null){
   if(!/^seed-[0-9]{3,}$/.test(catalogueId))throw Error('Invalid drill identifier.');
   const list=await loadCatalogue(),entry=list.find(x=>x.id===catalogueId);if(!entry)throw Error('This drill is not in the published catalogue.');
   const compose=new URL('./library.html',location.href);compose.searchParams.set('video',entry.id);$('addPlayerToVideo').href=compose.href;$('addPlayerToVideo').hidden=false;syncLibraryVideoStyle();
-  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='realistic'?'realistic':'coaching',framing:params.get('framing')==='action'?'action':'field',orientation:params.get('orientation')==='up'?'up':'right',cartoonMode:params.get('minion')==='1'});document.title=entry.title+' · Rugby Coaching Library';
+  open(entry,{offside:params.has('offside')?params.get('offside')==='1':entry.id==='seed-082',teachingGuides:params.get('guides')!=='0',scaleMode:params.get('scale')==='realistic'?'realistic':'coaching',framing:params.get('framing')==='action'?'action':'field',orientation:params.get('orientation')==='up'?'up':params.get('orientation')==='right'?'right':window.matchMedia('(max-width:700px) and (orientation:portrait)').matches?'up':'right',cartoonMode:params.get('minion')==='1'});document.title=entry.title+' · Rugby Coaching Library';
   if(entry.publishedAt){const stamp=document.createElement('small');stamp.className='published-stamp';stamp.textContent='Public copy updated '+new Date(entry.publishedAt).toLocaleDateString('en-GB')+' · '+(Number.isInteger(entry.publishedRevision)?'Revision '+entry.publishedRevision:'Legacy revision');$('objective').before(stamp)}
   $('catalogueReview').hidden=false;
   const shareLink=()=>{const link=new URL(drillHref(entry.id),location.href);link.searchParams.set('offside',opts.offside?'1':'0');link.searchParams.set('guides',opts.teachingGuides?'1':'0');link.searchParams.set('scale',opts.scaleMode);link.searchParams.set('framing',opts.framing);link.searchParams.set('orientation',opts.orientation);if(opts.cartoonMode)link.searchParams.set('minion','1');return link.href};
