@@ -370,15 +370,40 @@ function initPublicBoard(){
  const boardHeading=document.createElement('div');boardHeading.className='public-board-heading';
  boardHeading.innerHTML='<small>RUGBY COACHING BLACKBOARD · VIEW ONLY</small><strong id="publicBoardTitle"></strong><p id="publicBoardObjective"></p>';
  stage.append(boardHeading);
+ // Camera options are a separate floating card, NOT a child of the camera bar.
+ const cameraMenu=document.createElement('button');cameraMenu.type='button';
+ cameraMenu.className='public-board-camera-toggle';cameraMenu.textContent='⚙ Camera';
+ cameraMenu.setAttribute('aria-label','Show camera settings');
+ cameraMenu.setAttribute('aria-expanded','false');
+ const cameraContents=document.createElement('section');cameraContents.className='public-board-camera-settings';
+ cameraContents.id='publicBoardCameraSettings';cameraContents.hidden=true;
+ cameraMenu.setAttribute('aria-controls',cameraContents.id);
+ const cameraClose=document.createElement('button');cameraClose.type='button';cameraClose.className='public-board-camera-close';
+ cameraClose.textContent='×';cameraClose.setAttribute('aria-label','Close camera settings');
+ cameraClose.addEventListener('click',()=>setCameraSettingsOpen(false));
+ cameraContents.append(cameraClose);
+ $('viewerCamera').append(cameraMenu);
+ stage.append(cameraContents);
+ function setCameraSettingsOpen(open){
+  cameraContents.hidden=!open;
+  cameraMenu.setAttribute('aria-expanded',String(open));
+  if(open&&!cameraContents.dataset.floating){
+   const bar=$('viewerCamera').getBoundingClientRect();
+   const panel=cameraContents.getBoundingClientRect();
+   positionPanel(cameraContents,Math.min(bar.right-30,window.innerWidth-panel.width-12),Math.min(bar.bottom+8,window.innerHeight-panel.height-10));
+  }
+ }
+ cameraMenu.addEventListener('click',()=>setCameraSettingsOpen(cameraContents.hidden));
  // View-only floating panels: a grip is a pointer/keyboard drag handle.
  // Local positions are clamped to the viewport and never written to drills.
  const movablePanels=[
   {node:toolbar,key:'tools',label:'Move tools'},
   {node:boardHeading,key:'title',label:'Move title'},
   {node:$('viewerCamera'),key:'camera',label:'Move camera'},
-  {node:$('controls'),key:'playback',label:'Move playback'}
+  {node:$('controls'),key:'playback',label:'Move playback'},
+  {node:cameraContents,key:'cameraSettings',label:'Move camera settings'}
  ];
- const layoutKey='rugby-public-blackboard-layout-v1';
+ const layoutKey='rugby-public-blackboard-layout-v2';
  const settings=(()=>{
   try{const raw=JSON.parse(localStorage.getItem(layoutKey)||'{}');return raw&&typeof raw==='object'?raw:{}}catch{return {}}
  })();
@@ -467,12 +492,22 @@ function initPublicBoard(){
   }
   for(const item of movablePanels){
    const p=settings.positions?.[item.key];
+   if(item.key==='cameraSettings'&&item.node.hidden)continue;
    if(Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))
     positionPanel(item.node,p[0]*window.innerWidth,p[1]*window.innerHeight);
   }
  }
  requestAnimationFrame(reflowPanels);
  window.addEventListener('resize',reflowPanels);
+ document.addEventListener('pointerdown',event=>{
+  if(cameraContents.hidden)return;
+  if(cameraContents.contains(event.target)||cameraMenu.contains(event.target))return;
+  setCameraSettingsOpen(false);
+ });
+ window.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&!cameraContents.hidden){setCameraSettingsOpen(false);cameraMenu.focus()}
+ });
+
  // Fold-away rails leave the pitch clear without removing useful functions.
  const dock=document.createElement('nav');dock.className='public-board-dock';
  dock.setAttribute('aria-label','Show and hide floating panels');
@@ -581,12 +616,9 @@ function initPublicBoard(){
  document.getElementById('presentation-panel-view')?.prepend(focus);
  // Single home for all camera controls, alongside Zoom/Fit/Pan/Follow.
  // Existing select elements move rather than being cloned so their handlers work.
- const cameraMenu=document.createElement('details');cameraMenu.className='public-board-camera-menu';
- const cameraSummary=document.createElement('summary');cameraSummary.textContent='⚙ Camera';
- const cameraContents=document.createElement('div');cameraContents.className='public-board-camera-settings';
- cameraContents.innerHTML='<label>Camera mode <select id="publicCameraTarget" aria-label="Choose how the camera follows the drill"><option value="field">Whole pitch</option><option value="action">Frame this step</option><option value="follow">Follow action</option><option value="ball">Follow ball</option><option value="player">Follow player</option></select></label>'+
+ cameraContents.insertAdjacentHTML('beforeend','<label>Camera mode <select id="publicCameraTarget" aria-label="Choose how the camera follows the drill"><option value="field">Whole pitch</option><option value="action">Frame this step</option><option value="follow">Follow action</option><option value="ball">Follow ball</option><option value="player">Follow player</option></select></label>'+
   '<label id="publicCameraPlayerLabel" hidden>Player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+
-  '<label>Camera distance <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>';
+  '<label>Camera distance <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>');
  const legacyFraming=$('framing')?.closest('label');
  if(legacyFraming){legacyFraming.hidden=true;cameraContents.append(legacyFraming)}
  const orient=$('orientation');
@@ -594,8 +626,7 @@ function initPublicBoard(){
   const wrapper=document.createElement('label');wrapper.textContent='Pitch orientation';
   wrapper.append(orient);cameraContents.append(wrapper);
  }
- cameraMenu.append(cameraSummary,cameraContents);
- $('viewerCamera').append(cameraMenu);
+ 
 const local={spot:'',ghost:'off',camera:'field',cameraPlayer:'',cameraFraming:'standard',grid:false};
  const cameraTarget=cameraContents.querySelector('#publicCameraTarget');
  const cameraPlayer=cameraContents.querySelector('#publicCameraPlayer');
