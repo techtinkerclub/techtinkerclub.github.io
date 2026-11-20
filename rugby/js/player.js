@@ -503,6 +503,10 @@ function initPublicBoard(){
  }
  function refresh(scene){
   previousScene=scene;
+  if(!document.body.classList.contains('public-blackboard')){
+   if(ink.parentNode!==board)board.append(ink);
+   syncView();return;
+  }
   // Player choice is derived from the saved read-only frame, never from editing.
   const select=focus.querySelector('#publicSpotlight'),current=select.value;
   const names=scene.frame.objects.filter(o=>['attacker','defender','neutral','coach','shield','bagplayer'].includes(o.type));
@@ -569,7 +573,7 @@ function initPublicBoard(){
   refreshPlaybackTools();
  });
  function cameraView(scene){
-  if(!d||local.camera==='action'||local.cameraFraming==='full')return null;
+  if(!document.body.classList.contains('public-blackboard')||!d||local.camera==='action'||local.cameraFraming==='full')return null;
   const g=drillGeometry(d,opts.orientation),loc=stepLocation(d,t),i=scene.index;
   const prev=d.frames[Math.max(0,i-1)],objects=i>0?transitionObjects(prev,scene.frame,loc.p,g):scene.frame.objects;
   const target=local.camera==='ball'?objects.find(o=>o.type==='ball'):objects.find(o=>o.id===local.cameraPlayer);
