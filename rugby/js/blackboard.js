@@ -324,6 +324,10 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'ink-undo':{const last=marks.pop();last?.remove();hint(marks.length+' temporary marks remain.');break}
    case 'ink-clear':marks.splice(0).forEach(p=>p.remove());hint('Temporary ink cleared.');break;
   }
+  // Camera controls change Studio's follow checkbox synchronously. Update
+  // Blackboard's pressed indicators on this same click, not one animation
+  // frame later (important for keyboard/touch feedback as well).
+  if(['pan','fit','fit-drill','fit-action','zoom-in','zoom-out'].includes(action))sync();
   requestAnimationFrame(sync);
  }
  $('bbStepSeconds').addEventListener('change',()=>{
