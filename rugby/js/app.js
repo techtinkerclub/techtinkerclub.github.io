@@ -11,7 +11,7 @@ import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt,tryVisualDuration} from '.
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
 import {loadPublicationData,publicationForSource,isPublished} from './publication.js?v=1';
-import {loadCatalogue} from './catalogue.js?v=0.18.8';
+import {loadCatalogue} from './catalogue.js?v=0.19.0';
 import {familyMembers,publicationState,duplicateTitleGroups,revisionLabel} from './drill-families.js?v=1';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=0.18.5';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
@@ -35,9 +35,9 @@ import { cleanRoute, sanitizeRoutes, routeSamples, routeSVG, sampleRoute, waypoi
 import { createHistory } from './history.js?v=0.4.0';
 import {deriveDrill,readDerivation,relationLabel,rekeyImportedFamilies} from './drill-variations.js?v=0.12.22';
 import {timingTrackHTML,createTimingTrackEditor} from './timing-tracks.js?v=0.12.20';
-import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, objectPose, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.19.1';
+import { canCarry, carrier, carriedPose, syncPossession, frameObjects, movementFor, transitionObjects, contactTarget, assignPossession, objectPose, carrySide, setCarrySide, isShield, shieldPose, assignShield, shieldTarget, normaliseRecoveryPoses, releaseMovedPlayer } from './possession.js?v=0.20.78';
 import {createCamera} from './camera.js?v=0.5.2';
-import {actionViewport,followActionViewport} from './action-camera.js?v=2';
+import {actionViewport,followActionViewport} from './action-camera.js?v=3';
 import {contactType,contactTitle,contactCandidates,cleanContacts,arrangeContact,posesFor,posedShape,contactMarkerShape,contactLabels,PLAYER_POSES} from './contact.js?v=0.20.75';
 import {inspectedPose} from './pose-inspector.js?v=0.12.17';
 import {PHASES,supportTitle,validPhase,nextPhase,team,roles,cleanBreakdowns,candidates,advance} from './breakdown.js?v=0.12.34';
@@ -52,8 +52,8 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.77';
-import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.77';
+import {renderScene} from './scene.js?v=0.20.78';
+import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.78';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.55';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
