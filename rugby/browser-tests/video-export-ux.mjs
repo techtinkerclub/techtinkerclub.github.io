@@ -67,9 +67,9 @@ try{
  await player.locator('#playerFollow').click();
  assert.equal(await player.locator('#playerFollow').getAttribute('aria-pressed'),'true');
  assert.equal(await player.locator('#framing').inputValue(),'follow');
- const startView=await player.locator('#board > svg').getAttribute('viewBox');
+ const startView=await player.locator('#board > svg:not(.public-board-ink)').getAttribute('viewBox');
  await player.locator('#seek').evaluate(el=>{el.value=String(Number(el.max)*.65);el.dispatchEvent(new Event('input',{bubbles:true}))});
- const followView=await player.locator('#board > svg').getAttribute('viewBox');
+ const followView=await player.locator('#board > svg:not(.public-board-ink)').getAttribute('viewBox');
  assert.notEqual(startView,followView,'read-only camera follows the moving players at different times');
  await player.close();
 
