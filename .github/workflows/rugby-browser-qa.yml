@@ -37,6 +37,8 @@ jobs:
           done
           cat /tmp/rugby-http.log
           exit 1
+      - name: Test full-screen Blackboard editor and live player actions in Chromium
+        run: node rugby/browser-tests/blackboard-smoke.mjs
       - name: Test contextual video options and export an actual Ruckus movie in Chromium
         run: node rugby/browser-tests/video-export-ux.mjs
       - name: Test mobile editor, view sheets and touch actions in Chromium
