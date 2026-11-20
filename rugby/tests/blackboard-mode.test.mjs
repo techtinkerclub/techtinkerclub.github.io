@@ -42,11 +42,39 @@ test('Ink is explicitly ephemeral and separate from real routes and passes',()=>
 test('Both Studio editions load Blackboard and the same live JS module',()=>{
  for(const path of ['index.html','coach/index.html']){
   const s=read(path);
-  assert.match(s,/assets\/blackboard\.css\?v=1/);
-  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.49/:/js\/app\.js\?v=0\.20\.48/);
+  assert.match(s,/assets\/blackboard\.css\?v=2/);
+  assert.match(s,path==='index.html'?/js\/app\.js\?v=0\.20\.52/:/js\/app\.js\?v=0\.20\.48/);
  }
  const app=read('js/app.js');
- assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=3'/);
+ assert.match(app,/import \{initBlackboard\} from '\.\/blackboard\.js\?v=4'/);
  assert.match(app,/const blackboard=initBlackboard\(/);
  assert.match(app,/rotate:delta=>/);
+});
+
+test('Blackboard timeline reuses the original step cards, scrubber and timing tracks',()=>{
+ const src=read('js/blackboard.js');
+ assert.match(src,/const nativeTimeline=\$\('timelinePanel'\)/);
+ assert.match(src,/slot\.appendChild\(nativeTimeline\)/);
+ assert.match(src,/timelineHome\.insertBefore\(nativeTimeline,timelineNext\)/);
+ assert.match(src,/restoreTimeline\(\)/);
+ for(const value of ["click('deleteStep')","click('addStep')","click('toggleTracks')","click('zoomIn')","click('zoomOut')","click('zoomFit')","click('zoomAction')","click('zoomArea')","click('panMode')","click('orientation')"]){
+  assert.ok(src.includes(value),'Blackboard must reuse native control: '+value);
+ }
+ assert.match(src,/edit\.dispatchEvent\(new Event\('change'/,'Changing duration must reuse Studio validation/history');
+ assert.match(src,/openStepDetails\?\.\(\)/,'Blackboard can open Step inspector directly');
+ assert.doesNotMatch(src,/createHistory|createDrill|clone\(drill\)/,'No duplicate Blackboard drill engine');
+});
+test('Blackboard move grips remain compact, keyboard accessible and restore panel layouts',()=>{
+ const src=read('js/blackboard.js'),css=read('assets/blackboard.css');
+ for(const panel of ['title','tools','options','steps','add','selection','ink','camera','timeline']){
+  assert.match(src,new RegExp('data-bb-panel="'+panel+'"'));
+ }
+ assert.match(src,/grip\.setPointerCapture\(event\.pointerId\)/);
+ assert.match(src,/event\.key==='ArrowLeft'/);
+ assert.match(src,/Math\.max\(6,Math\.min\(x,/,'Panels must be clamped to the viewport');
+ assert.match(src,/resetPanels\(\)/);
+ assert.match(css,/\.bb-movable\{opacity:\.81/,'Idle panels should be unobtrusive');
+ assert.match(css,/\.bb-movable:hover/,'Interaction restores opacity');
+ assert.match(css,/\.bb-movable\.is-moved\{transform:none!important/);
+ assert.match(css,/\.bb-native-timeline #timelinePanel/,'Timeline stays compact in its movable panel');
 });
