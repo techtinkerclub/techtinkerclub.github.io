@@ -315,8 +315,9 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p){
   return old?.ownerId===o.id||b.ownerId===o.id||
    ((pose==='grounded'||markerRole==='grounded')&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<45);
  });
- const tryGroundingActive=o.type==='attacker'&&ball.held&&(frame?.tryGroundings||[]).some(v=>v.actorId===o.id&&p>=Number(v.at));
- const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||(tryGroundingActive?ball.held:null);
+ const tryBall=currentBall(o,previous,frame);
+ const tryGroundingActive=o.type==='attacker'&&tryBall.held&&(frame?.tryGroundings||[]).some(v=>v.actorId===o.id&&p>=Number(v.at));
+ const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||(tryGroundingActive?tryBall.held:null);
  const presentation=!!presentBall;
  const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17||tryGroundingActive);
  const ballAnchor=presentBall?g.toView(presentBall.x,presentBall.y):null;
