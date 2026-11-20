@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const escapeText=text=>String(text??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STROKE_NS='http://www.w3.org/2000/svg';
 
-export function initBlackboard({getState,fit,rotate,openDetails,openObjectActions}){
+export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,openObjectActions}){
  const host=document.querySelector('.field-wrap'),pitch=$('pitch');
  if(!host||!pitch)return {open:()=>{},close:()=>{},sync:()=>{}};
  const launch=document.createElement('button');
@@ -24,8 +24,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openObjectAction
  }
  const ui=document.createElement('div');ui.id='blackboardUI';ui.className='blackboard-ui';ui.hidden=true;
  ui.innerHTML=
- '<div class="bb-title" aria-live="polite"><strong id="bbName">Rugby blackboard</strong><small id="bbStep">Select and move a player</small></div>'+
- '<nav class="bb-rail" aria-label="Blackboard tools">'+
+ '<div class="bb-title bb-movable" data-bb-panel="title" aria-live="polite"><button type="button" class="bb-grip" aria-label="Move title panel" title="Drag or use arrow keys to move panel">⠿</button><strong id="bbName">Rugby blackboard</strong><small id="bbStep">Select and move a player</small></div>'+
+ '<nav class="bb-rail bb-movable" data-bb-panel="tools" aria-label="Blackboard tools">'+
+  '<button type="button" class="bb-grip" aria-label="Move tools panel" title="Drag or use arrow keys to move panel">⠿</button>'+
   '<button type="button" data-bb="select" class="is-active" title="Select and drag players">↖<span>Select</span></button>'+
   '<button type="button" data-bb="run" title="Draw the selected player\'s running path">↝<span>Run</span></button>'+
   '<button type="button" data-bb="pass" title="Pass the ball from the selected carrier">⇢<span>Pass</span></button>'+
@@ -33,7 +34,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openObjectAction
   '<button type="button" data-bb="add" title="Add a player or training object">＋<span>Add</span></button>'+
   '<button type="button" data-bb="details" title="Open the actual object and step inspector">☷<span>Details</span></button>'+
  '</nav>'+
- '<section id="bbAddMenu" class="bb-add-menu" aria-label="Add pitch object" hidden>'+
+ '<section id="bbAddMenu" class="bb-add-menu bb-movable" data-bb-panel="add" aria-label="Add pitch object" hidden>'+
+  '<button type="button" class="bb-grip" aria-label="Move add-objects panel" title="Drag panel">⠿</button>'+
   '<strong>Add to drill</strong><div>'+
   '<button type="button" data-bb-add="attacker">Blue player</button>'+
   '<button type="button" data-bb-add="defender">Red player</button>'+
@@ -42,7 +44,8 @@ export function initBlackboard({getState,fit,rotate,openDetails,openObjectAction
   '<button type="button" data-bb-add="markerDisc">Marker</button>'+
   '<button type="button" data-bb-add="fieldLine">Line marking</button>'+
  '</div><small>Added to the same editable drill</small></section>'+
- '<section id="bbSelection" class="bb-selection" aria-label="Selected player actions" hidden>'+
+ '<section id="bbSelection" class="bb-selection bb-movable" data-bb-panel="selection" aria-label="Selected player actions" hidden>'+
+  '<button type="button" class="bb-grip" aria-label="Move selected-player panel" title="Drag panel">⠿</button>'+
   '<strong id="bbSelected">Player</strong>'+
   '<div class="bb-actions">'+
   '<button type="button" data-bb="run">↝ Run</button>'+
@@ -52,29 +55,53 @@ export function initBlackboard({getState,fit,rotate,openDetails,openObjectAction
   '<button type="button" data-bb="actions" title="Open existing contact, ball and movement commands">⋯ Actions</button>'+
   '<button type="button" data-bb="details">Edit details</button>'+
   '</div></section>'+
- '<section class="bb-ink-controls" id="bbInkControls" hidden>'+
+ '<section class="bb-ink-controls bb-movable" data-bb-panel="ink" id="bbInkControls" hidden>'+
+  '<button type="button" class="bb-grip" aria-label="Move ink panel" title="Drag panel">⠿</button>'+
   '<strong>Temporary coaching ink</strong>'+
   '<label>Colour <input id="bbInkColour" type="color" value="#ffe68c" aria-label="Ink colour"></label>'+
   '<button type="button" data-bb="ink-undo">Undo mark</button>'+
   '<button type="button" data-bb="ink-clear">Clear ink</button>'+
   '<small>Visible on this board only · not saved or included in video export</small>'+
  '</section>'+
- '<nav class="bb-top-actions" aria-label="Blackboard options">'+
+ '<nav class="bb-top-actions bb-movable" data-bb-panel="options" aria-label="Blackboard options">'+
+  '<button type="button" class="bb-grip" aria-label="Move top actions" title="Drag or use arrow keys to move panel">⠿</button>'+
   '<button type="button" data-bb="undo" title="Undo edit">↶ <span>Undo</span></button>'+
   '<button type="button" data-bb="redo" title="Redo edit">↷ <span>Redo</span></button>'+
   '<button type="button" data-bb="fit" title="Fit all of the pitch">⊞ <span>Fit</span></button>'+
+  '<button type="button" data-bb="camera" title="Open camera and view controls" aria-controls="bbCameraPanel" aria-expanded="false">◎ <span>View</span></button>'+
   '<button type="button" data-bb="fullscreen" title="Use display fullscreen if available">⛶ <span>Fullscreen</span></button>'+
   '<button type="button" data-bb="ruckus" id="bbRuckus" title="Switch Classic/Ruckus appearance">◉ <span>Ruckus</span></button>'+
   '<button type="button" data-bb="save" title="Save the current drill through Studio">⬇ <span>Save</span></button>'+
   '<button type="button" data-bb="exit" class="bb-close" title="Return to Studio">× <span>Exit</span></button>'+
  '</nav>'+
- '<nav class="bb-steps" aria-label="Drill steps">'+
+ '<nav class="bb-steps bb-movable" data-bb-panel="steps" aria-label="Drill steps">'+
+  '<button type="button" class="bb-grip" aria-label="Move step controls" title="Drag or use arrow keys to move panel">⠿</button>'+
   '<button type="button" data-bb="prev" title="Previous step">◀</button>'+
   '<span id="bbStepCount">Step 1 / 1</span>'+
   '<button type="button" data-bb="next" title="Next step">▶</button>'+
   '<button type="button" data-bb="new-step" title="Copy this step to create a movement">＋ Step</button>'+
+  '<button type="button" data-bb="delete-step" title="Delete the selected step (Undo restores it)">− Step</button>'+
+  '<button type="button" data-bb="timeline" title="Edit step durations, timeline and object timing" aria-controls="bbTimelinePanel" aria-expanded="false">≡ <span>Timeline</span></button>'+
   '<button type="button" data-bb="play" class="bb-play" title="Play or pause this drill">▶ Play</button>'+
  '</nav>'+
+ '<section id="bbCameraPanel" class="bb-camera-panel bb-movable" data-bb-panel="camera" hidden aria-label="Camera and view options">'+
+  '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move camera panel" title="Drag panel">⠿</button><strong>Camera & view</strong><button type="button" class="bb-panel-close" data-bb="close-camera" aria-label="Close camera panel">×</button></div>'+
+  '<div class="bb-camera-buttons">'+
+  '<button type="button" data-bb="zoom-out" title="Zoom out">−</button><button type="button" data-bb="fit" title="Fit whole pitch">Fit</button><button type="button" data-bb="fit-drill" title="Fit drill area">Drill</button><button type="button" data-bb="fit-action" title="Focus current action">Action</button><button type="button" data-bb="zoom-in" title="Zoom in">＋</button>'+
+  '</div><div class="bb-view-buttons">'+
+  '<button type="button" data-bb="pan" aria-pressed="false" title="Move view by dragging empty pitch">✥ Pan</button>'+
+  '<button type="button" data-bb="rotate-view" title="Rotate pitch view">⇅ Rotate</button>'+
+  '<button type="button" data-bb="grid" aria-pressed="false" title="Toggle grid">▦ Grid</button>'+
+  '<button type="button" data-bb="paths" aria-pressed="false" title="Show running and passing routes">↝ Paths</button>'+
+  '<button type="button" data-bb="markings" aria-pressed="false" title="Show pitch markings">▤ Marks</button>'+
+  '</div><button type="button" data-bb="reset-panels" class="bb-reset-panels">Reset panel positions</button>'+
+ '</section>'+
+ '<section id="bbTimelinePanel" class="bb-timeline-panel bb-movable" data-bb-panel="timeline" hidden aria-label="Steps and timing">'+
+  '<div class="bb-panel-heading"><button type="button" class="bb-grip" aria-label="Move timeline panel" title="Drag panel">⠿</button><strong>Steps & timing</strong><button type="button" data-bb="tracks" title="Show or hide player movement tracks">Tracks ▾</button><button type="button" class="bb-panel-close" data-bb="close-timeline" aria-label="Close timeline">×</button></div>'+
+  '<div class="bb-duration-row"><label for="bbStepSeconds">Step travel time (s)</label><input type="number" id="bbStepSeconds" min="0" max="30" step="0.1" value="2"><button type="button" data-bb="edit-step" title="Open full step editing inspector">Step details</button></div>'+
+  '<small>Pick a step below to edit it. Drag the playhead to preview; select a step to return to editing.</small>'+
+  '<div id="bbNativeTimeline" class="bb-native-timeline"></div>'+
+ '</section>'+
  '<div id="bbNotice" class="bb-notice" role="status" aria-live="polite"></div>'+
  '<button type="button" data-bb="close-details" id="bbCloseDetails" title="Close inspector" hidden>× Close details</button>';
  document.body.appendChild(ui);
