@@ -28,7 +28,7 @@ export function teachingGuidesSVG(frame,g,{ink=false}={}){
  const labelAt=(x,y,value,col)=>{
   if(!value)return '';
   const size=Math.min(240,Math.max(50,value.length*6.6+18));
-  const camera=g.annotationViewport;
+  const camera=g.annotationScale<.999?g.annotationViewport:null;
   const safeX=camera?x:Math.max(size/2+4,Math.min(g.viewWidth-size/2-4,x));
   const safeY=camera?y:Math.max(18,Math.min(g.viewHeight-10,y));
   const placement=cameraTextPlacement(g,{x:safeX,y:safeY},size,20);
