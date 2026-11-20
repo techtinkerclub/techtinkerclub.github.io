@@ -198,7 +198,7 @@ $('play').onclick=()=>{
  raf=requestAnimationFrame(tick);
 };
 $('restart').onclick=()=>jumpStep(0);$('previousStep').onclick=()=>jumpStep(stepTarget(-1));$('nextStep').onclick=()=>jumpStep(stepTarget(1));$('seek').oninput=()=>{stop();t=Number($('seek').value);if(hasOutcomes(d)&&t<decisionTime(d)-1e-6)choiceResolved=false;$('branchDecisionPanel').hidden=true;render()};
-$('playerFollow').onclick=()=>{opts.framing=opts.framing==='follow'?'field':'follow';$('framing').value=opts.framing;resetZoom();render()};
+$('playerFollow').onclick=()=>{const next=opts.framing==='follow'?'field':'follow';if(publicBoard)publicBoard.selectCameraMode(next);else{opts.framing=next;$('framing').value=next;resetZoom();render()}};
 for(const k of ['runs','passes','labels','decisions','markups','offside','teachingGuides','orientation','scaleMode','framing'])$(k).onchange=()=>{opts[k]=['orientation','scaleMode','framing'].includes(k)?$(k).value:$(k).checked;if(['orientation','framing'].includes(k))resetZoom();render()};
 $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3000000)throw Error('File is too large.');open(JSON.parse(await file.text()),opts)}catch(err){$('message').textContent=err.message}};
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
@@ -390,7 +390,7 @@ function initPublicBoard(){
     Math.round(box.left/window.innerWidth*1000)/1000,
     Math.round(box.top/window.innerHeight*1000)/1000];
   }
-  settings.positions=positions;settings.opacity=panelOpacity.value;
+  settings.positions=positions;settings.opacity=panelOpacity.value;settings.opacityVersion=2;
   try{localStorage.setItem(layoutKey,JSON.stringify(settings))}catch{}
  }
  function positionPanel(node,left,top){
@@ -420,7 +420,7 @@ function initPublicBoard(){
   '<small>Drag a panel by its grip. These preferences stay on this device only.</small>';
  document.getElementById('presentation-panel-view')?.append(panelPrefs);
  const panelOpacity=panelPrefs.querySelector('#publicPanelOpacity');
- panelOpacity.value=String(settings.opacity??48);setOpacity(panelOpacity.value);
+ panelOpacity.value=String(settings.opacityVersion===2?settings.opacity:48);setOpacity(panelOpacity.value);
  panelPrefs.querySelector('#publicPanelOpacityValue').textContent=panelOpacity.value+'%';
  panelOpacity.addEventListener('input',()=>{
   setOpacity(panelOpacity.value);
@@ -584,23 +584,30 @@ function initPublicBoard(){
  const cameraMenu=document.createElement('details');cameraMenu.className='public-board-camera-menu';
  const cameraSummary=document.createElement('summary');cameraSummary.textContent='⚙ Camera';
  const cameraContents=document.createElement('div');cameraContents.className='public-board-camera-settings';
- cameraContents.innerHTML='<label>Track <select id="publicCameraTarget" aria-label="Coaching camera focus"><option value="action">Whole action</option><option value="ball">Ball</option><option value="player">Chosen player</option></select></label>'+
+ cameraContents.innerHTML='<label>Camera mode <select id="publicCameraTarget" aria-label="Choose how the camera follows the drill"><option value="field">Whole pitch</option><option value="action">Frame this step</option><option value="follow">Follow action</option><option value="ball">Follow ball</option><option value="player">Follow player</option></select></label>'+
   '<label id="publicCameraPlayerLabel" hidden>Player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+
   '<label>Camera distance <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>';
- for(const id of ['framing','orientation']){
-  const element=$(id),container=element?.closest('label')||element;
-  if(container)cameraContents.append(container);
+ const legacyFraming=$('framing')?.closest('label');
+ if(legacyFraming){legacyFraming.hidden=true;cameraContents.append(legacyFraming)}
+ const orient=$('orientation');
+ if(orient){
+  const wrapper=document.createElement('label');wrapper.textContent='Pitch orientation';
+  wrapper.append(orient);cameraContents.append(wrapper);
  }
  cameraMenu.append(cameraSummary,cameraContents);
  $('viewerCamera').append(cameraMenu);
-const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard',grid:false};
+const local={spot:'',ghost:'off',camera:'field',cameraPlayer:'',cameraFraming:'standard',grid:false};
  const cameraTarget=cameraContents.querySelector('#publicCameraTarget');
  const cameraPlayer=cameraContents.querySelector('#publicCameraPlayer');
- cameraTarget.addEventListener('change',()=>{
-  local.camera=cameraTarget.value;
-  cameraContents.querySelector('#publicCameraPlayerLabel').hidden=local.camera!=='player';
+ function selectCameraMode(mode){
+  local.camera=mode;
+  cameraTarget.value=mode;
+  cameraContents.querySelector('#publicCameraPlayerLabel').hidden=mode!=='player';
+  opts.framing=mode==='follow'?'follow':mode==='action'?'action':'field';
+  $('framing').value=opts.framing;
   resetZoom();render();
- });
+ }
+ cameraTarget.addEventListener('change',()=>selectCameraMode(cameraTarget.value));
  cameraPlayer.addEventListener('change',()=>{local.cameraPlayer=cameraPlayer.value;resetZoom();render()});
  cameraContents.querySelector('#publicCameraFraming').addEventListener('change',e=>{local.cameraFraming=e.target.value;resetZoom();render()});
  focus.querySelector('#publicSpotlight').addEventListener('change',e=>{local.spot=e.target.value;render()});
@@ -705,6 +712,8 @@ const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'
  function opened(){
   boardHeading.querySelector('#publicBoardTitle').textContent=d?.title||'Rugby drill';
   boardHeading.querySelector('#publicBoardObjective').textContent=d?.objective||'';
+  local.camera=opts.framing==='follow'?'follow':opts.framing==='action'?'action':'field';
+  cameraTarget.value=local.camera;
   stepLoop=false;loopIndex=1;refreshPlaybackTools();
  }
  function refreshPlaybackTools(){
@@ -803,7 +812,7 @@ const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'
    y:Math.max(0,Math.min(g.viewHeight-height,p.y-height/2)),width,height};
   return followFramingViewport(view,g,local.cameraFraming);
  }
- return {refresh,syncView,cameraView,opened,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,loopIndex):null};
+ return {refresh,syncView,cameraView,opened,selectCameraMode,loopEnabled:()=>stepLoop,loopBounds:()=>d?loopStepBounds(d,loopIndex):null};
 }
 
 publicBoard=initPublicBoard();
