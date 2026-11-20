@@ -6,8 +6,14 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.52** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.53** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.53 — Blackboard camera follows the action (20 November 2026)
+
+- Added **◎ Follow** to the existing movable Blackboard **Camera & view** panel beside Marks. Its pressed appearance is bound to Studio's original `#followAction` checkbox via the native change/click handler; no duplicate camera state or new tracking engine.
+- Camera follows moving players and ball in playback using the existing `followActionViewport`; manually zooming, fitting or panning can turn following off through Studio's existing `stopFollow` path. Blackboard re-syncs its indicator from the original checkbox after every camera change.
+- Updated `js/blackboard.js` module cache to v5 and Studio version to 0.20.53. Added Node checks in `tests/blackboard-mode.test.mjs` and browser tests in `browser-tests/blackboard-smoke.mjs` for enable/disable, indicator and manual-zoom interaction. Full CI/deployment check belongs to the commit, not assumed by code changes.
 
 ## 0.20.51–0.20.52 — Rebuilt U10 tackle drill, cleaner Ruckus and Blackboard editing (20 November 2026)
 
