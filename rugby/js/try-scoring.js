@@ -67,6 +67,26 @@ export function tryLineEvents(drill,g){
  }
  return result;
 }
+export const RUCKUS_TRY_CELEBRATION_SECONDS=1.9;
+// Score animations are visual epilogues. They do not change authored step
+// timing, Classic mode, ball transfers, score eligibility or saved drill data.
+export function tryVisualDuration(drill,g,cartoonMode=false){
+ const base=(drill?.frames||[]).slice(1).reduce((sum,f)=>sum+Math.max(0,number(f.seconds)),0);
+ if(!cartoonMode)return base;
+ const tries=tryLineEvents(drill,g);
+ return tries.length?Math.max(base,tries[tries.length-1].time+RUCKUS_TRY_CELEBRATION_SECONDS):base;
+}
+export function tryCelebrationAt(events,time,actorId){
+ const eligible=(events||[]).filter(e=>e.actorId===actorId&&time>=e.time-1e-6&&time<e.time+RUCKUS_TRY_CELEBRATION_SECONDS);
+ if(!eligible.length)return null;
+ const elapsed=Math.max(0,time-eligible[eligible.length-1].time);
+ if(elapsed<.34)return {phase:'ground',elapsed};
+ if(elapsed<.65)return {phase:'rise',index:Math.min(4,Math.floor((elapsed-.34)/.31*5)),elapsed};
+ // The atlas already includes the supplied raised-arms front and back poses.
+ // Five clear beats give the crowd a genuine celebratory sequence at 60fps.
+ const beat=Math.min(4,Math.floor((elapsed-.65)/(RUCKUS_TRY_CELEBRATION_SECONDS-.65)*5));
+ return {phase:'celebrate',index:beat,elapsed};
+}
 export function tryFeedbackSVG(events,time,g,{cartoonMode=false,ink=false}={}){
  if(!Array.isArray(events)||!events.length||!g)return '';
  const eligible=events.filter(e=>e.time<=time+1e-5);
