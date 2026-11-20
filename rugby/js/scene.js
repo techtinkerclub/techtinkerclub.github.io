@@ -1,5 +1,5 @@
 import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
-import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=2';
+import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=3';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=1';
 import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=2';
 import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=2';
@@ -10,7 +10,7 @@ import {esc,types,shape,clamp} from './model.js?v=0.20.60';
 import {headSettings} from './player-gaze.js?v=3';
 import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,cartoonTagIcon} from './cartoon-players.js?v=40';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
-import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=10';
+import {sanitizeSkills,sanitizeInteractions,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects} from './skill-actions.js?v=11';
 import {hasOutcomes,branchInfo,outcomeViews} from './branching.js?v=2';
 import {signalForFrame,whistleOverlay} from './whistle-signal.js?v=0.20.51';
 import {copyTraining,cleanTraining,decisionOverlay,donutShape,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
