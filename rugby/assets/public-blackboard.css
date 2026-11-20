@@ -226,3 +226,15 @@
 .read-only-player.public-blackboard .public-board-heading p{display:none}
 .read-only-player.public-blackboard .presentation-stage .viewer-camera{top:110px}
 }
+
+@media screen {
+.read-only-player .public-board-focus label:has(>input[type="checkbox"]){
+ display:flex;align-items:center;gap:9px;min-height:36px
+}
+.read-only-player .public-board-focus input[type="checkbox"]{
+ width:19px;height:19px;accent-color:#c9f07c
+}
+.read-only-player.public-blackboard .public-board-ink-tools label:has(>select){
+ white-space:nowrap
+}
+}
