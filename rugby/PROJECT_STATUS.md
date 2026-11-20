@@ -6,8 +6,15 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.54** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.55** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.55 — Align Follow action throughout the coaching UI (20 November 2026)
+
+- Reviewed the four camera presentations: main Studio's View menu, Blackboard's floating Camera & view panel, mobile's shared View sheet, and read-only presentation, plus the separate movie-export camera selector.
+- Standardised the wording **Follow action** everywhere. Studio/mobile retain the same native `#followAction` checkbox, visibly highlighted when checked; Blackboard retains its native-linked `aria-pressed` button; the read-only presentation keeps `#playerFollow` linked to framing; and export selects now say `Follow action · moving camera` or `Follow action · smooth moving camera`.
+- No duplicate camera controller or shared setting between distinct playback and export contexts. Existing camera tracking behaviour and manual override rules remain unchanged. The compact mobile camera toolbar is not enlarged: the setting remains available in the shared View sheet.
+- Updated cache versions for Blackboard, movie settings, CSS and relevant Studio/read-only/public-library entrypoints. Added a wording and control-access regression check to `tests/blackboard-mode.test.mjs`. Validate with browser CI for the current commit.
 
 ## 0.20.53–0.20.54 — Blackboard camera follows the action (20 November 2026)
 
