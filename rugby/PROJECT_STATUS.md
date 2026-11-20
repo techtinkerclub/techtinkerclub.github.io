@@ -7,7 +7,7 @@ Updated 20 November 2026. This document is the maintained handover between chats
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
 - UI release marker: **0.20.57** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
-- QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+- QA (20 November 2026, code commit `18a4bd66`): Blackboard Chromium, contextual video/Ruckus export, mobile View-sheet, and decision-video browser workflows **passed**. GitHub Pages deployment **succeeded**. Full Node suite: **151 / 162 passed**; 11 outstanding failures concern older catalogue/drill-data, decision-video assertions and publication fixtures, not the new Blackboard controls. A later documentation-only commit does not change runnable code.
 
 ## 0.20.56–0.20.57 — Blackboard teaching workflow and smarter View menus (20 November 2026)
 
@@ -20,7 +20,7 @@ Updated 20 November 2026. This document is the maintained handover between chats
 - Decision controls: conditional ◆ Decision shortcut and A/B choices use actual authored outcomes and existing comparison/editor dialogs. Duplicate native A/B controls are hidden only in the embedded Blackboard timeline. Comparison presentation is compact and responsive.
 - Menus: The View popover prioritises properly aligned Follow action and pitch visibility controls. Object scale, grid and snapping, and workspace layout are now collapsed under More display & alignment, avoiding the screenshot's awkward checkbox/text wrapping and excessive scrolling. Mobile uses the same controls.
 - Implementation: new js/blackboard-coaching.js; updated blackboard.js, app.js, index.html, assets/blackboard.css and assets/workflow.css. Added tests/blackboard-teaching.test.mjs, expanded browser-tests/blackboard-smoke.mjs; adjusted video-export-ux.mjs selector to target the outer View summary.
-- QA: The expanded Blackboard browser test passed on desktop 1380×850, phone 390×844 and tablet 920×520 in the v0.20.57 run. The full Node suite still has 12 existing failures in old catalogue, animation, publication and rules fixtures; the newly added Blackboard tests pass. Verify the final browser-video and Pages checks for the latest commit before asserting end-to-end certification.
+- QA: The expanded Blackboard browser test passed on desktop 1380×850, phone 390×844 and tablet 920×520 in the v0.20.57 run. The full Node suite still has 11 outstanding failures in older catalogue, animation, publication and rules fixtures; the new Blackboard tests pass. Browser QA for Blackboard on all three sizes, contextual video export, mobile View sheet and decision video passed; Pages deployment succeeded on the tested code.
 
 ## 0.20.55 — Align Follow action throughout the coaching UI (20 November 2026)
 
