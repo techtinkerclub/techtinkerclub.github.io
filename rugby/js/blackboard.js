@@ -123,6 +123,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');host.appendChild(ink);
  let active=false,pen=false,drawer=false,adding=false,drag=null;
  let cameraOpen=false,timelineOpen=false,panelDrag=null;
+ const layoutKey='rugby-blackboard-layouts-v1';
+ const savedLayouts=(()=>{try{const raw=JSON.parse(localStorage.getItem(layoutKey)||'{}');return raw&&typeof raw==='object'?raw:{}}catch{return {}}})();
+ let layoutPreset=savedLayouts.active==='coaching'?'coaching':'editing',momentSignature='';
  const nativeTimeline=$('timelinePanel'),timelineHome=nativeTimeline?.parentElement,timelineNext=nativeTimeline?.nextSibling;
  function mountTimeline(){
   const slot=$('bbNativeTimeline');
@@ -160,12 +163,45 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   panel.style.left=pos.left+'px';panel.style.top=pos.top+'px';
   panel.style.right='auto';panel.style.bottom='auto';panel.style.transform='none';
  }
- function resetPanels(){
+ function clearPanelPositions(){
   for(const panel of ui.querySelectorAll('[data-bb-panel]')){
    panel.classList.remove('is-moved','is-dragging');
    for(const prop of ['left','top','right','bottom','transform'])panel.style[prop]='';
   }
-  hint('Panel positions reset to their original layout.');
+ }
+ function storeLayouts(){
+  try{savedLayouts.active=layoutPreset;localStorage.setItem(layoutKey,JSON.stringify(savedLayouts))}catch{}
+ }
+ function saveLayout(){
+  const panels={};
+  for(const panel of ui.querySelectorAll('[data-bb-panel].is-moved')){
+   const key=panel.dataset.bbPanel,left=parseFloat(panel.style.left),top=parseFloat(panel.style.top);
+   if(key&&Number.isFinite(left)&&Number.isFinite(top))panels[key]=[left,top];
+  }
+  savedLayouts[layoutPreset]={panels,camera:cameraOpen,timeline:timelineOpen};
+  storeLayouts();
+ }
+ function useLayout(name){
+  if(!['coaching','editing'].includes(name))return;
+  layoutPreset=name;
+  ui.classList.toggle('bb-coaching-layout',name==='coaching');
+  $('bbLayoutPreset').value=name;
+  const stored=savedLayouts[name]||{};
+  clearPanelPositions();openTimeline(stored.timeline??false);openCamera(stored.camera??false);
+  for(const [key,p] of Object.entries(stored.panels||{})){
+   if(!Array.isArray(p)||!Number.isFinite(p[0])||!Number.isFinite(p[1]))continue;
+   const panel=ui.querySelector('[data-bb-panel="'+key+'"]');if(panel)placePanel(panel,p[0],p[1]);
+  }
+  clampMovedPanels();storeLayouts();
+ }
+ function resetPanels(){
+  delete savedLayouts[layoutPreset];
+  clearPanelPositions();
+  storeLayouts();
+   panel.classList.remove('is-moved','is-dragging');
+   for(const prop of ['left','top','right','bottom','transform'])panel.style[prop]='';
+  }
+  hint('Panel positions reset for this layout.');
  }
  function clampMovedPanels(){
   for(const panel of ui.querySelectorAll('[data-bb-panel].is-moved')){
@@ -193,7 +229,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
  });
  function finishPanelDrag(event){
   if(!panelDrag||panelDrag.id!==event.pointerId)return;
-  panelDrag.panel.classList.remove('is-dragging');panelDrag=null;
+  panelDrag.panel.classList.remove('is-dragging');panelDrag=null;saveLayout();
  }
  for(const type of ['pointerup','pointercancel','lostpointercapture'])ui.addEventListener(type,finishPanelDrag);
  ui.addEventListener('keydown',event=>{
@@ -202,7 +238,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   const panel=grip.closest('[data-bb-panel]'),rect=panel.getBoundingClientRect(),n=event.shiftKey?32:12;
   const dx=event.key==='ArrowLeft'?-n:event.key==='ArrowRight'?n:0;
   const dy=event.key==='ArrowUp'?-n:event.key==='ArrowDown'?n:0;
-  placePanel(panel,rect.left+dx,rect.top+dy);event.preventDefault();
+  placePanel(panel,rect.left+dx,rect.top+dy);saveLayout();event.preventDefault();
  });
 
  const marks=[];
@@ -251,6 +287,37 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    follow.setAttribute('aria-pressed',String(enabled));
    follow.classList.toggle('is-active',enabled);
   }
+  const target=$('bbFollowTarget');
+  if(target&&document.activeElement!==target)target.value=state.followTarget||'action';
+  const ghost=$('bbGhostMode');
+  if(ghost&&document.activeElement!==ghost)ghost.value=state.ghostMode||'off';
+  const spot=btn('spotlight');if(spot){spot.setAttribute('aria-pressed',String(!!state.spotlight));spot.classList.toggle('is-active',!!state.spotlight)}
+  const loop=btn('loop');if(loop){loop.disabled=state.total<2;loop.setAttribute('aria-pressed',String(!!state.loop));loop.classList.toggle('is-active',!!state.loop)}
+  const replay=btn('replay');if(replay)replay.disabled=state.total<2;
+  const speed=$('bbSpeed');if(speed&&document.activeElement!==speed)speed.value=String(state.speed||1);
+  const branch=state.branching;
+  $('bbDecisionShortcut').hidden=!branch;
+  $('bbDecisionBar').hidden=!branch;
+  if(branch){
+   $('bbDecisionQuestion').textContent='◆ '+branch.question;
+   for(const choice of ['a','b']){
+    const b=ui.querySelector('[data-bb-choice="'+choice+'"]');
+    const info=branch.choices?.find(c=>c.id===choice);
+    if(b){b.textContent=choice.toUpperCase()+' · '+(info?.label||'Option '+choice.toUpperCase());b.setAttribute('aria-pressed',String(branch.active===choice));b.classList.toggle('is-active',branch.active===choice)}
+   }
+  }
+  if(timelineOpen){
+   const moments=keyMoments({frames:state.frames,branching:branch});
+   const stamp=moments.map(m=>m.index+':'+m.kind+':'+m.title).join('|');
+   if(stamp!==momentSignature){
+    momentSignature=stamp;
+    const visible=moments.filter(m=>m.kind!=='setup'||moments.length>2);
+    $('bbKeyMoments').hidden=visible.length<2;
+    $('bbMomentCount').textContent=visible.length+' events';
+    $('bbMomentChips').innerHTML=visible.map(m=>'<button type="button" data-bb-moment="'+m.index+'" title="'+escapeText(m.title)+'">'+(m.index+1)+' · '+escapeText(m.label)+'</button>').join('');
+   }
+  }
+  for(const chip of ui.querySelectorAll('[data-bb-moment]'))chip.classList.toggle('is-active',Number(chip.dataset.bbMoment)===state.idx);
   const tracks=btn('tracks');if(tracks)tracks.setAttribute('aria-expanded',String($('toggleTracks')?.getAttribute('aria-expanded')==='true'));
   $('bbSelected').textContent=state.selection?.label||'Selected object';
   const showSelection=!!state.selection&&!state.playing&&state.preview===null&&!pen;
@@ -312,6 +379,11 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'timeline':openTimeline(!timelineOpen);break;
    case 'close-timeline':openTimeline(false);break;
    case 'tracks':click('toggleTracks');break;
+   case 'replay':onCoachTool('replay',true);break;
+   case 'loop':onCoachTool('loop',!state.loop);break;
+   case 'decision':case 'compare-decision':click('compareOutcomes');break;
+   case 'edit-decision':click('editOutcomes');break;
+   case 'save-layout':saveLayout();hint('Saved '+layoutPreset+' panel layout on this device.');break;
    case 'edit-step':showDetails(true,'step');break;
    case 'play':setPen(false);click('play');break;
    case 'undo':click('undoEdit');break;
@@ -330,6 +402,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
    case 'camera':openCamera(!cameraOpen);break;
    case 'close-camera':openCamera(false);break;
    case 'reset-panels':resetPanels();break;
+   case 'spotlight':if(!onCoachTool('spotlight',!state.spotlight))hint('Select a player or group to spotlight.');break;
    case 'ruckus':click('minionMode');break;
    case 'fullscreen':fullscreen();break;
    case 'save':if(!click('save'))hint('Saving requires a connected GitHub account. Exit to Studio to connect or export a drill file.');break;
@@ -342,6 +415,19 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(['pan','fit','fit-drill','fit-action','zoom-in','zoom-out'].includes(action))sync();
   requestAnimationFrame(sync);
  }
+ $('bbLayoutPreset').addEventListener('change',event=>{saveLayout();useLayout(event.target.value);hint('Switched to '+layoutPreset+' layout.');});
+ $('bbFollowTarget').addEventListener('change',event=>{
+  if(!onCoachTool('follow-target',event.target.value))event.target.value=getState().followTarget||'action';
+  requestAnimationFrame(sync);
+ });
+ $('bbGhostMode').addEventListener('change',event=>{onCoachTool('ghost',event.target.value);requestAnimationFrame(sync)});
+ $('bbSpeed').addEventListener('change',event=>{
+  const value=Number(event.target.value),source=$('speed');
+  if(!source||![.25,.5,1,2].includes(value))return;
+  source.value=String(value);
+  source.dispatchEvent(new Event('change',{bubbles:true}));
+  hint('Playback speed '+value+'× · timings in the saved drill stay unchanged.');
+ });
  $('bbStepSeconds').addEventListener('change',()=>{
   const edit=$('stepTime'),value=Number($('bbStepSeconds').value);
   const current=getState();
@@ -357,6 +443,14 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   requestAnimationFrame(sync);
  });
  ui.addEventListener('click',event=>{
+  const moment=event.target.closest('[data-bb-moment]');
+  if(moment){const step=Number(moment.dataset.bbMoment);const original=$('scenes')?.querySelector('[data-step="'+step+'"]');original?.click();requestAnimationFrame(sync);return}
+  const option=event.target.closest('[data-bb-choice]');
+  if(option){
+   const choice=option.dataset.bbChoice;
+   if(['a','b'].includes(choice))click('outcome'+choice.toUpperCase());
+   requestAnimationFrame(sync);return;
+  }
   const addButton=event.target.closest('[data-bb-add]');
   if(addButton){
    const type=addButton.dataset.bbAdd;
@@ -405,6 +499,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   active=true;document.body.classList.add('blackboard-mode');
   ui.hidden=false;setPen(false);showDetails(false);
   openTimeline(false);openCamera(false);
+  useLayout(layoutPreset);
   fit?.();sync();
   hint('Tap and drag a player. Draw a run or pass using the left toolbar. B or Esc returns to Studio.');
   launch.setAttribute('aria-pressed','true');
@@ -413,6 +508,7 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(!active)return;
   if(drag)drag=null;
   if(panelDrag){panelDrag.panel.classList.remove('is-dragging');panelDrag=null}
+  saveLayout();
   setPen(false);showDetails(false);openTimeline(false);openCamera(false);
   restoreTimeline();
   active=false;ui.hidden=true;document.body.classList.remove('blackboard-mode');
