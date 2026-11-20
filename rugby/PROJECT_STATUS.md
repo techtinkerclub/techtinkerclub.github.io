@@ -6,8 +6,17 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.50** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.52** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.51–0.20.52 — Rebuilt U10 tackle drill, cleaner Ruckus and Blackboard editing (20 November 2026)
+
+- Rebuilt editor-library source `u10-tackle-secure-go-again-v082` and its already-public copy `seed-921`, preserving stable URLs and all 10 existing stages. Compact 16 × 12 m practice layout, attack arrow down, close A2/D2 shield contact, editable short push–pull track on the ruck marker, improved ball presentation and pickup timing, second tackle solely A3+D3 followed by release/reset. Public copy and editor source were updated together; revisions incremented. The practice remains coaching guidance, not RFU safety certification.
+- Removed the Ruckus corner/side grass squiggle glyphs entirely; restrained ink borders and a subtle colour wash remain. Automatic Ruckus cue labels now use the **compact** sideways comic bubble in `comic-callouts.js`, leaving individually authored speech bubbles independent and unchanged; updated Studio, player, movie and public library asset versions.
+- Added an **Edit tackle / ruck stages** context-menu shortcut on contact markers or their members in Studio to reach existing Breakdown controls; this does not create a new action or alter Classic.
+- Blackboard v4: native #timelinePanel is temporarily mounted in a **movable compact Steps & timing** window with original step cards, scrubber and object timing tracks (not cloned); restored to original body location when exiting Blackboard. Native Add step, Delete step, Tracks toggle and Step inspector are accessible; quick step duration uses the original #stepTime change handler/history/validation.
+- Blackboard now has compact movable grips (pointer and keyboard arrows) on title, tools, options, steps, selected-player, add-object, ink, camera and timeline panels; bounds clamped to viewport, reset layout control. Controls become slightly transparent when idle and fully opaque on hover/focus/drag. New View panel forwards zoom +/- , fit pitch/drill/action, pan, orientation, grid, routes and markings to the original camera controls. Closing the inspector no longer resets camera unexpectedly.
+- Tests added: `tests/modern-u10-rebuild.test.mjs` for contact, ball, publication sync and compact bubbles; expanded `tests/blackboard-mode.test.mjs` for native controls and dragging. Full Node and Playwright regression/deployment verdicts should be checked against the final commit before claiming complete verification.
 
 ## 0.20.50 — Desktop ghost camera controls correction (20 November 2026)
 
