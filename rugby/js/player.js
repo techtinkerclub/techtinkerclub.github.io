@@ -418,10 +418,10 @@ function initPublicBoard(){
   finally{button.disabled=false}
  });
  const inkTools=document.createElement('section');inkTools.className='public-board-ink-tools';inkTools.hidden=true;
- inkTools.innerHTML='<strong>Coaching chalk</strong><label>Colour <input id="publicInkColour" type="color" value="#ffe68c"></label>'+
+ inkTools.innerHTML='<strong>Coaching chalk</strong><label>Tool <select id="publicInkTool" aria-label="Choose chalk tool"><option value="pen">✎ Freehand</option><option value="arrow">↗ Arrow</option><option value="circle">◯ Circle</option><option value="marker">▰ Highlighter</option></select></label><label>Colour <input id="publicInkColour" type="color" value="#ffe68c"></label>'+
   '<label>Width <select id="publicInkWidth" aria-label="Chalk stroke width"><option value="2.5">Fine</option><option value="4" selected>Normal</option><option value="7">Broad</option></select></label>'+
   '<button type="button" id="publicInkUndo">↶ Undo</button><button type="button" id="publicInkClear">Clear</button>'+
-  '<small>Temporary marks · not saved or included in exported videos</small>';
+  '<small>Local only · optional in PNG snapshots, never in saved drills or videos</small>';
  stage.append(inkTools);
  const notice=document.createElement('p');notice.className='public-board-notice';notice.setAttribute('role','status');stage.append(notice);
  function showNotice(value){notice.textContent=value;}
@@ -430,10 +430,11 @@ function initPublicBoard(){
   '<label>Camera follows <select id="publicCameraTarget" aria-label="Coaching camera focus"><option value="action">Whole action</option><option value="ball">Ball</option><option value="player">Chosen player</option></select></label>'+ 
   '<label id="publicCameraPlayerLabel" hidden>Follow player <select id="publicCameraPlayer" aria-label="Player to follow"></select></label>'+ 
   '<label>Framing <select id="publicCameraFraming" aria-label="Camera distance"><option value="close">Close</option><option value="standard" selected>Standard</option><option value="wide">Wide</option><option value="veryWide">Very wide</option><option value="full">Full pitch</option></select></label>'+ 
+  '<label><input id="publicBoardGrid" type="checkbox"> Show visual guide grid</label>'+ 
   '<label>Ghost <select id="publicGhost" aria-label="Show past or next positions"><option value="off">Off</option><option value="start">Previous</option><option value="next">Next</option><option value="both">Both</option></select></label>';
  // Teaching-only settings belong in the existing View drawer, not the canvas.
  document.getElementById('presentation-panel-view')?.prepend(focus);
- const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard'};
+ const local={spot:'',ghost:'off',camera:'action',cameraPlayer:'',cameraFraming:'standard',grid:false};
  const cameraTarget=focus.querySelector('#publicCameraTarget');
  const cameraPlayer=focus.querySelector('#publicCameraPlayer');
  cameraTarget.addEventListener('change',()=>{
@@ -445,6 +446,7 @@ function initPublicBoard(){
  focus.querySelector('#publicCameraFraming').addEventListener('change',e=>{local.cameraFraming=e.target.value;resetZoom();render()});
  focus.querySelector('#publicSpotlight').addEventListener('change',e=>{local.spot=e.target.value;render()});
  focus.querySelector('#publicGhost').addEventListener('change',e=>{local.ghost=e.target.value;render()});
+ focus.querySelector('#publicBoardGrid').addEventListener('change',e=>{local.grid=e.target.checked;render()});
  const ink=document.createElementNS('http://www.w3.org/2000/svg','svg');
  ink.setAttribute('aria-label','Temporary coaching ink');ink.classList.add('public-board-ink');
  ink.setAttribute('preserveAspectRatio','xMidYMid meet');
@@ -473,18 +475,37 @@ function initPublicBoard(){
  ink.addEventListener('pointerdown',event=>{
   if(!inkEnabled||event.button!==0)return;
   const p=point(event);if(!p)return;
-  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-  path.setAttribute('d','M'+seg(p)+' L'+(p.x+.01).toFixed(2)+' '+p.y.toFixed(2));
+  const tool=inkTools.querySelector('#publicInkTool').value;
+  const path=document.createElementNS('http://www.w3.org/2000/svg',tool==='circle'?'ellipse':'path');
+  if(tool==='circle'){
+   path.setAttribute('cx',String(p.x));path.setAttribute('cy',String(p.y));
+   path.setAttribute('rx','0.01');path.setAttribute('ry','0.01');
+  }else path.setAttribute('d','M'+seg(p)+' L'+(p.x+.01).toFixed(2)+' '+p.y.toFixed(2));
   path.setAttribute('fill','none');path.setAttribute('stroke',colour.value);
-  path.setAttribute('stroke-width',width.value);path.setAttribute('stroke-linecap','round');
-  path.setAttribute('stroke-linejoin','round');path.setAttribute('vector-effect','non-scaling-stroke');
-  ink.append(path);paths.push(path);activePath={id:event.pointerId,path};
+  path.setAttribute('stroke-width',tool==='marker'?String(Math.max(13,Number(width.value)*3)):width.value);
+  if(tool==='marker')path.setAttribute('opacity','.35');
+  path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
+  path.setAttribute('vector-effect','non-scaling-stroke');
+  ink.append(path);paths.push(path);activePath={id:event.pointerId,path,tool,start:p};
   ink.setPointerCapture(event.pointerId);event.preventDefault();
  });
  ink.addEventListener('pointermove',event=>{
   if(!activePath||activePath.id!==event.pointerId)return;
   const p=point(event);if(!p)return;
-  activePath.path.setAttribute('d',activePath.path.getAttribute('d')+' L'+seg(p));
+  const {path,tool,start}=activePath;
+  if(tool==='circle'){
+   path.setAttribute('cx',String((start.x+p.x)/2));
+   path.setAttribute('cy',String((start.y+p.y)/2));
+   path.setAttribute('rx',String(Math.max(.01,Math.abs(p.x-start.x)/2)));
+   path.setAttribute('ry',String(Math.max(.01,Math.abs(p.y-start.y)/2)));
+  }else if(tool==='arrow'){
+   const dx=p.x-start.x,dy=p.y-start.y,len=Math.hypot(dx,dy);
+   const unit=len>.001?{x:dx/len,y:dy/len}:{x:0,y:-1};
+   const size=Math.max(9,Math.min(23,len*.2));
+   const left={x:p.x-unit.x*size-unit.y*size*.45,y:p.y-unit.y*size+unit.x*size*.45};
+   const right={x:p.x-unit.x*size+unit.y*size*.45,y:p.y-unit.y*size-unit.x*size*.45};
+   path.setAttribute('d','M'+seg(start)+' L'+seg(p)+' M'+seg(left)+' L'+seg(p)+' L'+seg(right));
+  }else path.setAttribute('d',path.getAttribute('d')+' L'+seg(p));
   event.preventDefault();
  });
  for(const kind of ['pointerup','pointercancel','lostpointercapture'])ink.addEventListener(kind,event=>{
@@ -539,6 +560,15 @@ function initPublicBoard(){
   if(moments)for(const b of moments.children)b.setAttribute('aria-current',Number(b.dataset.step)===scene.index?'step':'false');
   const before=d.frames[Math.max(0,scene.index-1)],next=d.frames[Math.min(d.frames.length-1,scene.index+1)];
   const actors=scene.index>0?transitionObjects(before,scene.frame,loc.p,g):scene.frame.objects;
+  if(local.grid){
+   const svg=board.querySelector('svg:not(.public-board-ink)');
+   if(svg){
+    let grid='<g class="public-board-grid" pointer-events="none" stroke="#e7f3bd" stroke-width=".8" stroke-dasharray="3 8" opacity=".2">';
+    for(let x=1;x<10;x++)grid+='<path d="M'+(x*g.viewWidth/10)+' 0V'+g.viewHeight+'"/>';
+    for(let y=1;y<8;y++)grid+='<path d="M0 '+(y*g.viewHeight/8)+'H'+g.viewWidth+'"/>';
+    svg.insertAdjacentHTML('beforeend',grid+'</g>');
+   }
+  }
   if(local.spot||local.ghost!=='off'){
    const svg=board.querySelector('svg:not(.public-board-ink)');
    if(svg){
