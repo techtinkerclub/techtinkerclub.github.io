@@ -45,3 +45,11 @@ dialog.wide{width:min(1040px,95vw);max-height:90vh;overflow:auto}.filters{displa
 @media(max-width:1100px){.publication-control{max-width:205px;flex:0 0 auto}.publication-control button{min-height:40px}}
 
 .decision-tool-button{width:100%;min-height:44px;text-align:left;background:#2b3c2c;color:#d6f594;border:1px solid #abc96d;font-weight:700}.decision-tool-button:hover{background:#354b32;border-color:var(--accent)}.decision-tool small{display:block;font-size:11px;line-height:1.55;margin-top:7px;color:var(--muted)}
+/* Ready tackle donut: precise half-metre movement when a coach overlaps it.
+   This control adjusts the real setup snapshot and respects the ripple rules. */
+.donut-start-nudge{display:grid;gap:6px;margin:10px 0;padding:10px;
+ border:1px solid #62866966;border-radius:11px;background:#203b2c52}
+.donut-start-nudge .label-option{font-size:12px;font-weight:700;color:#e3f3d3;margin:0}
+.donut-start-nudge .flex{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.donut-start-nudge button{min-height:34px;min-width:0;padding:4px 6px;font-size:17px}
+.donut-start-nudge small{color:#c5d8c5;font-size:11px;line-height:1.4}
