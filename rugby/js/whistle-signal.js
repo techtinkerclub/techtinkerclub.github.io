@@ -1,4 +1,4 @@
-import {compactActionBubbleSVG} from './comic-callouts.js?v=2';
+import {compactActionBubbleSVG} from './comic-callouts.js?v=6';
 import {stepStartSeconds} from './step-timeline.js?v=1';
 // Coach-authored start signals: independent from player objects and law/decision markers.
 // The whistle lives on the action step it starts and can be carried through
