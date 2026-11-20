@@ -174,3 +174,55 @@
 }
 
 @media screen{.read-only-player:not(.public-blackboard) #board .public-board-ink{display:none!important}}
+
+@media screen {
+.read-only-player.public-blackboard .public-board-heading{
+ position:absolute;z-index:12;top:68px;left:14px;
+ width:min(340px,calc(100vw - 175px));max-width:none;
+ background:#152b21e9;border:1px solid #5e7b5c;border-radius:10px;
+ padding:10px 12px;box-shadow:0 8px 22px #07170c77;
+ pointer-events:none;backdrop-filter:blur(7px);
+}
+.read-only-player.public-blackboard .public-board-heading small{
+ display:block;font-size:9px;letter-spacing:.12em;color:#bbd3a6;font-weight:800;
+}
+.read-only-player.public-blackboard .public-board-heading strong{
+ display:block;font-size:clamp(13px,1.2vw,17px);line-height:1.3;
+ color:#f1f8e8;margin:5px 0 2px;max-height:3.9em;overflow:hidden;
+}
+.read-only-player.public-blackboard .public-board-heading p{
+ font-size:11px;color:#c6d7ba;line-height:1.4;margin:0;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.read-only-player.public-blackboard .presentation-stage .viewer-camera{
+ top:clamp(157px,19vh,190px);left:14px;max-width:calc(100vw - 30px);
+}
+.read-only-player:not(.public-blackboard) .public-board-heading{display:none!important}
+.read-only-player .public-board-share-tools{
+ padding:11px;margin:0 0 16px;border:1px solid #5d795e;
+ border-radius:9px;background:#223b2c;display:grid;gap:9px;
+}
+.read-only-player .public-board-share-tools h2{margin:0!important}
+.read-only-player .public-board-share-tools p{font-size:12px;margin:0;line-height:1.45}
+.read-only-player .public-board-share-tools label{
+ display:flex;gap:9px;align-items:center;font-size:12px;color:#d8e8cb
+}
+.read-only-player .public-board-share-tools input{accent-color:#c9f07c}
+.read-only-player .public-board-share-tools button{min-height:39px}
+.read-only-player .public-board-share-tools #publicSnapshotStatus{color:#d3e8aa}
+}
+@media screen and (max-width:850px){
+.read-only-player.public-blackboard .public-board-heading{
+ top:57px;left:7px;padding:7px 9px;width:min(260px,calc(100vw - 145px));
+}
+.read-only-player.public-blackboard .public-board-heading strong{font-size:12px}
+.read-only-player.public-blackboard .public-board-heading p{display:none}
+.read-only-player.public-blackboard .presentation-stage .viewer-camera{
+ top:120px;left:7px;max-width:calc(100vw - 14px)
+}
+}
+@media screen and (max-height:600px){
+.read-only-player.public-blackboard .public-board-heading{top:49px}
+.read-only-player.public-blackboard .public-board-heading p{display:none}
+.read-only-player.public-blackboard .presentation-stage .viewer-camera{top:110px}
+}
