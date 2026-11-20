@@ -1,6 +1,8 @@
 /* Rugby Coaching Studio: mobile and tablet editor, shared by Classic and Coach Edition.
    The pitch stays visible; existing tools, inspector and timeline become bottom sheets. */
 .mobile-workspace-nav{display:none}
+/* Mobile controls are injected on every device. Hide them on DESKTOP too. */
+.mobile-camera-controls{display:none}
 @media screen and (max-width:1100px){
  body.mobile-workspace{
   --mobile-nav-height:56px;
@@ -42,7 +44,6 @@
  body.mobile-workspace .pitch .obj > circle:first-child{stroke:transparent;stroke-width:30px;vector-effect:non-scaling-stroke;pointer-events:all}
  body.mobile-workspace .pitch .path-hit{stroke-width:30px;vector-effect:non-scaling-stroke;pointer-events:stroke}
  body.mobile-workspace .pitch [data-waypoint],body.mobile-workspace .pitch [data-insert-point]{touch-action:none}
- .mobile-camera-controls{display:none}
  body.mobile-workspace .mobile-camera-controls{
   display:flex;align-items:center;gap:3px;position:absolute;top:7px;right:7px;
   z-index:5;padding:3px;border:1px solid #ffffff40;border-radius:10px;
