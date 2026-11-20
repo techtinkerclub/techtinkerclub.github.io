@@ -3,7 +3,9 @@
 // no movement or rugby judgement is inferred by this planner.
 import {hasOutcomes,outcomeViews} from './branching.js?v=2';
 import {decisionTime} from './branching-visual.js?v=12';
-import {drillDuration} from './scene.js?v=0.20.45';
+import {drillDuration} from './scene.js?v=0.20.61';
+import {drillGeometry} from './pitch.js?v=0.16.1';
+import {tryVisualDuration} from './try-scoring.js?v=2';
 
 const clean=(v,max=500)=>String(v??'').replace(/\s+/g,' ').trim().slice(0,max);
 const seconds=(n,fallback,min=0,max=12)=>Number.isFinite(Number(n))?
@@ -18,9 +20,10 @@ export function movieStoryboard(source,opts={}){
  const replay=opts.mode!=='single',replaySpeed=[.25,.5,.75].includes(Number(opts.replaySpeed))?
   Number(opts.replaySpeed):.5;
  const clips=[];
+ const playbackSeconds=view=>opts.cartoonMode===true?tryVisualDuration(view,drillGeometry(view,'up'),true):drillDuration(view);
  const add=(clip,duration)=>{if(duration>.00001)clips.push({...clip,duration})};
  for(const [i,d] of drills.entries()){
-  const total=drillDuration(d);
+  const total=playbackSeconds(d);
   if(total<=0)throw Error('Video stage '+(i+1)+' ('+clean(d.title,60)+') has no animated movement.');
   const stage=drills.length>1?'STAGE '+(i+1)+' / '+drills.length:'COACHING DRILL';
   const base={stage,title:clean(d.title,160),drill:d,index:i};
@@ -58,14 +61,14 @@ export function movieStoryboard(source,opts={}){
    const title='OPTION '+v.id.toUpperCase()+' · '+clean(v.label,140);
    // Each alternative must start from the very same frozen fork position.
    // Show the reverse journey instead of an unexplained snap backwards.
-   if(previousOption)rewind(previousOption.drill,drillDuration(previousOption.drill),fork);
+   if(previousOption)rewind(previousOption.drill,playbackSeconds(previousOption.drill),fork);
    add({...base,drill:v.drill,kind:'choice',at:fork,heading:title,
     body:clean(choice.explanation,500)||clean(first?.notes,420)||'Follow the movement shown in this option.',
     watch:clean(choice.watchFor,500)||'Watch the players nearest the ball and the space around them.'},choicePause);
-   makeMotion(v.drill,fork,drillDuration(v.drill),title);
+   makeMotion(v.drill,fork,playbackSeconds(v.drill),title);
    if(replay){
-    rewind(v.drill,drillDuration(v.drill),fork,'REWIND FOR SLOW-MOTION REPLAY');
-    makeMotion(v.drill,fork,drillDuration(v.drill),title,'replay');
+    rewind(v.drill,playbackSeconds(v.drill),fork,'REWIND FOR SLOW-MOTION REPLAY');
+    makeMotion(v.drill,fork,playbackSeconds(v.drill),title,'replay');
    }
    previousOption=v;
   }
