@@ -305,7 +305,7 @@ function initPresentationWorkspace(){
  if(share){share.open=true;panels.share.append(share)}
  panels.share.append($('catalogueReview'));
  const download=$('downloadDrill');if(download)panels.share.append(download);
- for(const [key,label] of [['steps','Step-by-step technical notes'],['view','Pitch display & camera'],['share','Share, export & review']]){
+ for(const [key,label] of [['steps','Step-by-step technical notes'],['view','Pitch overlays & appearance'],['share','Share, export & review']]){
   const h=document.createElement('h2');h.textContent=label;panels[key].prepend(h);
  }
  const pitch=document.querySelector('.presentation-pitch-shell');
@@ -351,7 +351,7 @@ function initPublicBoard(){
  make('☷ Notes','Current step and coaching flow',()=>openPanel('step'));
  make('▤ Coach','Full coaching card, safety and rules',()=>openPanel('coach'));
  make('≡ Steps','Step-by-step coaching sequence',()=>openPanel('steps'));
- make('◎ View','Camera, overlays and pitch options',()=>openPanel('view'));
+ make('▦ Display','Pitch overlays, guides and panel appearance',()=>openPanel('view'));
  make('↗ Share','Links, coaching sheets and videos',()=>openPanel('share'));
  const focusButton=make('◎ Focus','Tap a player to spotlight them without editing',()=>setPickFocus(!pickFocus));
  focusButton.setAttribute('aria-pressed','false');
@@ -802,7 +802,7 @@ const local={spot:'',ghost:'off',camera:'field',cameraPlayer:'',cameraFraming:'s
   refreshPlaybackTools();
  });
  function cameraView(scene){
-  if(!document.body.classList.contains('public-blackboard')||!d||local.camera==='action'||local.cameraFraming==='full')return null;
+  if(!document.body.classList.contains('public-blackboard')||!d||!['ball','player'].includes(local.camera)||local.cameraFraming==='full')return null;
   const g=drillGeometry(d,opts.orientation),loc=stepLocation(d,t),i=scene.index;
   const prev=d.frames[Math.max(0,i-1)],objects=i>0?transitionObjects(prev,scene.frame,loc.p,g):scene.frame.objects;
   const target=local.camera==='ball'?objects.find(o=>o.type==='ball'):objects.find(o=>o.id===local.cameraPlayer);
