@@ -316,17 +316,18 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p,celebration=null){
    ((pose==='grounded'||markerRole==='grounded')&&!old?.ownerId&&Math.hypot(b.x-o.x,b.y-o.y)<45);
  });
  const tryBall=currentBall(o,previous,frame);
+ const trySlideActive=celebration?.phase==='slide';
  const tryGroundingActive=o.type==='attacker'&&tryBall.held&&(frame?.tryGroundings||[]).some(v=>v.actorId===o.id&&p>=Number(v.at));
- const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||(tryGroundingActive?tryBall.held:null);
+ const presentBall=presentingBalls.find(b=>b.id===tackleMarker?.breakdown?.ballId)||presentingBalls[0]||((tryGroundingActive||trySlideActive)?tryBall.held:null);
  const presentation=!!presentBall;
- const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17||tryGroundingActive);
+ const presentationVisible=(presentation||semantic===17)&&(pose==='grounded'||activeCarrier||semantic===17||tryGroundingActive||trySlideActive);
  const ballAnchor=presentBall?g.toView(presentBall.x,presentBall.y):null;
  const playerAnchor=ballAnchor?g.toView(o.x,o.y):null;
  const vx=ballAnchor&&playerAnchor?ballAnchor.x-playerAnchor.x:0;
  const vy=ballAnchor&&playerAnchor?ballAnchor.y-playerAnchor.y:0;
  // Bearing is screen-up=0, clockwise-positive. Subtract the already-applied
  // player+field rotation; the source sprite's hands point LEFT (-90 degrees).
- const presentationBearing=tryGroundingActive?(Number(o.rot)||0):Math.hypot(vx,vy)>2
+ const presentationBearing=(tryGroundingActive||trySlideActive)?(Number(o.rot)||0):Math.hypot(vx,vy)>2
   ?Math.atan2(vx,-vy)*180/Math.PI
   :Number(o.rot)||0;
  const presentationLocal=wrapMinionAngle(presentationBearing-(Number(o.rot)||0)-(Number(g.rotation)||0));
@@ -387,7 +388,7 @@ function cartoonRuckus(o,pose,objects,g,previous,frame,p,celebration=null){
  const cell=tileUse(atlasId,(sprite%RUCKUS_COLS)*RUCKUS_TILE,Math.floor(sprite/RUCKUS_COLS)*RUCKUS_TILE,RUCKUS_TILE);
  // The first fifth of the release shows the regular grounded silhouette.
  // The remainder shows a clearly held presentation pose without an extra ball.
- const showProne=celebration?.phase==='ground'||(!celebration&&presentationVisible&&(!previous||step>=.2));
+ const showProne=['slide','ground'].includes(celebration?.phase)||(!celebration&&presentationVisible&&(!previous||step>=.2));
  const presentArt=showProne?
   '<g transform="rotate('+fmt(proneAngle)+' 64 64)">'+
    '<svg x="0" y="33" width="128" height="62" viewBox="0 0 208 104" overflow="hidden">'+
