@@ -88,7 +88,21 @@ const geometry=()=>drillGeometry(drill,orientation);
 let scaleMode='realistic';try{scaleMode=normalScaleMode(localStorage.getItem('rugby-symbol-scale'))}catch{}
 function preferCoachingForFullField(){if(drill.pitchContext?.mode!=='field')return false;if(scaleMode==='coaching')return false;scaleMode='coaching';$('scaleMode').value='coaching';try{localStorage.setItem('rugby-symbol-scale','coaching')}catch{}return true}
 $('scaleMode').value=scaleMode;$('scaleMode').onchange=()=>{scaleMode=normalScaleMode($('scaleMode').value);try{localStorage.setItem('rugby-symbol-scale',scaleMode)}catch{}render();note(scaleMode==='realistic'?'Realistic scale · nominal dimensions in metres.':'Coaching view · enlarged symbols; positions unchanged.')};
-const camera=createCamera(pitch,{
+// Camera navigation changes the SVG viewBox outside normal animation frames.
+ // Refresh annotation layout after zoom/pan without recursively rerendering.
+ let annotationViewKey='',annotationRefreshPending=false;
+ const annotationViewKeyNow=()=>{const v=pitch.viewBox.baseVal;
+  return [v.x,v.y,v.width,v.height].map(n=>Number(n).toFixed(3)).join(':');
+ };
+ function scheduleAnnotationRefresh(){
+  if(annotationRefreshPending||annotationViewKeyNow()===annotationViewKey)return;
+  annotationRefreshPending=true;
+  queueMicrotask(()=>{
+   annotationRefreshPending=false;
+   if(annotationViewKeyNow()!==annotationViewKey)render();
+  });
+ }
+ const camera=createCamera(pitch,{
  getGeometry:geometry,
  canNavigate:()=>!drag&&!routeDrawing&&!ballPicking&&!trainingPick,
  // Pan-mode must never consume a tap on a player or editing handle on mobile.
@@ -104,6 +118,7 @@ const camera=createCamera(pitch,{
   touchPan?.setAttribute('aria-pressed',String(pan));
   touchPan?.classList.toggle('selected',pan);
   $('zoomOut').disabled=z<=1.001;$('zoomIn').disabled=z>=15.999;
+  scheduleAnnotationRefresh();
  }
 });
 function stopFollow(){autoFollow=false;$('followAction').checked=false}
@@ -166,6 +181,7 @@ function render(){
  // The Studio uses the same camera-aware annotation sizing as public playback
  // and exported videos. Neither saved coordinates nor rugby measurements change.
  const viewport=pitch.viewBox.baseVal;
+ annotationViewKey=annotationViewKeyNow();
  const adaptive=withAnnotationCamera(g,{x:viewport.x,y:viewport.y,width:viewport.width,height:viewport.height});
  Object.assign(g,{annotationViewport:adaptive.annotationViewport,annotationScale:adaptive.annotationScale});
  if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
