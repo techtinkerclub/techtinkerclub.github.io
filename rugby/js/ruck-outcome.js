@@ -1,3 +1,4 @@
+import {bubbleSVG} from './comic-callouts.js?v=1';
 // Display a coach-authored contest result without pretending that the ball
 // lying separately for a safety exercise has come out of the ruck.
 export const ruckSide=o=>['attacker','shield'].includes(o?.type)?'attack':['defender','bagplayer'].includes(o?.type)?'defence':null;
@@ -51,7 +52,7 @@ export function outcomeMemberDisplacement(old,next,marker,id,p,g){
 
 // A coaching annotation is explicitly authored, never inferred from distance.
 // The actual ball transfer is a separate, deliberate edit in a following step.
-export function nextPlayCue(frame,objects,marker,g,ink=false){
+export function nextPlayCue(frame,objects,marker,g,ink=false,cartoonMode=false){
  if(!marker?.breakdown?.showNextPlayerLabel||!marker.breakdown.nextPlayerId)return '';
  const winner=contestWinner(marker),id=marker.breakdown.nextPlayerId;
  const player=objects.find(o=>o.id===id);
@@ -61,13 +62,14 @@ export function nextPlayCue(frame,objects,marker,g,ink=false){
  const text=safe+' NEXT',width=Math.max(92,Math.min(165,66+safe.length*8));
  const x=Math.max(g.margin+7,Math.min(g.margin+g.fw-width-7,p.x+31));
  const y=Math.max(g.margin+7,Math.min(g.margin+g.fh-25,p.y+21));
+ if(cartoonMode&&!ink)return '<g data-next-play-cue="'+winner+'" pointer-events="none">'+bubbleSVG({x:p.x,y:p.y,text,kind:'speech',g,comic:true,accent})+'</g>';
  return '<g data-next-play-cue="'+winner+'" pointer-events="none">'+
   '<circle cx="'+p.x+'" cy="'+p.y+'" r="22" stroke="'+accent+'" stroke-width="2.3" fill="none" stroke-dasharray="4 4"/>'+
   '<path d="M'+(p.x+13)+' '+(p.y+12)+'L'+(x+8)+' '+(y+12)+'" stroke="'+accent+'" stroke-dasharray="3 3" stroke-width="1.5"/>'+
   '<rect x="'+x+'" y="'+y+'" width="'+width+'" height="23" rx="8" fill="'+(ink?'#fff':'#183528')+'" stroke="'+accent+'" stroke-width="1.8"/>'+
   '<text x="'+(x+width/2)+'" y="'+(y+15.5)+'" text-anchor="middle" font-weight="700" font-size="11.5" fill="'+(ink?'#183528':accent)+'">'+text+'</text></g>';
 }
-export function contestResultOverlay(frame,objects,g,progress=1,ink=false){
+export function contestResultOverlay(frame,objects,g,progress=1,ink=false,cartoonMode=false){
  const markers=(frame?.objects||[]).filter(o=>o.type==='ruck'&&contestWinner(o));
  if(!markers.length)return '';
  const safe=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -85,13 +87,14 @@ export function contestResultOverlay(frame,objects,g,progress=1,ink=false){
     const badgeX=safe(p.x+40,g.margin+7,g.margin+g.fw-bw-7);
     const badgeY=safe(p.y-50,g.margin+7,g.margin+g.fh-bh-7);
     const accent=ink?'#2d6136':winner==='attack'?'#b9ed83':'#ffbf7c';
-    svg='<g data-contest-result="'+winner+'" pointer-events="none">'+
+    if(cartoonMode&&!ink)svg='<g data-contest-result="'+winner+'" pointer-events="none">'+bubbleSVG({x:p.x,y:p.y,text:line,kind:'shout',g,comic:true,accent})+'</g>';
+    else svg='<g data-contest-result="'+winner+'" pointer-events="none">'+
      '<circle cx="'+p.x+'" cy="'+p.y+'" r="26" stroke="'+accent+'" stroke-width="3" fill="none" stroke-dasharray="4 3"/>'+
      '<path d="M'+(p.x+16)+' '+(p.y-17)+'L'+(badgeX+6)+' '+(badgeY+bh/2)+'" stroke="'+accent+'" stroke-width="2" stroke-dasharray="3 3" fill="none"/>'+
      '<rect x="'+badgeX+'" y="'+badgeY+'" width="'+bw+'" height="'+bh+'" rx="9" fill="'+(ink?'#fff':'#172c22')+'" stroke="'+accent+'" stroke-width="2"/>'+
      '<text x="'+(badgeX+bw/2)+'" y="'+(badgeY+15.5)+'" fill="'+(ink?'#172c22':accent)+'" font-size="12" font-weight="750" text-anchor="middle">'+line+'</text></g>';
    }
   }
-  return svg+nextPlayCue(frame,objects,marker,g,ink);
+  return svg+nextPlayCue(frame,objects,marker,g,ink,cartoonMode);
  }).join('');
 }
