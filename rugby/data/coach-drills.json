@@ -785,7 +785,7 @@
         {
           "name": "TRY! · watch the celebration and review",
           "seconds": 1.5,
-          "notes": "One TRY is registered after genuine grounding, never just after crossing. Hold the prone ball presentation, rise and celebrate clearly; then discuss A1/A2 fixing defenders, the final pass and the direction of attack. Review and rotate. The extra Ruckus celebration time is a view-only outro; Classic and the authored rugby steps remain unchanged.",
+          "notes": "One TRY is registered after genuine grounding, never just after crossing. Keep A3 in-goal without reversing across the try line. Hold the prone ball presentation, rise and celebrate clearly; then discuss A1/A2 fixing defenders, the final pass and the direction of attack. Review and rotate. The extra Ruckus celebration time is a view-only outro; Classic and the authored rugby steps remain unchanged.",
           "objects": [
             {
               "id": "o0",
@@ -807,8 +807,8 @@
               "id": "o2",
               "type": "attacker",
               "label": "A3",
-              "x": 738.0201497395833,
-              "y": 137.77020664760045,
+              "x": 745,
+              "y": 94,
               "rot": 0
             },
             {
@@ -831,8 +831,8 @@
               "id": "o5",
               "type": "ball",
               "label": "",
-              "x": 730.5401497395834,
-              "y": 133.57620664760043,
+              "x": 737.52,
+              "y": 89.806,
               "rot": 0,
               "ownerId": "o2",
               "carrySide": "left"
