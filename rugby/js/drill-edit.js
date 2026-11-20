@@ -42,7 +42,14 @@ const find=(f,id)=>f?.objects.find(o=>o.id===id);
 const route=(f,id)=>f?.paths?.[id]?.points||[];
 // A new Ready / running pose does not by itself interrupt a repositioned run.
 const stateChanged=(a,b)=>a.ownerId!==b.ownerId||a.groundState!==b.groundState||a.transferKind!==b.transferKind||a.donutState!==b.donutState;
-export function canPropagate(f,o){return !!o&&!contactTypes.has(o.type)&&!['decision','donut','ball','shieldItem'].includes(o.type)&&!o.ownerId&&!linked(f,o.id)}
+export function canPropagate(f,o){
+ // A READY rolling donut can have its starting position adjusted. Propagation
+ // stops before the first authored roll/contact state or destination, preserving
+ // the intentionally placed interception and the tackler's contact geometry.
+ // Active/down donuts and attached equipment retain the existing protection.
+ if(o?.type==='donut')return o.donutState==='ready'&&!linked(f,o.id);
+ return !!o&&!contactTypes.has(o.type)&&!['decision','ball','shieldItem'].includes(o.type)&&!o.ownerId&&!linked(f,o.id);
+}
 export function canEntire(o){return !!o&&staticTypes.has(o.type)&&!o.layoutMarker}
 export function propagatePosition(frames,index,id,origin,scope){
  const current=frames[index],source=find(current,id);
@@ -66,7 +73,8 @@ export function propagatePosition(frames,index,id,origin,scope){
   const f=frames[i],o=find(f,id);
   if(!o)return stop(i,'object is no longer present');
   if(!canPropagate(f,o))return stop(i,'contact formation or guided action');
-  if(stateChanged(previous,o))return stop(i,'deliberate change of linked action');
+  if(stateChanged(previous,o))return stop(i,source.type==='donut'?'next authored roll or contact (interception preserved)':'deliberate change of linked action');
+  if(source.type==='donut'&&!same(previous,o))return stop(i,'next authored donut movement (destination preserved)');
   if(scope==='until'&&(!same(previous,o)||route(f,id).length))return stop(i,'next deliberate movement');
   const extra=scope==='onward'?extras(f):[];
   if(!fits(o)||extra.some(p=>!fits(p)))return stop(i,'pitch boundary');
