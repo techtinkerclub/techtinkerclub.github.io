@@ -70,7 +70,7 @@ export function tryLineEvents(drill,g){
 export const RUCKUS_TRY_CELEBRATION_SECONDS=2.8;
 // A deliberate hold makes it clear that the ball has been grounded before
 // the player stands and celebrates, especially during teaching playback.
-export const RUCKUS_TRY_SLIDE_SECONDS=1.2;
+export const RUCKUS_TRY_SLIDE_SECONDS=1.45;
 export const TRY_GROUND_HOLD_SECONDS=.92;
 export const TRY_RISE_END_SECONDS=1.3;
 // Score animations are visual epilogues. They do not change authored step
