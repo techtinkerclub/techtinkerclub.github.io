@@ -6,8 +6,18 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.48** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.49** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA for commit `3cd81bdac78befe2a028fe540d9359709eaaad9c`: Node Rugby tests **passed**, Playwright browser QA **passed**, Pages deployment **succeeded**. Any later commit must earn its own check; a successful deployment alone does not prove QA passed.
+
+## 0.20.49 — Ruckus graphic-novel speech and timed author callouts (20 November 2026)
+
+- **Repository:** techtinkerclub/techtinkerclub.github.io on master. Classic visuals and existing rugby drill mechanics are unchanged. Ruckus remains a visual translation of the same drill, not a separate editor.
+- Ruckus-specific comic SVG balloons now style existing TAG, touch, tag-return, ball rip, coach whistle, contact captions, ruck winner and NEXT player cues. Classic keeps its original built-in cue graphics.
+- **Custom speech:** player context menu → Add speech bubble, or Step → Actions in this step → Add speech bubble. Choose speaker, text (up to 120 characters), speech/shout/thought style, event moment (0–100% of step) and duration (0.2–8 seconds). Edit/remove from the same Step panel. Data lives in frame.callouts, separate from rugby actions; may continue into following steps. Static editor reveals all current-step authored bubbles.
+- **Ruckus pitch:** visual-only illustrated grass wash, inked outer edges and fine grass tufts. No flowers; no pitch size, marking, coordinates, running paths or speed changes.
+- **Shared paths:** new js/comic-callouts.js and assets/comic-callouts.css; updated Studio, playback scene, skill actions, ruck outcome, whistle, and both video pipelines. Entry pages /rugby/, /rugby/play.html and /rugby/library.html use v0.20.49 references. Saved drills and publications remain unchanged.
+- **QA:** modified JavaScript parsed, isolated timing/escape/sanitisation tests passed. Added tests/comic-callouts.test.mjs and updated prior Ruckus/Blackboard expectations. Full Node, Playwright and Pages deployment for this commit are still unconfirmed; prior v0.20.48 checks are not certification.
+- **Limits:** No speech audio or freely draggable text-offset yet; simultaneous bubbles may overlap on tight crops. Legacy /rugby/coach/ page is divergent and not the supported editor; new authoring UI is on /rugby/.
 
 ## 0.20.46–0.20.48 — Immersive live Blackboard for coaches (20 November 2026)
 
