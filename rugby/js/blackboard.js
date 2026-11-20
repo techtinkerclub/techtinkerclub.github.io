@@ -152,27 +152,35 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   button?.classList.toggle('is-active',drillsOpen);
  }
  function syncAddPalette(){
-  // Don't maintain a parallel list. The SAME native palette buttons provide
-  // labels, SVG icons and object types. Their click handlers stay authoritative.
-  const target=$('bbAddPalette');
-  if(!target)return;
+  // Mirror ONLY the current editor's normal palette + its supported contact
+  // tools. Do not surface the #legacyPalette (maul, scrum, standalone decision):
+  // those are legacy diagrams and not the primary authored-action workflow.
+  const target=$('bbAddPalette'),nativePalette=$('palette');
+  if(!target||!nativePalette)return;
   target.replaceChildren();
-  for(const [source,label] of [['palette','Players, equipment & markings'],['rugbyPalette','Contact formations'],['legacyPalette','Other diagrams']]){
-   const root=$(source);if(!root)continue;
-   const native=[...root.querySelectorAll('button[data-type]')];
-   if(!native.length)continue;
-   const group=document.createElement('div');group.className='bb-native-palette-group';
-   const heading=document.createElement('h4');heading.textContent=label;group.appendChild(heading);
+  const makeGroup=(name,buttons,open=false)=>{
+   if(!buttons.length)return;
+   const section=document.createElement('details');
+   section.className='bb-native-palette-group';section.open=open;
+   const title=document.createElement('summary');title.textContent=name+' ('+buttons.length+')';
+   section.appendChild(title);
    const cells=document.createElement('div');cells.className='bb-palette-grid';
-   for(const button of native){
-    const clone=button.cloneNode(true);
-    clone.removeAttribute('data-type');
-    clone.dataset.bbAdd=button.dataset.type;
-    clone.id='';
-    cells.appendChild(clone);
+   for(const native of buttons){
+    if(!native.dataset.type||native.disabled)continue;
+    const clone=native.cloneNode(true);
+    // Retain EXACT icon and label from Studio; the only action is forwarding
+    // the object type back to that same original button's existing handler.
+    clone.removeAttribute('data-type');clone.dataset.bbAdd=native.dataset.type;
+    clone.removeAttribute('id');cells.appendChild(clone);
    }
-   group.appendChild(cells);target.appendChild(group);
+   section.appendChild(cells);target.appendChild(section);
+  };
+  for(const [i,group] of [...nativePalette.querySelectorAll('.group')].entries()){
+   const name=group.querySelector('h4')?.textContent?.trim()||'Objects';
+   makeGroup(name,[...group.querySelectorAll('.palette button[data-type]')],i===0);
   }
+  const contact=[...($('rugbyPalette')?.querySelectorAll('button[data-type]')||[])];
+  makeGroup('Contact formations',contact,false);
  }
  function openCamera(show){
   cameraOpen=!!show;
