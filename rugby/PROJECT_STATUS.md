@@ -6,8 +6,17 @@ Updated 20 November 2026. This document is the maintained handover between chats
 
 - Single supported editor: **Classic Studio** at `/rugby/`, including touch workspace on phones and tablets.
 - Public catalogue: `/rugby/library.html`; read-only presentation: `/rugby/play.html`.
-- UI release marker: **0.20.59** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
+- UI release marker: **0.20.65** (publication system shipped in 0.17.0). Source repository: `techtinkerclub/techtinkerclub.github.io` on `master`.
 - QA (20 November 2026, code commit `18a4bd66`): Blackboard Chromium, contextual video/Ruckus export, mobile View-sheet, and decision-video browser workflows **passed**. GitHub Pages deployment **succeeded**. Full Node suite: **151 / 162 passed**; 11 outstanding failures concern older catalogue/drill-data, decision-video assertions and publication fixtures, not the new Blackboard controls. A later documentation-only commit does not change runnable code.
+
+## 0.20.64–0.20.65 — Try coaching cues, slide timing and full replay (20 November 2026)
+
+- **Root cause of the unnatural slow jog:** stretching the post-crossing step from 1.2 to 2.1 s delayed the original grounded pose, so the player jogged slowly until the grounding marker. In 0.20.65, the real Ruckus prone-presentation artwork appears during the final 1.45 s **before** valid grounding; the player is already moving forward on their belly. Grounding retains its own 0.92 s prone hold, followed by 0.38 s rise and raised-arms celebration. A pre-grounding slide is not a score; automatic TRY! still appears only at confirmed grounding. Invalid defender/wrong-direction crossing never triggers this animation.
+- **Replay after natural completion:** the final authored step remains editable (no stuck preview), but the *next Play* starts at zero and replays the whole drill. Explicitly choosing a step resets this one-shot full-replay behaviour and lets the coach start there; manual Pause continues returning to an editable step.
+- **Simpler published try demo:** editable `u10-3v2-overload-to-try-v1` and published `seed-923` use one fixed-position speech-style `GROUND IT!` cue on the grounding step, no overlapping `NOT A TRY YET!` shout at the crossing step. The cue no longer jumps as the player moves. The authored scoring step lasts 2.1 s and records grounding at 78% of it. Briefly approaching, sliding, grounding and celebrating are visually distinct.
+- **Tackle donut:** ready donut's Object inspector includes 0.5 m directional nudges useful when the coach graphic overlaps it. These call existing `propagatePosition` for matching stationary snapshots and stop before deliberately authored roll/impact destinations. Normal drag ripple still works.
+- **Tests:** added `tests/try-simplified-coaching.test.mjs` coverage of valid slide-before-grounding, later celebration, one stable cue and full replay flag. Expanded mobile Chromium smoke to check that pressing Play after natural completion restarts at time zero. Cache-bumped editor, scene, public player, video and library entry points to 0.20.65.
+- **QA:** GitHub Pages deployment for code commit `ff01ca98` succeeded. Dedicated Node and Chromium workflow runs for that commit were pending at the final check; they have **not** yet been claimed passing. Prior wide Node suite had several older quality/publication fixture failures and some release-marker assertions were refreshed. Do not claim full suite success without checking its final run.
 
 ## 0.20.58–0.20.59 — Blackboard layout clarity, Ruckus contrast and follow framing (20 November 2026)
 
