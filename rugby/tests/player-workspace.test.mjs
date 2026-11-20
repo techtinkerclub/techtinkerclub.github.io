@@ -69,7 +69,7 @@ test('the public board offers coaching tools without editor mutations',()=>{
  }
  assert.match(js,/const overlay=teachingOverlay/);
  assert.match(js,/saveBlob\(png,outputName\(d\)/);
- assert.match(js,/Temporary marks/);
+ assert.match(js,/Local only/);
  assert.match(js,/local\s*to this board/);
  assert.match(js,/stepLoop=false/);
  assert.match(js,/new URLSearchParams\(location\.search\)\.has\('drill'\)/);
