@@ -378,6 +378,98 @@ function initPublicBoard(){
  const boardHeading=document.createElement('div');boardHeading.className='public-board-heading';
  boardHeading.innerHTML='<small>RUGBY COACHING BLACKBOARD · VIEW ONLY</small><strong id="publicBoardTitle"></strong><p id="publicBoardObjective"></p>';
  stage.append(boardHeading);
+ // View-only floating panels: a grip is a pointer/keyboard drag handle.
+ // Local positions are clamped to the viewport and never written to drills.
+ const movablePanels=[
+  {node:toolbar,key:'tools',label:'Move tools'},
+  {node:boardHeading,key:'title',label:'Move title'},
+  {node:$('viewerCamera'),key:'camera',label:'Move camera'},
+  {node:$('controls'),key:'playback',label:'Move playback'}
+ ];
+ const layoutKey='rugby-public-blackboard-layout-v1';
+ const settings=(()=>{
+  try{const raw=JSON.parse(localStorage.getItem(layoutKey)||'{}');return raw&&typeof raw==='object'?raw:{}}catch{return {}}
+ })();
+ function savePanelPositions(){
+  const positions={};
+  for(const item of movablePanels){
+   const box=item.node.getBoundingClientRect();
+   if(item.node.dataset.floating==='true')positions[item.key]=[
+    Math.round(box.left/window.innerWidth*1000)/1000,
+    Math.round(box.top/window.innerHeight*1000)/1000];
+  }
+  try{localStorage.setItem(layoutKey,JSON.stringify({...settings,positions,opacity:panelOpacity.value}))}catch{}
+ }
+ function positionPanel(node,left,top){
+  const rect=node.getBoundingClientRect(),w=rect.width||200,h=rect.height||50;
+  node.dataset.floating='true';
+  node.style.setProperty('left',Math.max(5,Math.min(window.innerWidth-w-5,left))+'px');
+  node.style.setProperty('top',Math.max(5,Math.min(window.innerHeight-h-5,top))+'px');
+  node.style.setProperty('right','auto');node.style.setProperty('bottom','auto');
+  node.style.setProperty('transform','none');
+ }
+ function resetPanelPositions(){
+  for(const item of movablePanels){
+   delete item.node.dataset.floating;
+   for(const prop of ['left','top','right','bottom','transform'])item.node.style.removeProperty(prop);
+  }
+  savePanelPositions();
+ }
+ function setOpacity(value){
+  const v=Math.max(35,Math.min(97,Number(value)||80));
+  document.body.style.setProperty('--public-panel-alpha',(v/100).toFixed(2));
+  document.body.style.setProperty('--public-panel-blur',(v<60?5:9)+'px');
+ }
+ const panelPrefs=document.createElement('section');panelPrefs.className='public-board-panel-prefs';
+ panelPrefs.innerHTML='<h2>Blackboard appearance</h2>'+
+  '<label>Floating panel opacity <input type="range" id="publicPanelOpacity" min="35" max="97" step="1" value="80"><output id="publicPanelOpacityValue">80%</output></label>'+
+  '<button type="button" id="publicPanelReset">Reset floating panels</button>'+
+  '<small>Drag a panel by its grip. These preferences stay on this device only.</small>';
+ document.getElementById('presentation-panel-view')?.append(panelPrefs);
+ const panelOpacity=panelPrefs.querySelector('#publicPanelOpacity');
+ panelOpacity.value=String(settings.opacity||80);setOpacity(panelOpacity.value);
+ panelPrefs.querySelector('#publicPanelOpacityValue').textContent=panelOpacity.value+'%';
+ panelOpacity.addEventListener('input',()=>{
+  setOpacity(panelOpacity.value);
+  panelPrefs.querySelector('#publicPanelOpacityValue').textContent=panelOpacity.value+'%';
+ });
+ panelOpacity.addEventListener('change',savePanelPositions);
+ panelPrefs.querySelector('#publicPanelReset').addEventListener('click',resetPanelPositions);
+ const narrow=()=>window.matchMedia('(max-width:700px)').matches;
+ for(const item of movablePanels){
+  const grip=document.createElement('button');grip.type='button';grip.className='public-board-grip';
+  grip.textContent='⠿';grip.title=item.label;grip.setAttribute('aria-label',item.label);
+  grip.setAttribute('aria-keyshortcuts','ArrowLeft ArrowRight ArrowUp ArrowDown');
+  item.node.prepend(grip);
+  let drag=null;
+  grip.addEventListener('pointerdown',event=>{
+   if(event.button!==0||narrow())return;
+   event.preventDefault();event.stopPropagation();
+   const rect=item.node.getBoundingClientRect();
+   drag={id:event.pointerId,x:event.clientX,y:event.clientY,left:rect.left,top:rect.top};
+   grip.setPointerCapture(event.pointerId);
+  });
+  grip.addEventListener('pointermove',event=>{
+   if(!drag||event.pointerId!==drag.id)return;
+   positionPanel(item.node,drag.left+event.clientX-drag.x,drag.top+event.clientY-drag.y);
+  });
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])grip.addEventListener(type,event=>{
+   if(!drag||event.pointerId!==drag.id)return;drag=null;savePanelPositions();
+   if(grip.hasPointerCapture?.(event.pointerId))grip.releasePointerCapture(event.pointerId);
+  });
+  grip.addEventListener('keydown',event=>{
+   const delta={ArrowLeft:[-12,0],ArrowRight:[12,0],ArrowUp:[0,-12],ArrowDown:[0,12]}[event.key];
+   if(!delta||narrow())return;
+   event.preventDefault();const r=item.node.getBoundingClientRect();
+   positionPanel(item.node,r.left+delta[0],r.top+delta[1]);savePanelPositions();
+  });
+ }
+ if(settings.positions&&window.innerWidth>700)requestAnimationFrame(()=>{
+  for(const item of movablePanels){
+   const p=settings.positions[item.key];
+   if(Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))positionPanel(item.node,p[0]*window.innerWidth,p[1]*window.innerHeight);
+  }
+ });
  const shareTools=document.createElement('section');shareTools.className='public-board-share-tools';
  shareTools.innerHTML='<h2>Coaching snapshot</h2><p>Save the current frame for handouts or messages. The exported image can include your temporary chalk, without changing the drill.</p>'+
   '<label><input id="publicSnapshotInk" type="checkbox" checked> Include my chalk marks</label>'+
