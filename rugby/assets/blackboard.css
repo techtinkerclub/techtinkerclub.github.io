@@ -322,3 +322,31 @@ body.blackboard-mode .bb-native-timeline #outcomeBar{display:none!important}
  .blackboard-ui .bb-timeline-panel .bb-decision-actions{gap:4px}
  .blackboard-ui .bb-timeline-panel .bb-decision-actions button{min-height:32px;font-size:11px}
 }
+
+/* v0.20.58: Ruckus is an available VIEW, not a disabled action.
+   Keep it readable in both presets without adding an extra toolbar. */
+.blackboard-ui .bb-top-actions [data-bb="ruckus"]{
+ color:#f3edcc;
+ background:#314939e8;
+ border:1px solid #a9bb86a3;
+ border-radius:10px;
+ font-weight:700;
+ opacity:1;
+}
+.blackboard-ui .bb-top-actions [data-bb="ruckus"] span{color:inherit;font-weight:700}
+.blackboard-ui .bb-top-actions [data-bb="ruckus"]:hover:not(:disabled){
+ color:#fffde5;background:#476344;border-color:#d4e89c;
+}
+.blackboard-ui .bb-top-actions [data-bb="ruckus"].is-active,
+.blackboard-ui .bb-top-actions [data-bb="ruckus"][aria-pressed="true"]{
+ color:#193224;background:#c9e992;border-color:#e2ffb1;
+ box-shadow:inset 0 0 0 1px #e9ffc375;
+}
+.blackboard-ui.bb-coaching-layout .bb-top-actions.bb-movable:not(:hover):not(:focus-within){
+ opacity:.87;
+}
+.blackboard-ui .bb-layout-hint{
+ display:block;margin:3px 0 6px;color:#cadcc7;
+ font-size:10px;line-height:1.4;max-width:100%;
+}
+
