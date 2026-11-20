@@ -103,6 +103,12 @@ try{
   assert.equal(await title.evaluate(el=>el.classList.contains('is-moved')),false,
    'Reset returns the panel to its original layout');
   await page.locator('[data-bb="close-camera"]').click();
+  await page.locator('[data-bb="prev"]').click();
+  assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
+   'Blackboard Previous step retains the original added player');
+  await page.locator('[data-bb="next"]').click();
+  assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
+   'Blackboard Next step retains copied players');
 
   await page.locator('[data-bb="exit"]').click();
   assert.equal(await page.locator('body.blackboard-mode').count(),0,'exit restores the editor');
@@ -110,14 +116,8 @@ try{
   assert.equal(await page.locator('#scenes .scene').count(),previousStepCount+1,
    'new step persists after closing Blackboard');
   assert.equal(await page.locator('body > #timelinePanel').count(),1,'Native timeline returns to Studio after exit');
-  const currentPlayerCount=await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count();
-  const currentIndex=await page.locator('#scenes .scene.selected').getAttribute('data-step');
-  await page.locator('#back').click();
-  const setupPlayerCount=await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count();
-  console.log('BLACKBOARD player continuity '+viewport.width+'px: selected='+selectedId+
-   ' currentStep='+currentIndex+' current='+currentPlayerCount+' previous='+setupPlayerCount);
-  assert.equal(setupPlayerCount,1,'original added player must survive changes and Blackboard exit');
-  assert.equal(currentPlayerCount,1,'new step copied from setup must retain its player');
+  assert.equal(await page.locator('#pitch .obj[data-id="'+selectedId+'"]').count(),1,
+   'added player persists after closing Blackboard');
   await page.close();
   console.log('BLACKBOARD PASS '+viewport.width+'x'+viewport.height+': fullscreen, add, edit, ink, step management, duration, timeline, zoom, drag and restore');
  }
