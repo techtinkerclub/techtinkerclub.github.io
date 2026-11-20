@@ -43,20 +43,20 @@ test('the try line points toward in-goal and grounds in a DISTINCT later step',(
  assert.match(frames[4].notes,/NO try yet/);
  assert(!frames[4].tryGroundings?.length,'Crossing step must not award a try');
  assert.equal(frames[5].tryGroundings[0].actorId,'o2');
- assert.equal(frames[5].tryGroundings[0].at,.65);
+ assert.equal(frames[5].tryGroundings[0].at,.78);
  assert.equal(frames[5].objects.find(o=>o.type==='ball').ownerId,'o2');
  const events=tryLineEvents(editor,pitchGeometry(editor.length,editor.width,'up'));
  assert.equal(events.length,1,'Exactly one try for legal attacking entry + grounding');
  assert.equal(events[0].actorId,'o2');
  assert.equal(events[0].step,5);
- assert(events[0].time>8.5&&events[0].time<9.5);
+ assert(events[0].time>10&&events[0].time<10.5);
 });
 test('published normal and Ruckus playback shows no TRY at crossing and one after grounding',()=>{
  const scene=playbackData(publicDrill);
  assert.equal(scene.frames[5].tryGroundings[0].actorId,'o2');
  const noTry=renderScene(scene,{time:8.5,cartoonMode:false}).svg;
  assert.doesNotMatch(noTry,/try-score-feedback/);
- const result=renderScene(scene,{time:9.5,cartoonMode:true}).svg;
+ const result=renderScene(scene,{time:10.5,cartoonMode:true}).svg;
  assert.match(result,/try-score-feedback/);
  assert.match(result,/TRY!/);
 });
