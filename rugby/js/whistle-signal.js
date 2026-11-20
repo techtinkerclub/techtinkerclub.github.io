@@ -48,13 +48,16 @@ export function whistleOverlay(frame,g,elapsed=0,{ink=false,staticView=false,car
  const actor=frame.objects.find(o=>o.id===signal.coachId);
  if(!actor)return '';
  const p=g.toView(actor.x,actor.y),x=clamp(p.x+25,g.margin+10,g.margin+g.fw-124),y=clamp(p.y-57,g.margin+9,g.margin+g.fh-41);
+ const view=g.annotationViewport,scale=view?g.annotationScale||1:1;
+ if(view&&(p.x<view.x-8||p.x>view.x+view.width+8||p.y<view.y-8||p.y>view.y+view.height+8))return '';
  const accent=ink?'#254f3b':'#ffdf86',fill=ink?'#fff':'#1c3329';
  if(cartoonMode&&!ink)return '<g data-coach-signal="whistle" pointer-events="none">'+compactActionBubbleSVG({x:p.x,y:p.y,text:'WHISTLE · GO',kind:'shout',g,comic:true,accent})+'</g>';
- return '<g data-coach-signal="whistle" pointer-events="none">'+
+ const prefix=view&&scale<.999?'<g transform="translate('+p.x+' '+p.y+') scale('+scale+') translate('+(-p.x)+' '+(-p.y)+')">':'';
+ return prefix+'<g data-coach-signal="whistle" pointer-events="none">'+
  '<path d="M'+p.x+' '+p.y+'L'+(x+12)+' '+(y+20)+'" stroke="'+accent+'" stroke-width="2" stroke-dasharray="3 3"/>'+
  '<circle cx="'+p.x+'" cy="'+p.y+'" r="25" fill="none" stroke="'+accent+'" stroke-width="2.6" stroke-dasharray="5 5"/>'+
  '<rect x="'+x+'" y="'+y+'" width="118" height="33" rx="9" fill="'+fill+'" stroke="'+accent+'" stroke-width="2"/>'+
- '<text x="'+(x+59)+'" y="'+(y+21.5)+'" text-anchor="middle" fill="'+accent+'" font-family="Arial,sans-serif" font-size="13" font-weight="800">WHISTLE · GO</text></g>';
+ '<text x="'+(x+59)+'" y="'+(y+21.5)+'" text-anchor="middle" fill="'+accent+'" font-family="Arial,sans-serif" font-size="13" font-weight="800">WHISTLE · GO</text></g>'+(prefix?'</g>':'');
 }
 let context=null;
 export function playWhistle({enabled=true}={}){
