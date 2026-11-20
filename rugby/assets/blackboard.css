@@ -418,4 +418,15 @@ body.blackboard-mode .bb-save-complete[open],.bb-save-complete[open]{
  .blackboard-ui .bb-add-menu:has(.bb-palette){width:min(310px,calc(100vw - 66px));max-height:65dvh}
  .blackboard-ui .bb-palette-grid button{min-height:63px}
 }
+/* The Blackboard Add panel borrows the live Studio icon groups. Keep only one
+   section expanded by default; full set available without a huge menu. */
+.blackboard-ui .bb-native-palette-group{border-top:1px solid #ffffff24;padding-top:3px}
+.blackboard-ui .bb-native-palette-group:first-child{border-top:0}
+.blackboard-ui .bb-native-palette-group > summary{
+ cursor:pointer;list-style-position:inside;color:#d2eac7;
+ font-weight:750;font-size:11px;line-height:1.4;padding:8px 3px
+}
+.blackboard-ui .bb-native-palette-group > summary:hover{color:#efffc6}
+.blackboard-ui .bb-native-palette-group > summary:focus-visible{outline:2px solid #d8faad;outline-offset:1px}
+.blackboard-ui .bb-native-palette-group .bb-palette-grid{margin:0 0 8px}
 
