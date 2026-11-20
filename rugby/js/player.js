@@ -85,7 +85,7 @@ boardEl.addEventListener('pointermove',event=>{
 for(const kind of ['pointerup','pointercancel','lostpointercapture'])boardEl.addEventListener(kind,event=>{
  touches.delete(event.pointerId);
  if(dragStart?.id===event.pointerId){dragStart=null;if(d)render()}
- if(touches.size<2)pinchStart=null;
+ if(touches.size<2&&pinchStart){pinchStart=null;if(d)render()}
  if(boardEl.hasPointerCapture?.(event.pointerId))boardEl.releasePointerCapture(event.pointerId);
 });
 boardEl.addEventListener('wheel',event=>{
