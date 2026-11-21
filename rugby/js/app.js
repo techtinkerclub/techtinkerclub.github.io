@@ -6,8 +6,8 @@ import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,
 import {cleanCallouts,calloutOverlay,CALLOUT_KINDS} from './comic-callouts.js?v=6';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=14';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=4';
-import {trackedOffsideObjects,trackedOffsidePosition,moveTrackedOffsideGuide} from './offside.js?v=0.20.88';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=5';
+import {trackedOffsideObjects,trackedOffsidePosition,moveTrackedOffsideGuide} from './offside.js?v=0.20.89';
 import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt,tryVisualDuration} from './try-scoring.js?v=5';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -58,7 +58,7 @@ import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,print
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.85';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.20.88';
+import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.20.89';
 initWorkspace();
 const SEEDS=await loadCatalogue().catch(err=>{
  const msg=document.createElement('p');msg.setAttribute('role','alert');msg.textContent='Could not load the published library: '+err.message;msg.style.padding='16px';document.body.prepend(msg);throw err;
