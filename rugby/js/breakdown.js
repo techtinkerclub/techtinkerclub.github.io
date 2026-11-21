@@ -48,7 +48,7 @@ export function setParticipants(f,m,g,ids,u10=false){
  // The marker is the ball area. Separate grounded participants from standing ones.
  for(const [group,sign] of [[same,1],[other,-1]])group.forEach((o,i)=>{
   const row=Math.floor(i/3),n=Math.min(3,group.length-row*3),j=i%3;
-  const base=sign*((phase==='support'?40:14)+row*29);const advance=phase==='secured'?20+Math.max(1,Math.ceil(same.length/3))*29:0;
+  const base=sign*((phase==='support'?40:10)+row*29);const advance=phase==='secured'?20+Math.max(1,Math.ceil(same.length/3))*29:0;
   put(o,(j-(n-1)/2)*29,base-advance,sign===1?0:180)
  });
  const active=new Set(players.map(o=>o.id));for(const x of f.objects)if(x!==m&&Array.isArray(x.members))x.members=x.members.filter(y=>!active.has(y.id));
