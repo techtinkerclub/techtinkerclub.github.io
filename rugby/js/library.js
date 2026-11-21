@@ -1,4 +1,4 @@
-import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.20.92';
+import {loadCatalogue,CATEGORIES,isAnimated,isRules,ageLabel,readFilters,filterParams,filterDrills,drillHref,copyText,feedbackText} from './catalogue.js?v=0.20.93';
 import {playbackData,renderScene} from './scene.js?v=0.20.90';
 import {publicVideoBuilder} from './public-video.js?v=0.20.88';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
