@@ -39,7 +39,7 @@ export function offsideOverlay(objects,d,g,mode='auto',ink=false){
    const k=p/(horizontal?b.v.y:b.v.x),pos=horizontal?'x1="'+g.margin+'" x2="'+(g.margin+g.fw)+'" y1="'+k+'" y2="'+k+'"':'x1="'+k+'" x2="'+k+'" y1="'+g.margin+'" y2="'+(g.margin+g.fh)+'"';
    const zoomView=g.annotationViewport,scale=zoomView?g.annotationScale||1:1;
    const view=scale<.999?zoomView:null;
-   const lineVisible=!view||horizontal?k>=view.y&&k<=view.y+view.height:k>=view.x&&k<=view.x+view.width;
+   const lineVisible=!view||(horizontal?(k>=view.y&&k<=view.y+view.height):(k>=view.x&&k<=view.x+view.width));
    const tx=horizontal?(view?Math.max(g.margin+5,view.x+9*scale):g.margin+5):k+4*scale;
    const ty=horizontal?k-5*scale:(view?Math.max(g.margin+12,view.y+12*scale):g.margin+12);
    const guideText=lineVisible?'<text x="'+tx+'" y="'+ty+'" font-size="'+(10*scale)+'" fill="'+c+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(3*scale)+'">'+(view?'OFFSIDE · GUIDE':label+' · OFFSIDE GUIDE')+'</text>':'';
