@@ -151,7 +151,14 @@ export function followActionViewport(d,g,index,progress=1){
   if(Number.isFinite(p.x)&&Number.isFinite(p.y))
    positions.push({...p,weight:o.type==='ball'?1.5:1});
  }
- if(!positions.length)return stage;
+ if(!positions.length){
+  if(index>1&&t<.3){
+   const prev=followActionViewport(d,g,index-1,1),u=t/.3,q=u*u*(3-2*u);
+   return {x:lerp(prev.x,stage.x,q),y:lerp(prev.y,stage.y,q),
+    width:lerp(prev.width,stage.width,q),height:lerp(prev.height,stage.height,q)};
+  }
+  return stage;
+ }
  const sum=positions.reduce((v,p)=>v+p.weight,0);
  const tx=positions.reduce((v,p)=>v+p.x*p.weight,0)/sum;
  const ty=positions.reduce((v,p)=>v+p.y*p.weight,0)/sum;
