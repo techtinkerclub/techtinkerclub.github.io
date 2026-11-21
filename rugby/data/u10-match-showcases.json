@@ -1408,7 +1408,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 348,
+              "y": 346.3,
               "rot": 0
             },
             {
@@ -1472,7 +1472,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 340,
+              "y": 341.7,
               "rot": 180
             },
             {
@@ -1642,7 +1642,7 @@
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.45,
+          "seconds": 1.8,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -1676,7 +1676,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 348,
+              "y": 343.2,
               "rot": 0
             },
             {
@@ -1740,7 +1740,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 340,
+              "y": 338.6,
               "rot": 180
             },
             {
@@ -3020,8 +3020,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 612,
-              "y": 260,
+              "x": 614,
+              "y": 258.3,
               "rot": 0
             },
             {
@@ -3094,8 +3094,8 @@
               "id": "d5",
               "type": "defender",
               "label": "D5",
-              "x": 612,
-              "y": 252,
+              "x": 614,
+              "y": 253.7,
               "rot": 180
             },
             {
@@ -3257,7 +3257,7 @@
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.45,
+          "seconds": 1.8,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -3288,8 +3288,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 612,
-              "y": 260,
+              "x": 614,
+              "y": 255.2,
               "rot": 0
             },
             {
@@ -3362,8 +3362,8 @@
               "id": "d5",
               "type": "defender",
               "label": "D5",
-              "x": 612,
-              "y": 252,
+              "x": 614,
+              "y": 250.6,
               "rot": 180
             },
             {
@@ -6001,7 +6001,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 348,
+              "y": 346.3,
               "rot": 0
             },
             {
@@ -6065,7 +6065,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 340,
+              "y": 341.7,
               "rot": 180
             },
             {
@@ -6235,7 +6235,7 @@
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.45,
+          "seconds": 1.8,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -6269,7 +6269,7 @@
               "type": "attacker",
               "label": "A4",
               "x": 460,
-              "y": 348,
+              "y": 343.2,
               "rot": 0
             },
             {
@@ -6333,7 +6333,7 @@
               "type": "defender",
               "label": "D4",
               "x": 460,
-              "y": 340,
+              "y": 338.6,
               "rot": 180
             },
             {
@@ -12053,8 +12053,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 461,
-              "y": 312,
+              "x": 463,
+              "y": 310.3,
               "rot": 0
             },
             {
@@ -12117,8 +12117,8 @@
               "id": "d4",
               "type": "defender",
               "label": "D4",
-              "x": 460,
-              "y": 304,
+              "x": 463,
+              "y": 305.7,
               "rot": 180
             },
             {
@@ -12270,7 +12270,7 @@
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.45,
+          "seconds": 1.8,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -12303,8 +12303,8 @@
               "id": "a4",
               "type": "attacker",
               "label": "A4",
-              "x": 461,
-              "y": 312,
+              "x": 463,
+              "y": 307.2,
               "rot": 0
             },
             {
@@ -12367,8 +12367,8 @@
               "id": "d4",
               "type": "defender",
               "label": "D4",
-              "x": 460,
-              "y": 304,
+              "x": 463,
+              "y": 302.6,
               "rot": 180
             },
             {
@@ -13495,8 +13495,8 @@
               "id": "a6",
               "type": "attacker",
               "label": "A6",
-              "x": 559,
-              "y": 228,
+              "x": 556,
+              "y": 226.3,
               "rot": 0
             },
             {
@@ -13559,8 +13559,8 @@
               "id": "d6",
               "type": "defender",
               "label": "D6",
-              "x": 557,
-              "y": 220,
+              "x": 556,
+              "y": 221.7,
               "rot": 180
             },
             {
@@ -13705,7 +13705,7 @@
         },
         {
           "name": "Contest · attacking ball secured",
-          "seconds": 1.45,
+          "seconds": 1.8,
           "notes": "One upright support player from each team stays engaged over the presented ball. After the short contest, attack secures it; everyone else stays onside. The link collects only once the ball is available.",
           "objects": [
             {
@@ -13754,8 +13754,8 @@
               "id": "a6",
               "type": "attacker",
               "label": "A6",
-              "x": 559,
-              "y": 228,
+              "x": 556,
+              "y": 223.2,
               "rot": 0
             },
             {
@@ -13818,8 +13818,8 @@
               "id": "d6",
               "type": "defender",
               "label": "D6",
-              "x": 557,
-              "y": 220,
+              "x": 556,
+              "y": 218.6,
               "rot": 180
             },
             {
