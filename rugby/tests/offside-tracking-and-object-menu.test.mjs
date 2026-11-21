@@ -125,3 +125,12 @@ test('attacking and defending guides use their OWN participants, not the other t
  assert.equal(offsideBands(red,d,g,'guide')[0].blue,first.blue,'defender must not shift attacking line');
  assert.equal(offsideBands(blue,d,g,'guide')[0].orange,first.orange,'attacker must not shift defending line');
 });
+
+
+test('movement path selection cannot delete the player or expose ball skills',()=>{
+ const src=read('js/app.js');
+ assert.match(src,/const pathContext=!!path\|\|e\.pathSelection===true/);
+ assert.match(src,/if\(pathContext\)\{\s*for\(const button of \$\('objectMenu'\)\.querySelectorAll\('\[data-object-command\]'\)\)button\.hidden=true/);
+ assert.match(src,/visible\('menuAddPoint',canInsertPoint\(\)\)/);
+ assert.match(src,/visible\('menuResetMovement',!!\(idx>0&&selectedMovement\(\)/);
+});

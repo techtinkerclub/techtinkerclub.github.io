@@ -1378,6 +1378,7 @@ function closeObjectMenu(){const menu=$('objectMenu');if(menu)menu.hidden=true}
 function openObjectMenu(e){
  if(!canEditObjects())return;
  const path=e.target.closest('[data-path-id]'),group=e.target.closest('[data-id]'),handle=e.target.closest('[data-rotate]');
+ const pathContext=!!path||e.pathSelection===true;
  const stacked=group?.dataset.id;
  const groupSelected=groupIds.size>=2&&stacked&&groupIds.has(stacked);
  const stack=path||groupSelected?[]:overlapAt(viewPoint(e));
@@ -1397,7 +1398,7 @@ function openObjectMenu(e){
  }
  groupIds.clear();groupMode=false;
  if(path){selected=path.dataset.pathId;selectedPathId=selected}
- else{selectedPathId=null;if(group)selected=group.dataset.id;else if(!handle&&stack.length)selected=stack[0].id;}
+ else{if(!pathContext)selectedPathId=null;if(group)selected=group.dataset.id;else if(!handle&&stack.length)selected=stack[0].id;}
  // The clicked SVG object always wins, even when another selected player overlaps.
  $('stackOptions').hidden=stack.length<2;$('stackOptions').innerHTML=stack.length<2?'':'<small>Choose overlapping object</small>'+stack.map(o=>'<button data-stack-id="'+esc(o.id)+'">'+esc(objectName(o))+'</button>').join('');
  const o=activeObject();if(!o)return;
@@ -1430,6 +1431,15 @@ function openObjectMenu(e){
  visible('menuDeleteAll',drill.frames.length>1&&!annotation);
  visible('menuDuplicate',!annotation);
  visible('menuDeleteHere',true);
+ // Running paths are editable guides to a player's run, not players themselves.
+ // A path click must never offer ball skills or delete the owning player.
+ if(pathContext){
+  for(const button of $('objectMenu').querySelectorAll('[data-object-command]'))button.hidden=true;
+  visible('menuDecision',moving&&!decision);
+  visible('menuEditDecision',moving&&decision);
+  visible('menuAddPoint',canInsertPoint());
+  visible('menuResetMovement',!!(idx>0&&selectedMovement()&&(player||ballObject&&!o.ownerId)));
+ }
  const menu=$('objectMenu');$('objectMenuLabel').textContent=o.label||types[o.type][0];
  menu.hidden=false;
  menu.style.left='0px';menu.style.top='0px';
@@ -1447,7 +1457,7 @@ $('mobileObjectActions')?.addEventListener('click',()=>{
  const node=[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===id);
  if(!node)return;
  const rect=node.getBoundingClientRect();
- openObjectMenu({target:node,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,preventDefault(){}});
+ openObjectMenu({target:node,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,pathSelection:selectedPathId===selected,preventDefault(){}});
 });
 $('objectMenu').addEventListener('click',e=>{
  const stacked=e.target.closest('[data-stack-id]');if(stacked){selectObject(stacked.dataset.stackId);closeObjectMenu();return}
@@ -2986,7 +2996,7 @@ const blackboard=initBlackboard({
   const node=[...pitch.querySelectorAll('.obj[data-id]')].find(el=>el.dataset.id===selected);
   if(!node)return;
   const r=node.getBoundingClientRect();
-  openObjectMenu({target:node,clientX:r.left+r.width/2,clientY:r.top+r.height/2,preventDefault(){}});
+  openObjectMenu({target:node,clientX:r.left+r.width/2,clientY:r.top+r.height/2,pathSelection:selectedPathId===selected,preventDefault(){}});
  }
 });
 

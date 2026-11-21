@@ -50,6 +50,10 @@ try {
  assert.equal(await page.locator('#branchChoice').inputValue(),'a');
  await page.locator('#play').click();
  // Verify the settings and actual video creation in a headless Chromium browser.
+ // Public Blackboard hides the legacy header and controls: open the actual
+ // Share drawer first, as a coach would in the read-only presentation UI.
+ await page.locator('.public-board-toolbar button').filter({hasText:'Share'}).click();
+ await page.locator('.presentation-sidebar[data-open="true"]').waitFor({state:'visible'});
  await page.locator('#playerMovieMode').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
  await page.locator('#playerMovieMode').selectOption('single');
  await page.locator('#playerMovieQuality').selectOption('720');
