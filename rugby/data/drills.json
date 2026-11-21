@@ -16297,8 +16297,8 @@
         },
         {
           "name": "Reset · switch the team called",
-          "seconds": 1.7,
-          "notes": "Reset and let the coach award the next possession to the other team. Reward quick reorganisation rather than one fast runner.",
+          "seconds": 2.2,
+          "notes": "Reset deliberately, not at sprint pace. Coach awards the next possession only after both sides have returned to safe starting positions, ready to switch roles again.",
           "objects": [
             {
               "id": "coach",
