@@ -784,7 +784,7 @@
         },
         {
           "name": "TRY! · watch the celebration and review",
-          "seconds": 1.5,
+          "seconds": 2.5,
           "notes": "One TRY is registered after genuine grounding, never just after crossing. Keep A3 exactly at the grounding position in-goal, with no backwards movement during the celebration. Hold the prone ball presentation, rise and celebrate clearly; then discuss A1/A2 fixing defenders, the final pass and the direction of attack. Review and rotate. The extra Ruckus celebration time is a view-only outro; Classic and the authored rugby steps remain unchanged.",
           "objects": [
             {
@@ -2154,7 +2154,7 @@
         {
           "name": "Ball available · A3 picks up",
           "seconds": 1.6,
-          "notes": "Once the ruck is secure and the ball is available, A3 arrives from behind the blue side, picks the ball up from the ground and prepares to play away. D2 has cleared from the passive pad and A2 is no longer driving.",
+          "notes": "Once the ruck is secure and the ball is available, A3 arrives from behind the blue side, picks the ball up from the ground and prepares to play away. D2 has cleared from the passive pad and A2 is no longer driving. The formed ruck is over as soon as A3 collects the ball; the ruck symbol disappears at the pickup moment.",
           "objects": [
             {
               "id": "mwj8e2r2oxyqlk",
@@ -2286,42 +2286,6 @@
               "y": 283.408,
               "rot": 0,
               "ownerId": "mwj8ftzhp158ce"
-            },
-            {
-              "id": "mwj8ldmgzz1gti",
-              "type": "ruck",
-              "label": "Ball secure · next phase",
-              "x": 549,
-              "y": 261,
-              "rot": 180,
-              "members": [
-                {
-                  "id": "mwj8e2r2oxyqlk",
-                  "pose": "grounded"
-                },
-                {
-                  "id": "mwj8e34mdkmz60",
-                  "pose": "standing"
-                },
-                {
-                  "id": "mwj8ftzhp158ce",
-                  "pose": "standing"
-                }
-              ],
-              "breakdown": {
-                "phase": "secured",
-                "carrierId": "mwj8e2r2oxyqlk",
-                "tacklerId": "mwj8ftsmevmydz",
-                "tacklerIds": [
-                  "mwj8ftsmevmydz"
-                ],
-                "ballId": "mwj8h553khg2gb",
-                "arrivalSide": "defence",
-                "winner": "attack",
-                "showWinnerLabel": false,
-                "showNextPlayerLabel": false,
-                "nextPlayerId": "mwj8e3k6cepl43"
-              }
             }
           ],
           "timing": {
@@ -3066,7 +3030,7 @@
         {
           "name": "Set up · check both tag belts",
           "seconds": 0,
-          "notes": "A1 has the ball; all three wear tag belts and A2 is behind for support.",
+          "notes": "A1 has the ball; all three wear tag belts and A2 is behind for support. A1 attacks DOWN the diagram; A2 waits above/behind A1 for the legal backward pass.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -3233,7 +3197,7 @@
         {
           "name": "A1 passes backwards to A2",
           "seconds": 1.5,
-          "notes": "A1 looks to A2 and passes backwards; D1 still holds the removed strip.",
+          "notes": "A1 looks to A2 and passes backwards; D1 still holds the removed strip. The illustrated pass travels up the page, backwards relative to the downward attack direction.",
           "objects": [
             {
               "id": "mwm9aw076rsq4c",
@@ -3460,7 +3424,7 @@
           "paths": {}
         }
       ],
-      "attackDirection": "up",
+      "attackDirection": "down",
       "showAttack": true,
       "boundary": "line",
       "ageMin": 10,
@@ -5094,7 +5058,7 @@
         },
         {
           "name": "Hold shape · look and communicate",
-          "seconds": 1,
+          "seconds": 2.1,
           "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
           "objects": [
             {
@@ -5555,7 +5519,7 @@
         {
           "name": "Controlled contest",
           "seconds": 3,
-          "notes": "A1 and D1 make a short, low-force push–pull over the grounded bag. In this demonstration A1 secures the space and D1 yields. A2 moves to the separate ball late in the step, but may only touch it when the coach calls 'Won—use it!' This is a ball-availability cue, not a legal hands-in-the-ruck action.",
+          "notes": "A1 and D1 make a short, low-force push–pull over the grounded bag. In this demonstration A1 secures the space and D1 yields. A2 moves towards the separate ball late in the step, but does not pick it up while the ruck is still formed; the coach then calls 'Won—use it!' This is a ball-availability cue, not a legal hands-in-the-ruck action.",
           "objects": [
             {
               "id": "mwko06q2r10wwh",
@@ -5635,10 +5599,9 @@
               "id": "mwko4wpmsdirgs",
               "type": "ball",
               "label": "",
-              "x": 523.2359999999999,
-              "y": 254.23366666666666,
-              "rot": 0,
-              "ownerId": "mwko3a96tai59c"
+              "x": 501,
+              "y": 260.2916666666667,
+              "rot": 0
             },
             {
               "id": "mwko758271hcp3",
@@ -5750,6 +5713,153 @@
               "follow": false
             }
           }
+        },
+        {
+          "name": "Ball out · A2 picks up after the contest",
+          "seconds": 1.25,
+          "notes": "D1 disengages from the passive shield. Once the contest is over and the ball is clear, A2 collects the loose ball from outside the formed ruck; no hands-in-the-ruck action is shown. A3 stays available to receive the next pass.",
+          "objects": [
+            {
+              "id": "mwko06q2r10wwh",
+              "type": "defender",
+              "label": "D1",
+              "x": 450.0000000000001,
+              "y": 295.24166666666673,
+              "rot": 0
+            },
+            {
+              "id": "mwko06wal3mstg",
+              "type": "defender",
+              "label": "D2",
+              "x": 531.5999999999999,
+              "y": 293.3,
+              "rot": 0
+            },
+            {
+              "id": "mwko072avp7wre",
+              "type": "defender",
+              "label": "D3",
+              "x": 450,
+              "y": 374.85,
+              "rot": 0
+            },
+            {
+              "id": "mwko07962eg8ba",
+              "type": "defender",
+              "label": "D4",
+              "x": 450,
+              "y": 405.9166666666667,
+              "rot": 0
+            },
+            {
+              "id": "mwko3a2ya6ju52",
+              "type": "attacker",
+              "label": "A1",
+              "x": 450.0000000000001,
+              "y": 256.40833333333336,
+              "rot": 180
+            },
+            {
+              "id": "mwko3a96tai59c",
+              "type": "attacker",
+              "label": "A2",
+              "x": 536.6999999999998,
+              "y": 248.64166666666668,
+              "rot": 180,
+              "headMode": "player",
+              "headTargetId": "mwko3afv8riv49"
+            },
+            {
+              "id": "mwko3afv8riv49",
+              "type": "attacker",
+              "label": "A3",
+              "x": 450,
+              "y": 169.03333333333333,
+              "rot": 180
+            },
+            {
+              "id": "mwko3am2mh6y4m",
+              "type": "attacker",
+              "label": "A4",
+              "x": 450,
+              "y": 137.96666666666667,
+              "rot": 180
+            },
+            {
+              "id": "mwko4krm39vpeq",
+              "type": "sausage",
+              "label": "",
+              "x": 450,
+              "y": 270,
+              "rot": 0
+            },
+            {
+              "id": "mwko4wpmsdirgs",
+              "type": "ball",
+              "label": "",
+              "x": 523.2359999999999,
+              "y": 254.23366666666666,
+              "rot": 0,
+              "ownerId": "mwko3a96tai59c",
+              "transferKind": "pickup"
+            },
+            {
+              "id": "mwko758271hcp3",
+              "type": "shieldItem",
+              "label": "",
+              "x": 450.0000000000001,
+              "y": 287.7856666666667,
+              "rot": 0,
+              "ownerId": "mwko06q2r10wwh"
+            },
+            {
+              "id": "mwkpwupi3yqu0i",
+              "type": "cone",
+              "label": "",
+              "x": 409.2,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwuvarw6uyk",
+              "type": "cone",
+              "label": "",
+              "x": 409.2,
+              "y": 176.8,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv1iebxo5f",
+              "type": "cone",
+              "label": "",
+              "x": 490.79999999999995,
+              "y": 176.8,
+              "rot": 0
+            },
+            {
+              "id": "mwkpwv7y3tvbdz",
+              "type": "cone",
+              "label": "",
+              "x": 490.79999999999995,
+              "y": 363.2,
+              "rot": 0
+            },
+            {
+              "id": "mwktucsgx1wsbp",
+              "type": "coach",
+              "label": "Coach",
+              "x": 705,
+              "y": 270,
+              "rot": 270
+            }
+          ],
+          "timing": {
+            "mwko4wpmsdirgs": {
+              "start": 24,
+              "end": 74
+            }
+          },
+          "paths": {}
         },
         {
           "name": "Win it and pass away",
