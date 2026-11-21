@@ -26,7 +26,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
  const source=Array.isArray(raw)?raw:[raw],drills=source.map(playbackData);
  const settings=movieOptions(opts),story=movieStoryboard(drills,opts);
  const quality=settings.quality==='720'?{width:1280,height:720,bitrate:6000000,fps:30}:
-  settings.quality==='2160'?{width:3840,height:2160,bitrate:36000000,fps:30}:
+  settings.quality==='2160'?{width:3840,height:2160,bitrate:18000000,fps:30}:
   {width:1920,height:1080,bitrate:14000000,fps:30};
  const portrait=settings.format==='portrait',W=portrait?quality.height:quality.width,H=portrait?quality.width:quality.height;
  const {canvas,present,ready}=createMovieFrame(W,H),unit=W/(portrait?1080:1920);
