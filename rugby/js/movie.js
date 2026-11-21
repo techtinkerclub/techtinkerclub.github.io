@@ -2,7 +2,7 @@
 export const MOVIE_QUALITIES={
  '720':{width:1280,height:720,bitrate:6000000,fps:30},
  '1080':{width:1920,height:1080,bitrate:14000000,fps:30},
- '2160':{width:3840,height:2160,bitrate:36000000,fps:30}
+ '2160':{width:3840,height:2160,bitrate:18000000,fps:30}
 };
 export function movieOptions(o={}){
  return {mode:o.mode==='single'?'single':'dual',framing:['field','action','follow'].includes(o.framing)?o.framing:'action',quality:Object.hasOwn(MOVIE_QUALITIES,o.quality)?String(o.quality):'1080',replaySpeed:[.25,.5,.75].includes(Number(o.replaySpeed))?Number(o.replaySpeed):.5,format:o.format==='portrait'?'portrait':'landscape',notes:o.notes!==false,card:o.card===true,branchMode:o.branchMode==='selected'?'selected':'all',pauseCards:o.pauseCards!==false,introSeconds:[0,2,3,5].includes(Number(o.introSeconds))?Number(o.introSeconds):3,decisionSeconds:[3,5,8].includes(Number(o.decisionSeconds))?Number(o.decisionSeconds):8,choiceSeconds:[3,4,6].includes(Number(o.choiceSeconds))?Number(o.choiceSeconds):6};

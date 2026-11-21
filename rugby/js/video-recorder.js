@@ -2,9 +2,9 @@
 // title/decision/option cards freeze a real scene without changing the drill.
 import {playbackData,renderScene} from './scene.js?v=0.20.84';
 import {movieStoryboard,storyboardClip,storyboardTime} from './movie-storyboard.js?v=0.20.79';
-import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
+import {movieOptions,movieRaster,rasterSVG} from './movie.js?v=0.20.85';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.83';
+import {encodeDeterministicVideo,prefersPhotosCompatibleMP4} from './deterministic-video.js?v=0.20.85';
 import {wrapCanvas,cardEntries,cardLinks} from './coaching-output.js?v=0.13.10';
 
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -26,7 +26,7 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
  const source=Array.isArray(raw)?raw:[raw],drills=source.map(playbackData);
  const settings=movieOptions(opts),story=movieStoryboard(drills,opts);
  const quality=settings.quality==='720'?{width:1280,height:720,bitrate:6000000,fps:30}:
-  settings.quality==='2160'?{width:3840,height:2160,bitrate:36000000,fps:30}:
+  settings.quality==='2160'?{width:3840,height:2160,bitrate:18000000,fps:30}:
   {width:1920,height:1080,bitrate:14000000,fps:30};
  const portrait=settings.format==='portrait',W=portrait?quality.height:quality.width,H=portrait?quality.width:quality.height;
  const {canvas,present,ready}=createMovieFrame(W,H),unit=W/(portrait?1080:1920);
@@ -164,15 +164,22 @@ export async function recordCoachingMovie(raw,opts={},progress=()=>{},signal=nul
  if(precise)return {...precise,chapters:story.clips.length};
  if(typeof MediaRecorder==='undefined')throw Error('Video recording is not supported in this browser. Try current Chrome or Edge.');
  if(!canvas.captureStream)throw Error('Canvas video recording is unavailable.');
- const stream=canvas.captureStream(quality.fps),types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+ const photos=prefersPhotosCompatibleMP4();
+ const stream=canvas.captureStream(quality.fps),
+  types=['video/mp4;codecs=avc1','video/mp4',
+   ...(!photos?['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']:[])];
  let recorder,recorded;
  try{
   let failure;
-  for(const mime of [...types.filter(t=>MediaRecorder.isTypeSupported?.(t)),'']){
+  const candidates=types.filter(t=>MediaRecorder.isTypeSupported?.(t));
+  if(!photos)candidates.push('');
+  for(const mime of candidates){
    try{recorder=new MediaRecorder(stream,{...(mime?{mimeType:mime}:{}),videoBitsPerSecond:quality.bitrate});break}
    catch(e){failure=e}
   }
-  if(!recorder)throw failure||Error('This browser cannot encode the selected video.');
+  if(!recorder)throw failure||Error(photos?
+   'This iPhone cannot record a Photos-compatible MP4 at this resolution. Try Full HD or another browser.':
+   'This browser cannot encode the selected video.');
   const chunks=[];let error=null;
   recorded=new Promise((resolve,reject)=>{
    recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};

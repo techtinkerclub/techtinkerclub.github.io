@@ -7,9 +7,9 @@ import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
 import {zoomWindow,viewerZoomLevel} from './viewer-camera.js?v=1';
 import {playWhistle,crossedWhistles} from './whistle-signal.js?v=0.20.76';
 import {decisionTime,outcomeCardsMarkup} from './branching-visual.js?v=12';
-import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.20.83';
+import {decodeShare,outputOptions,printDrill,recordDrill,saveBlob,outputName} from './outputs.js?v=0.20.85';
 import {createExportProgress} from './export-progress.js?v=0.18.3';
-import {bindMovieSettings} from './movie.js?v=0.20.81';
+import {bindMovieSettings} from './movie.js?v=0.20.85';
 import {coachingMarkup,sequenceMarkup,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 import {teachingOverlay,keyMoments,loopStepBounds,loopProgress,followFramingViewport} from './blackboard-coaching.js?v=2';
 import {stepLocation} from './step-timeline.js?v=1';
@@ -213,7 +213,7 @@ $('file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if
 $('coachSequenceContent').onclick=e=>{const b=e.target.closest('[data-jump-step]');if(!b||!d)return;stop();jumpStep(Number(b.dataset.jumpStep),true)};
 $('downloadDrill').onclick=()=>{if(d)saveBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),outputName(d)+'-presentation.json')};
 $('print').onclick=()=>{if(d){stop();printDrill(d,opts)}};
-$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings(),cartoonMode:$('playerVideoStyle').value==='ruckus'};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'}finally{$('video').disabled=false}};
+$('video').onclick=async()=>{if(!d||movieProgress.active)return;stop();$('video').disabled=true;$('message').textContent='';try{const snapshot=d,settings={...opts,...getMovieSettings(),cartoonMode:$('playerVideoStyle').value==='ruckus'};const result=await movieProgress.run(async(progress,signal)=>{const result=await recordDrill(snapshot,settings,progress,signal);if(!signal.aborted)saveBlob(result.blob,outputName(snapshot)+'.'+result.extension);return result});if(result)$('message').textContent='Video exported · '+result.width+' × '+result.height+' · '+result.extension.toUpperCase()+'.'+(result.extension==='webm'?' WebM cannot be saved directly to iPhone Photos; export as MP4 for iPhone.':'')}finally{$('video').disabled=false}};
 // One-screen public presentation layout. Move the EXISTING functional controls
 // rather than duplicating them; all playback, camera, branch and export handlers
 // above keep their original element identities and event listeners.

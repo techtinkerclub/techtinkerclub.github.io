@@ -70,8 +70,15 @@ function muxWebM(samples,width,height,fps,seconds){
  return new Blob([header,hexBytes('18538067'),vint(length),...segments],{type:'video/webm'});
 }
 
-// Prefer the existing deterministic WebM path where supported; Safari can use
-// WebCodecs H.264 + a local MP4 muxer instead of the stuttering live recorder.
+// Photos on iPhone/iPad accepts H.264 MP4 much more reliably than WebM.
+// iPadOS desktop-class Safari can identify as a Mac while still being touch-only.
+export function prefersPhotosCompatibleMP4(){
+ if(typeof navigator==='undefined')return false;
+ const ua=String(navigator.userAgent||''),platform=String(navigator.platform||'');
+ return /iPhone|iPad|iPod/i.test(ua)||(platform==='MacIntel'&&navigator.maxTouchPoints>1);
+}
+// Prefer timestamp-accurate H.264 MP4 at every resolution. WebM is a fallback
+// for desktop browsers only; never silently hand an iPhone an unsavable WebM.
 export async function encodeDeterministicVideo({canvas,draw,seconds,fps=30,bitrate=6000000,signal=null,progress=()=>{}}){
  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined'||!Number.isFinite(seconds)||
   seconds<=0||bitrate*seconds/8>140000000)return null;
@@ -81,11 +88,14 @@ export async function encodeDeterministicVideo({canvas,draw,seconds,fps=30,bitra
  const avcLevel=Math.max(width,height)>2048?'avc1.640033':
   Math.max(width,height)>1280?'avc1.42E028':'avc1.42E01F';
  const candidates=[
-  {kind:'webm',config:{codec:'vp8',width,height,framerate:fps,bitrate}},
   {kind:'mp4',config:{codec:avcLevel,width,height,framerate:fps,bitrate,avc:{format:'avc'}}},
   {kind:'mp4',config:{codec:Math.max(width,height)>2048?'avc1.640033':
    Math.max(width,height)>1280?'avc1.4D4028':'avc1.4D401F',
-   width,height,framerate:fps,bitrate,avc:{format:'avc'}}}
+   width,height,framerate:fps,bitrate,avc:{format:'avc'}}},
+  // If Safari cannot encode MP4 with WebCodecs, try its MediaRecorder MP4
+  // fallback instead of immediately selecting an incompatible WebM file.
+  ...(!prefersPhotosCompatibleMP4()?[{kind:'webm',
+   config:{codec:'vp8',width,height,framerate:fps,bitrate}}]:[])
  ];
  let chosen=null;
  for(const candidate of candidates){
