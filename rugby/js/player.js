@@ -1,6 +1,6 @@
 import {loadCatalogue,readFilters,libraryHref,drillHref,copyText,feedbackText,isAnimated} from './catalogue.js?v=0.20.88';
 import {stepEndSeconds,stepStartSeconds} from './step-timeline.js?v=1';
-import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.88';
+import {playbackData,renderScene,drillDuration} from './scene.js?v=0.20.89';
 import {drillGeometry} from './pitch.js?v=0.16.1';
 import {tryVisualDuration} from './try-scoring.js?v=5';
 import {hasOutcomes,branchInfo,chooseOutcome} from './branching.js?v=2';
