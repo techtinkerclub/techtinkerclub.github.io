@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {pitchGeometry} from '../js/pitch.js';
-import {actionViewport,followActionViewport,wholeFieldView} from '../js/action-camera.js';
+import {pitchGeometry,drillGeometry} from '../js/pitch.js';
+import {actionViewport,followActionViewport,wholeFieldView,FOLLOW_OPEN_ZOOM,FOLLOW_CONTACT_ZOOM} from '../js/action-camera.js';
 import {playbackData,renderScene,timeLocation} from '../js/scene.js';
 import {outputOptions} from '../js/outputs.js';
 import {movieSettingsMarkup} from '../js/movie.js';
@@ -80,8 +80,30 @@ test('follow view retains nearby tactical context and starts the first movement 
   'first moving frame must not jump in zoom relative to the setup card');
  for(const p of [.1,.25,.5,.75,1]){
   const view=followActionViewport(d,g,1,p);
-  assert(view.width>=g.viewWidth/1.75-1e-6,
+  assert(view.width>=g.viewWidth/FOLLOW_OPEN_ZOOM-1e-6,
    'camera must not crop so close that supporting runners disappear');
   assert(rectangle(view,g),'camera must remain within the pitch boundaries');
  }
+});
+
+test('U10 match showcase camera restores close contact shots without hiding contact players',()=>{
+ const catalogue=JSON.parse(read('data/u10-match-showcases.json'));
+ const d=playbackData(catalogue.drills.find(drill=>drill.id==='seed-972'));
+ const g=drillGeometry(d,'up'),unchanged=JSON.stringify(d);
+ const wider=followActionViewport(d,g,10,1);
+ const close=followActionViewport(d,g,6,1);
+ assert(close.width>=g.viewWidth/FOLLOW_CONTACT_ZOOM-1e-6,'contact zoom must stay bounded');
+ assert(close.width<wider.width,'ruck should be a closer shot than open running play');
+ assert(close.width<g.viewWidth/FOLLOW_OPEN_ZOOM,'contact should zoom closer than open-play cap');
+ for(const id of ['a3','a4','d4']){
+  const p=d.frames[6].objects.find(o=>o.id===id);
+  assert(p&&g.toView(p.x,p.y).x>=close.x-1e-6&&g.toView(p.x,p.y).x<=close.x+close.width+1e-6,
+   'participant must remain inside close-up: '+id);
+  assert(g.toView(p.x,p.y).y>=close.y-1e-6&&g.toView(p.x,p.y).y<=close.y+close.height+1e-6,
+   'participant must remain inside close-up vertically: '+id);
+ }
+ const incoming=followActionViewport(d,g,6,0),previous=followActionViewport(d,g,5,1);
+ assert(roughly(incoming.x,previous.x)&&roughly(incoming.y,previous.y)&&roughly(incoming.width,previous.width),
+  'camera must enter a close-up without snapping at the stage boundary');
+ assert.equal(JSON.stringify(d),unchanged,'camera remains view-only');
 });

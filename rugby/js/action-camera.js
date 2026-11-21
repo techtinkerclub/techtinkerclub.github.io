@@ -72,12 +72,14 @@ export function actionViewportAt(d,g,index,progress=1){
  * movement never alters saved drill coordinates, routes or player facing.
  */
 
-// FOLLOW ACTION is deliberately less cropped than the per-step Action Focus:
-// a 60 m pitch needs to show nearby defenders and supporting runners, too.
-const FOLLOW_MAX_ZOOM=1.75;
-function followSafeView(g,view,extraPoints=[]){
+// Follow open play wide enough to show spacing. Contact needs a closer,
+// slower-moving camera: tackle technique, grounded carrier and ball presentation
+// are unreadable from a permanently zoomed-out tactical view.
+export const FOLLOW_OPEN_ZOOM=2.05;
+export const FOLLOW_CONTACT_ZOOM=2.70;
+function followSafeView(g,view,extraPoints=[],maxZoom=FOLLOW_OPEN_ZOOM){
  const ratio=g.viewWidth/g.viewHeight;
- let width=Math.max(view.width,g.viewWidth/FOLLOW_MAX_ZOOM);
+ let width=Math.max(view.width,g.viewWidth/maxZoom);
  if(extraPoints.length){
   const xs=extraPoints.map(p=>p.x),ys=extraPoints.map(p=>p.y);
   // Reserve screen-space breathing room around the nearby participants.
@@ -98,6 +100,23 @@ function followSafeView(g,view,extraPoints=[]){
  return {x:clamp(cx-width/2,0,g.viewWidth-width),y:clamp(cy-height/2,0,g.viewHeight-height),
   width,height};
 }
+function followContactView(g,current,contact){
+ const source=current.find(o=>o.id===contact.id)||contact;
+ if(!Number.isFinite(source.x)||!Number.isFinite(source.y))return null;
+ const anchor=g.toView(source.x,source.y),ratio=g.viewWidth/g.viewHeight;
+ const members=new Set((contact.members||[]).map(m=>m.id));
+ const focus=current.filter(o=>{
+  if(!o||!Number.isFinite(o.x)||!Number.isFinite(o.y))return false;
+  if(members.has(o.id))return true;
+  const p=g.toView(o.x,o.y),dist=Math.hypot(p.x-anchor.x,p.y-anchor.y);
+  // Show the carrier/ball plus immediately arriving support and opposition,
+  // without distant runners forcing a wide shot during a tackle or ruck.
+  return dist<=g.scale*(o.type==='ball'?6:PLAYER.has(o.type)?5.3:0);
+ }).map(o=>g.toView(o.x,o.y));
+ focus.push(anchor);
+ const width=g.viewWidth/FOLLOW_CONTACT_ZOOM,height=width/ratio;
+ return followSafeView(g,{x:anchor.x-width/2,y:anchor.y-height/2,width,height},focus,FOLLOW_CONTACT_ZOOM);
+}
 export function followActionViewport(d,g,index,progress=1){
  const frames=d?.frames||[];
  if(index<=0||index>=frames.length)
@@ -105,6 +124,18 @@ export function followActionViewport(d,g,index,progress=1){
  const t=clamp(progress,0,1),old=frames[index-1],next=frames[index];
  const stage=followSafeView(g,actionViewportAt(d,g,index,t));
  const current=transitionObjects(old,next,t,g),moving=new Set();
+ const contact=next.objects?.find(o=>['tackle','ruck','maul','scrum'].includes(o.type)&&
+  Array.isArray(o.members)&&o.members.length);
+ const contactView=contact?followContactView(g,current,contact):null;
+ if(contactView){
+  // Enter close-up gently, retaining continuity from the previous stage.
+  if(t<.42){
+   const prev=followActionViewport(d,g,index-1,1),u=t/.42,q=u*u*(3-2*u);
+   return {x:lerp(prev.x,contactView.x,q),y:lerp(prev.y,contactView.y,q),
+    width:lerp(prev.width,contactView.width,q),height:lerp(prev.height,contactView.height,q)};
+  }
+  return contactView;
+ }
  for(const end of next.objects||[]){
   if(!PLAYER.has(end.type)&&end.type!=='ball'&&!['ruck','tackle','scrum','maul'].includes(end.type))continue;
   const before=find(old,end.id);
@@ -120,7 +151,14 @@ export function followActionViewport(d,g,index,progress=1){
   if(Number.isFinite(p.x)&&Number.isFinite(p.y))
    positions.push({...p,weight:o.type==='ball'?1.5:1});
  }
- if(!positions.length)return stage;
+ if(!positions.length){
+  if(index>1&&t<.3){
+   const prev=followActionViewport(d,g,index-1,1),u=t/.3,q=u*u*(3-2*u);
+   return {x:lerp(prev.x,stage.x,q),y:lerp(prev.y,stage.y,q),
+    width:lerp(prev.width,stage.width,q),height:lerp(prev.height,stage.height,q)};
+  }
+  return stage;
+ }
  const sum=positions.reduce((v,p)=>v+p.weight,0);
  const tx=positions.reduce((v,p)=>v+p.x*p.weight,0)/sum;
  const ty=positions.reduce((v,p)=>v+p.y*p.weight,0)/sum;
