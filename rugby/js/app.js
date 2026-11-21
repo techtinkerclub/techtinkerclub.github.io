@@ -12,7 +12,7 @@ import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt,tryVisualDuration} from '.
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
 import {loadPublicationData,publicationForSource,isPublished} from './publication.js?v=1';
-import {loadCatalogue} from './catalogue.js?v=0.20.92';
+import {loadCatalogue} from './catalogue.js?v=0.20.93';
 import {familyMembers,publicationState,duplicateTitleGroups,revisionLabel} from './drill-families.js?v=1';
 import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,editOutcomes,removeOutcomes,outcomeViews,removeObjectAcrossOutcomes} from './branching.js?v=0.18.5';
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
