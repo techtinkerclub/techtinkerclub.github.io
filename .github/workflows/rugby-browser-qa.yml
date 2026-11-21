@@ -6,6 +6,10 @@ on:
     paths:
       - 'rugby/**'
       - '.github/workflows/rugby-browser-qa.yml'
+  pull_request:
+    paths:
+      - 'rugby/**'
+      - '.github/workflows/rugby-browser-qa.yml'
   workflow_dispatch:
 
 permissions:
@@ -43,5 +47,7 @@ jobs:
         run: node rugby/browser-tests/video-export-ux.mjs
       - name: Test mobile editor, view sheets and touch actions in Chromium
         run: node rugby/browser-tests/mobile-smoke.mjs
+      - name: Test tracked offside guides and object-specific menus in Chromium
+        run: node rugby/browser-tests/offside-menu-smoke.mjs
       - name: Play decision drill and export video in Chromium
         run: node rugby/browser-tests/smoke.mjs

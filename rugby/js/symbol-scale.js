@@ -50,7 +50,12 @@ export function symbolFactors(o,g,pose){
 export function symbolTransform(o,g,pose){const [x,y]=symbolFactors(o,g,pose);return 'scale('+x+' '+y+')'}
 export function symbolRadius(o,g,pose){const [x,y]=symbolFactors(o,g,pose);const base=o.type==='hoop'?[24,17]:o.type==='hurdle'?[25,15]:o.type==='slalomPole'?[12,27]:o.type==='markerDisc'?[18,12]:o.type==='ladder'?[12,25]:o.type==='donut'?[o.donutState==='down'?23:10,23]:o.type==='sausage'?[29,9]:o.type==='bag'?[10,21]:o.type==='shieldItem'?[17,6]:o.type==='ball'?[10,6]:o.type==='cone'?[11,12]:pose==='grounded'?[12,23]:pose==='ready'?[22,15]:[16,20];return Math.max(base[0]*x,base[1]*y)}
 export const symbolLabelSize = g => g?.fieldContext?.mode==='field'?10:13;
-export const labelOffset=(o,g,pose)=>o.type==='label'?4:g?.fieldContext?.mode==='field'?Math.max(9,symbolRadius(o,g,pose)+5):Math.max(13,symbolRadius(o,g,pose)+11);
+// Text is aligned by its visible glyph box, not by its SVG baseline.
+// Reserve the same six-pixel gap from the true sprite edge on both sides of
+// the pitch, regardless of team colour or heading.
+const captionAscent = g => symbolLabelSize(g)*.78*(Number(g?.annotationScale)||1);
+const captionGap = g => (g?.fieldContext?.mode==='field'?6:7)*(Number(g?.annotationScale)||1);
+export const labelOffset=(o,g,pose)=>o.type==='label'?4:symbolRadius(o,g,pose)+captionAscent(g)+captionGap(g);
 // A player's arrow points forward (local -Y); put the caption behind their
 // facing direction (local +Y) while keeping text horizontally readable.
 // Other equipment retains its simple lower caption.
@@ -73,43 +78,32 @@ function coachCaptionPosition(o,g,cartoon=false){
  return {x:clamp(at.x,halfLabel+4,Math.max(halfLabel+4,vw-halfLabel-4))-at.x,
   y:baseline-at.y};
 }
-export function labelPosition(o,g,pose){
- if(o?.type==='coach')return coachCaptionPosition(o,g);
- const distance=labelOffset(o,g,pose);
- if(!playerTypes.has(o?.type))return {x:0,y:distance};
+function playerCaptionPosition(o,g,pose,cartoon=false){
  const angle=((Number(o.rot)||0)+(Number(g.rotation)||0))*Math.PI/180;
- // SVG text uses its bottom baseline by default. Above a player, that
- // puts the whole 13px caption another ~10px away from the shirt; below a
- // player, the glyphs sit 10px ABOVE the baseline and look much closer.
- // Compensate only for the upward-facing placement so the visible gaps match.
- const behindY=Math.cos(angle);
- const desired={x:-Math.sin(angle)*distance,y:behindY*distance+(g?.fieldContext?.mode==='field'?7.5:10)*Math.max(0,-behindY)};
- // Keep the caption anchor inside the playing field at pitch edges.
+ const backX=-Math.sin(angle),backY=Math.cos(angle);
+ let distance=labelOffset(o,g,pose);
+ if(cartoon){
+  const [sx,sy]=symbolFactors(o,g,pose);
+  distance+=Math.max(0,27*Math.max(sx,sy)-symbolRadius(o,g,pose));
+ }
+ // Above the sprite the text baseline is its nearest edge; below the sprite
+ // the baseline is one glyph ascent below the nearest edge.
+ const desired={x:backX*distance,y:backY*distance+captionAscent(g)*Math.max(0,-backY)};
  const at=g.toView(o.x,o.y),margin=g.margin||0;
  const clamp=(n,low,high)=>Math.max(low,Math.min(high,n));
  return {x:clamp(at.x+desired.x,margin+7,margin+g.fw-7)-at.x,
-  y:clamp(at.y+desired.y,margin+10,margin+g.fh-7)-at.y};
+  y:clamp(at.y+desired.y,margin+captionAscent(g)+captionGap(g),margin+g.fh-7)-at.y};
 }
-
+export function labelPosition(o,g,pose){
+ if(o?.type==='coach')return coachCaptionPosition(o,g);
+ if(!playerTypes.has(o?.type))return {x:0,y:labelOffset(o,g,pose)};
+ return playerCaptionPosition(o,g,pose);
+}
 // Minion captions follow EXACTLY the same side and body direction as Classic.
 // The image atlas is slightly larger than the schematic circle, so increase
 // the distance only by the additional visible footprint, never switch sides.
 export function cartoonLabelPosition(o,g,pose){
  if(o?.type==='coach')return coachCaptionPosition(o,g,true);
- const classic=labelPosition(o,g,pose);
- if(!playerTypes.has(o?.type))return classic;
- const [sx,sy]=symbolFactors(o,g,pose);
- // Original sprites are 54px across; the Classic standing symbol extends 20px.
- // Their footprint difference is small at realistic pitch scales.
- const outer=27*Math.max(sx,sy);
- const classicExtent=symbolRadius(o,g,pose);
- const extra=Math.max(0,outer-classicExtent);
- if(extra<=0)return classic;
- const angle=((Number(o.rot)||0)+(Number(g.rotation)||0))*Math.PI/180;
- const at=g.toView(o.x,o.y),margin=g.margin||0;
- const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
- return {
-  x:clamp(at.x+classic.x-Math.sin(angle)*extra,margin+7,margin+g.fw-7)-at.x,
-  y:clamp(at.y+classic.y+Math.cos(angle)*extra,margin+10,margin+g.fh-7)-at.y
- };
+ if(!playerTypes.has(o?.type))return labelPosition(o,g,pose);
+ return playerCaptionPosition(o,g,pose,true);
 }
