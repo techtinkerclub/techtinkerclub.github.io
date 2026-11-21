@@ -53,8 +53,8 @@ export const symbolLabelSize = g => g?.fieldContext?.mode==='field'?10:13;
 // Text is aligned by its visible glyph box, not by its SVG baseline.
 // Reserve the same six-pixel gap from the true sprite edge on both sides of
 // the pitch, regardless of team colour or heading.
-const captionAscent = g => symbolLabelSize(g)*.78;
-const captionGap = g => g?.fieldContext?.mode==='field'?6:7;
+const captionAscent = g => symbolLabelSize(g)*.78*(Number(g?.annotationScale)||1);
+const captionGap = g => (g?.fieldContext?.mode==='field'?6:7)*(Number(g?.annotationScale)||1);
 export const labelOffset=(o,g,pose)=>o.type==='label'?4:symbolRadius(o,g,pose)+captionAscent(g)+captionGap(g);
 // A player's arrow points forward (local -Y); put the caption behind their
 // facing direction (local +Y) while keeping text horizontally readable.
