@@ -24,7 +24,8 @@ try {
  assert.equal(await page.locator('#board .cartoon-pitch-decor').count(),0,'No corner flowers');
  await page.locator('#playerMinionMode').click();
  assert.equal(await page.locator('#board .ruckus-player').count(),0,'Switch restores Classic view');
-  assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
+  assert.equal(await page.locator('#addPlayerToVideo').evaluate(el=>el.hidden),false,
+    'The video-composition link must be enabled, even when Blackboard intentionally hides the header');
   assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
  assert.equal(await page.locator('#branchPlayer').evaluate(el=>el.hidden),false,'Outcome selector should be available in the coaching sidebar');
  assert.match(await page.locator('#coachCardContent').innerText(),/World Rugby|RFU/i);
