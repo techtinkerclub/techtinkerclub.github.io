@@ -6,7 +6,8 @@ import {playerAppearance,cartoonPitchDecor,cartoonSpriteDefs,cartoonObjectOrder,
 import {cleanCallouts,calloutOverlay,CALLOUT_KINDS} from './comic-callouts.js?v=6';
 import {COACH_GESTURES} from './coach-atlas-data.js?v=1';
 import {CONE_COLORS,TAG_COLORS,sanitizeSkills,sanitizeInteractions,outstandingTagItems,hydrateLegacyTagItems,skillIcon,interactionOverlay,ripOverlay,timedSkillObjects,addInteraction} from './skill-actions.js?v=14';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=3';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=4';
+import {trackedOffsideObjects,trackedOffsidePosition,moveTrackedOffsideGuide} from './offside.js?v=0.20.87';
 import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt,tryVisualDuration} from './try-scoring.js?v=5';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {createGithubStore,REPO_LIBRARY} from './github-store.js?v=0.17.0';
@@ -17,7 +18,7 @@ import {hasOutcomes,branchInfo,createOutcomes,syncActiveOutcome,chooseOutcome,ed
 import {drawnDecisionAt,convertDrawnDecision,createDecisionOnRun} from './annotation-to-branch.js?v=2';
 import {DEFAULT_WHISTLE_DURATION,normalWhistleDuration,signalForFrame,removeWhistle,whistleOverlay,playWhistle,crossedWhistles} from './whistle-signal.js?v=0.20.76';
 import {outcomeCardsMarkup,decisionTime} from './branching-visual.js?v=12';
-import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
+import {normalScaleMode,symbolTransform,symbolRadius,labelOffset,labelPosition,cartoonLabelPosition,symbolLabelSize} from './symbol-scale.js?v=0.20.87';
 import { $, clone, esc, clamp, uid, types, shape, obj, blank } from './model.js?v=0.20.60';
 import {decisionData,copyTraining,cleanTraining,stripDecisions,decisionOverlay,decisionRoute,decisionFraction,decisionLocation,donutShape,donutSteps,donutLaneOverlay,trainingTransition,trainingPoses} from './training.js?v=0.18.8';
 import { RESOURCES, EMPHASIS } from './resources.js';
@@ -52,12 +53,12 @@ import {nextPlayPlayers,nextPlayBalls,prepareRuckPlayAway} from './ruck-next-act
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {isGroundPad,padTitle,linkRuckPlayersInPlace,placeRuckPlayersAtPad,nudgeRuckPlayer} from './ruck-practice.js?v=0.12.28';
 import {PRESETS} from './presets.js?v=0.6.0';
-import {renderScene} from './scene.js?v=0.20.86';
+import {renderScene} from './scene.js?v=0.20.87';
 import {shareCode,outputOptions,recordDrill,saveBlob,outputName,printDrill,printProgression} from './outputs.js?v=0.20.86';
 import {createExportProgress} from './export-progress.js?v=0.7.3';
 import {bindMovieSettings} from './movie.js?v=0.20.85';
 import {GAME_PHASES,RULES,phaseAge,phaseAllowed,ageNote,phaseFields,choicesFor,makeGuide,generateStage,cleanGuide,guideCaption,nextGuide,playerTeam,phaseOverlay} from './game-phases.js?v=0.12.0';
-import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.20.77';
+import {checkDrill as auditDrill,CHECK_GROUPS,offsideOverlay} from './validation.js?v=0.20.87';
 initWorkspace();
 const SEEDS=await loadCatalogue().catch(err=>{
  const msg=document.createElement('p');msg.setAttribute('role','alert');msg.textContent='Could not load the published library: '+err.message;msg.style.padding='16px';document.body.prepend(msg);throw err;
@@ -185,6 +186,8 @@ function render(){
  const adaptive=withAnnotationCamera(g,{x:viewport.x,y:viewport.y,width:viewport.width,height:viewport.height});
  Object.assign(g,{annotationViewport:adaptive.annotationViewport,annotationScale:adaptive.annotationScale});
  if(preview!==null&&lineIndex>0)objects=timedSkillObjects(objects,drill.frames[lineIndex-1],drill.frames[lineIndex],locate(preview).p);
+ // Dynamic breakdown guides follow the live contest in Studio and Blackboard.
+ objects=trackedOffsideObjects(objects,drill,g);
  if(lineIndex>0){
   const next=drill.frames[lineIndex],old=drill.frames[lineIndex-1];
   for(const o of next.objects){
@@ -210,7 +213,7 @@ function render(){
   const sel=(selected===o.id||groupIds.has(o.id))&&preview===null,p=g.toView(o.x,o.y),pose=poses.get(o.id),radius=symbolRadius(o,g,pose);
   const graphic=isDiagramObject(o)?`<g transform="rotate(${o.rot+g.rotation})">${diagramSVG(o,g,{anchor:p})}</g>`:o.type==='label'?textLabelSVG(o,{baseline:labelOffset(o,g),g,anchor:p}):`<g transform="rotate(${o.rot+g.rotation}) ${symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':pose)}">${playerAppearance(o,pose,posedShape(o,pose,contactMarkerShape(o,donutShape(o,shape(o.type,o.coneColor))),types[o.type][1]),objects,g,drill.frames[lineIndex-1],drill.frames[lineIndex],preview===null?1:locate(preview).p,{cartoonMode,celebration:cartoonMode?tryCelebrationAt(scoredTries,visualTime,o.id):null})}${(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))}</g>${o.label&&!contactType(o.type)?`<text x="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).x}" y="${(cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,pose):labelPosition(o,g,pose)).y}" text-anchor="middle" fill="#fff" paint-order="stroke" stroke="#234f38" stroke-width="${3*(g.annotationScale||1)}" font-size="${symbolLabelSize(g)*(g.annotationScale||1)}" font-weight="600">${esc(o.label)}</text>`:''}`;
   return `<g class="obj" data-id="${esc(o.id)}" transform="translate(${p.x} ${p.y})"><circle r="${Math.max(o.type==='ball'?5:8,radius+2)}" fill="transparent"/>${sel?'<circle data-editor-only="true" r="'+Math.max(10,radius+5)+'" stroke="#d6f77b" stroke-width="2" stroke-dasharray="4 3" fill="none" pointer-events="none"/>':''}${graphic}</g>`;
- }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex,cartoonMode})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+calloutOverlay(drill.frames,lineIndex,objects,g,preview===null?1:locate(preview).p,{cartoonMode,editing:preview===null})+tryFeedbackSVG(scoredTries,visualTime,g,{cartoonMode})+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[]) ])],cartoonMode):'')+(document.body.classList.contains('blackboard-mode')?teachingOverlay({objects,previous:drill.frames[lineIndex-1],next:drill.frames[lineIndex+1],g,spotlightIds:bbSpotlightIds,ghostMode:bbGhostMode,ghostIds:[...groupIds,selected].filter(Boolean).filter(id=>objects.some(o=>o.id===id)).slice(0,8)}):'');
+ }).join('')+(preview===null&&validationHighlight.size?objects.filter(o=>validationHighlight.has(o.id)).map(o=>{const p=g.toView(o.x,o.y);return '<circle data-editor-only="true" pointer-events="none" cx="'+p.x+'" cy="'+p.y+'" r="27" stroke="#ffcc89" stroke-width="2.4" stroke-dasharray="5 3" fill="none"/>'}).join(''):'')+contestResultOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+(showDecisions?decisionOverlay(drill.frames[lineIndex],g,esc,preview===null?selected:'',false,drill.frames[lineIndex-1]):'')+(active&&active.type!=='decision'&&!active.diagram?.followContactId&&!(active.type==='donut'&&active.donutState==='down')&&!trainingPick&&!groupIds.size&&!routeDrawing&&!ballPicking&&!((active.type==='ball'||isShield(active))&&active.ownerId)?rotationHandle(g.toView(active.x,active.y),active.rot,g.rotation):'')+(pathVisible&&!routeDrawing&&!ballPicking?handles:'')+(active&&contactType(active.type)&&!ballPicking&&!trainingPick&&!groupIds.size?formationTrajectorySVG(drill.frames[idx-1]?.objects.find(o=>o.id===active.id),f(),active,g,drag?.kind==='waypoint'&&drag.id===active.id?drag.contactTransform:null):'')+(active&&contactType(active.type)&&!routeDrawing&&!ballPicking&&!trainingPick&&!groupIds.size?contactDragGrip(f(),active,g):'')+(active&&!contactType(active.type)&&move&&!move.turnover&&!move.instant&&!move.presentation&&!ballPicking&&(pathVisible||routeDrawing)?waypointOverlay(f().paths?.[active.id],g):'')+magnetOverlay+interactionOverlay(drill.frames[lineIndex],objects,g,preview===null?1:locate(preview).p,false,{frames:drill.frames,index:lineIndex,cartoonMode})+ripOverlay(drill.frames[lineIndex],drill.frames[lineIndex-1],objects,g,preview===null?1:locate(preview).p,false,cartoonMode)+calloutOverlay(drill.frames,lineIndex,objects,g,preview===null?1:locate(preview).p,{cartoonMode,editing:preview===null})+tryFeedbackSVG(scoredTries,visualTime,g,{cartoonMode})+(showActionLabels?contactLabels(objects,g,esc,[...new Set([...(turnoverCaption(objects,g,lineIndex)?['Turnover']:[]),...(guideCaption(drill.frames[lineIndex])&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(drill.frames[lineIndex]))?[guideCaption(drill.frames[lineIndex])]:[]) ])],cartoonMode):'')+(document.body.classList.contains('blackboard-mode')?teachingOverlay({objects,previous:drill.frames[lineIndex-1],next:drill.frames[lineIndex+1],g,spotlightIds:bbSpotlightIds,ghostMode:bbGhostMode,ghostIds:[...groupIds,selected].filter(Boolean).filter(id=>objects.some(o=>o.id===id)).slice(0,8)}):'');
  // Playback may change a player's pose without changing the selected step.
  // Keep the read-only inspector aligned with the frame actually on screen.
  if(preview!==null){const selector=$('playerPose');if(selector?.disabled&&selected)selector.value=poses.get(selected)||'standing'}
@@ -218,14 +221,22 @@ function render(){
  $('sceneLabel').textContent=preview===null?`Step ${idx+1} of ${drill.frames.length} · ${f().name}`:drill.frames[locate(preview).i].name;$('narration').textContent=preview===null?f().notes:(drill.frames[locate(preview).i]?.notes||'');$('narration').title=$('narration').textContent;$('timeLabel').textContent=`${(preview??at(idx)).toFixed(1)} / ${duration().toFixed(1)} s`;$('scrub').max=Math.max(.01,duration());$('scrub').value=preview??at(idx)}
 function pitchMarkingInspector(o,disabled){
  const s=diagramSettings(o.type,o.diagram,drill.width),panel=document.createElement('div'),rect=o.type==='zoneRect',area=rect||o.type==='zoneCircle',lineType=['fieldLine','tryLine'].includes(o.type),dim=(o.type==='zoneCircle'||o.type==='spotMarker')?'Diameter (m)':rect||o.type==='offsideLine'||o.type==='fieldLine'||o.type==='tryLine'?'Line length (m)':'Length (m)';
+ const contacts=o.type==='offsideLine'?f().objects.filter(q=>['ruck','tackle'].includes(q.type)&&q.members?.length):[];
+ const contactOptions=contacts.map(q=>'<option value="'+esc(q.id)+'">'+esc(q.label||q.id)+' · live contest</option>').join('')+
+  (s.followContactId&&!contacts.some(q=>q.id===s.followContactId)?'<option value="'+esc(s.followContactId)+'">Linked contest · not active this step</option>':'');
  panel.className='section marking-inspector';
  panel.innerHTML='<h3>Pitch marking · measured in metres</h3>'+
- (o.type==='offsideLine'?'<small><strong>Manual coaching reference only.</strong> Use the separate Breakdown offside guides option for calculated examples. This line does not certify the legal offside position.</small>':'')+
+ (o.type==='offsideLine'?'<small><strong>Coaching guide, not a refereeing measurement.</strong> Follow a live breakdown or keep this line manual and drag it freely.</small>':'')+
  '<div class="pair"><div class="field"><label for="markLength">'+dim+'</label><input id="markLength" type="number" min=".25" max="70" step=".25" value="'+s.length+'" '+disabled+'></div>'+
  (rect?'<div class="field"><label for="markWidth">Along pitch (m)</label><input id="markWidth" type="number" min=".25" max="70" step=".25" value="'+s.width+'" '+disabled+'></div>':'<div class="field"><label for="markColor">Colour</label><input id="markColor" type="color" value="'+s.color+'" '+disabled+'></div>')+'</div>'+
  (rect?'<div class="field"><label for="markColor">Colour</label><input id="markColor" type="color" value="'+s.color+'" '+disabled+'></div>':'')+
  '<div class="field"><label for="markOpacity">Line opacity · <output id="markOpacityText">'+s.opacity+'%</output></label><input id="markOpacity" type="range" min="0" max="100" step="5" value="'+s.opacity+'" '+disabled+'></div>'+
  '<label class="label-option"><input id="markDashed" type="checkbox" '+(s.dashed?'checked ':'')+disabled+'> Dashed outline / line</label>'+
+ (o.type==='offsideLine'?'<div class="field"><label for="markFollowContact">Positioning</label><select id="markFollowContact" '+disabled+'><option value="">Manual · move each step</option>'+contactOptions+'</select></div>'+
+  (s.followContactId?'<div class="pair"><div class="field"><label for="markFollowSide">Team</label><select id="markFollowSide" '+disabled+'><option value="attack">Attack</option><option value="defence">Defence</option></select></div>'+
+  '<div class="field"><label for="markFollowOffset">Forward/back shift (m)</label><input type="number" id="markFollowOffset" min="-15" max="15" step=".1" value="'+s.followOffset+'" '+disabled+'></div></div>'+
+  '<div class="field"><label for="markFollowLateral">Sideways shift (m)</label><input type="number" id="markFollowLateral" min="-15" max="15" step=".1" value="'+s.followLateral+'" '+disabled+'></div>'+
+  '<small>Follows the ruck. Drag to fine-tune this step without losing the link. The line disappears when the ball is played away.</small>':'<small>Move this line freely between steps. Choose a breakdown above for automatic tracking.</small>')):'')+
  (lineType?'<div class="pair"><div class="field"><label for="markLabelAnchor">Label position</label><select id="markLabelAnchor" '+disabled+'><option value="start">Start</option><option value="middle">Middle</option><option value="end">End</option></select></div><div class="field"><label for="markLabelSide">Label side</label><select id="markLabelSide" '+disabled+'><option value="left">Above / left</option><option value="right">Below / right</option><option value="inside">Inside line</option></select></div></div>':'')+
  (o.type==='tryLine'?'<div class="field"><label for="markScoringSide">Attack crosses towards</label><select id="markScoringSide" '+disabled+'><option value="positive">Arrow side (↓ before rotation)</option><option value="negative">Opposite side (↑ before rotation)</option></select></div><small>Only ATTACKERS carrying the ball in this direction are eligible. Crossing alone does not score: the ball must be grounded.</small>':'')+
  (area?'<label class="label-option"><input id="markFill" type="checkbox" '+(s.fill?'checked ':'')+disabled+'> Fill shape</label><div class="field"><label for="markFillOpacity">Fill opacity · <output id="markFillText">'+s.fillOpacity+'%</output></label><input id="markFillOpacity" type="range" min="0" max="100" step="5" value="'+s.fillOpacity+'" '+(!s.fill||disabled?'disabled':'')+'></div>':'')+
@@ -238,6 +249,16 @@ function pitchMarkingInspector(o,disabled){
  $('markOpacity').oninput=e=>$('markOpacityText').textContent=e.target.value+'%';
  $('markOpacity').onchange=e=>change('opacity',Number(e.target.value));
  $('markDashed').onchange=e=>change('dashed',e.target.checked);
+ if(o.type==='offsideLine'){
+  $('markFollowContact').value=s.followContactId||'';
+  $('markFollowContact').onchange=e=>change('followContactId',e.target.value,true);
+  if(s.followContactId){
+   $('markFollowSide').value=s.followSide||'attack';
+   $('markFollowSide').onchange=e=>change('followSide',e.target.value,true);
+   $('markFollowOffset').onchange=e=>change('followOffset',Number(e.target.value),true);
+   $('markFollowLateral').onchange=e=>change('followLateral',Number(e.target.value),true);
+  }
+ }
  if(lineType){
   $('markLabelAnchor').value=s.labelAnchor;$('markLabelSide').value=s.labelSide;
   $('markLabelAnchor').onchange=e=>change('labelAnchor',e.target.value);
@@ -1594,7 +1615,7 @@ $('drawingLayerSelect').onchange=()=>changeDrawingLayer($('drawingLayerSelect').
 $('drawingFront').onclick=()=>changeDrawingLayer('front','top');
 $('drawingBack').onclick=()=>changeDrawingLayer('back','bottom');
 function objectName(o){return (o.label||types[o.type][0])+((o.type==='ball'||isShield(o))&&carrier(f(),o)?' · '+(carrier(f(),o).label||'carried'):'')}
-function overlapAt(p){const g=geometry();return frameObjects(f(),g).filter(o=>{const q=g.toView(o.x,o.y);return Math.hypot(p.x-q.x,p.y-q.y)<(o.type==='ball'?16:29)}).reverse()}
+function overlapAt(p){const g=geometry();return trackedOffsideObjects(frameObjects(f(),g),drill,g).filter(o=>{const q=g.toView(o.x,o.y);return Math.hypot(p.x-q.x,p.y-q.y)<(o.type==='ball'?16:29)}).reverse()}
 function selectObject(id){if(!f().objects.some(o=>o.id===id))return;selectedPathId=null;trainingPick=null;groupIds.clear();groupMode=false;if(pendingInsert&&pendingInsert.id!==id)pendingInsert=null;selected=id;render();inspector();openInspector('Object',false)}
 function updateObjectPicker(){const list=$('objectPicker'),isGroup=groupMode||groupIds.size>0;$('objectHeading').hidden=isGroup;list.hidden=isGroup;$('objectPanel').hidden=isGroup;const options='<option value="">Select an object…</option>'+f().objects.map(o=>'<option value="'+esc(o.id)+'">'+esc(objectName(o))+'</option>').join('');if(list.innerHTML!==options)list.innerHTML=options;list.value=selected||'';list.disabled=preview!==null||!!ballPicking||routeDrawing}
 $('objectPicker').onchange=()=>{if($('objectPicker').value)selectObject($('objectPicker').value);else{selected=null;selectedPathId=null;render();inspector()}};
