@@ -107,7 +107,7 @@ export async function loadCatalogue(fetcher=fetch){
      !Array.isArray(pack.drills)||pack.drills.length!==4)throw Error('Invalid match-day playbook');
   const known=new Set([...curated,...showcase,...qa,...matchShowcases].map(d=>d.id));
   for(const d of pack.drills){
-   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Match-day Plays'||
+   if(!/^seed-\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Match-day Plays'||
       d.ageMin!==10||d.ageMax!==10||d.length!==60||d.width!==35||
       d.pitchContext?.mode!=='field'||!Array.isArray(d.frames)||d.frames.length<5||
       d.frames.some(f=>f.objects.filter(o=>o.type==='attacker').length!==8||
