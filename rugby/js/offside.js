@@ -64,8 +64,8 @@ export function moveTrackedOffsideGuide(o,objects,d,g,point){
  o.diagram.followLateral=clamp((Number(o.diagram.followLateral)||0)+lateral,-15,15);
  return true;
 }
-export function offsideOverlay(objects,d,g,mode='auto',ink=false){
- const tracked=new Set(objects.filter(o=>o.type==='offsideLine'&&o.diagram?.followContactId).map(o=>o.diagram.followContactId));
+export function offsideOverlay(objects,d,g,mode='auto',ink=false,suppressTracked=false){
+ const tracked=suppressTracked?new Set(objects.filter(o=>o.type==='offsideLine'&&o.diagram?.followContactId).map(o=>o.diagram.followContactId)):new Set();
  return offsideBands(objects,d,g,mode).filter(b=>!tracked.has(b.id)).map(b=>{
   const horizontal=Math.abs(b.v.y)>.5;
   return '<g data-offside-guide="true" pointer-events="none" aria-label="Approximate breakdown offside lines">'+[[b.blue,ink?'#155a91':'#9bd6ff','BLUE'],[b.orange,ink?'#a6520e':'#ffc28d','ORANGE']].map(([p,c,label])=>{
