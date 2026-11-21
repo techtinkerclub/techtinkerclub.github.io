@@ -93,7 +93,7 @@ export function publicVideoBuilder({getDrills,isAnimated,ageLabel,onChange}){
     if(!signal.aborted)saveBlob(video.blob,outputName({title})+'.'+video.extension);
     return video;
    });
-   get('videoStatus').textContent=file?'Video exported · '+file.width+' × '+file.height+' · '+file.extension.toUpperCase()+(file.encoder==='compatibility-live'?' · Compatibility recorder; desktop Chrome/Edge usually exports more smoothly.':''):'Export not completed. See the export status.';
+   get('videoStatus').textContent=file?'Video exported · '+file.width+' × '+file.height+' · '+file.extension.toUpperCase()+(file.extension==='webm'?' · WebM cannot be saved directly to iPhone Photos; export as MP4 for iPhone.':'')+(file.encoder==='compatibility-live'?' · Compatibility recorder; desktop Chrome/Edge usually exports more smoothly.':''):'Export not completed. See the export status.';
   }catch(err){get('videoStatus').textContent='Export failed: '+err.message}
   finally{busy=false;render()}
  };
