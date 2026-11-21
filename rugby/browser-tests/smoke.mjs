@@ -188,18 +188,24 @@ try {
  capture(framed);
  await framed.goto(origin+'/rugby/play.html?drill=seed-057',{waitUntil:'networkidle',timeout:40000});
  await framed.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Tackle, Present'));
- const complete=await framed.locator('#board svg').getAttribute('viewBox');
+ const sceneSVG=framed.locator('#board svg:not(.public-board-ink)');
+ const complete=await sceneSVG.getAttribute('viewBox');
+ // The compact Public Blackboard exposes Display settings through Tools.
+ await framed.locator('.public-board-mobile-menu').click();
+ await framed.locator('.public-board-toolbar button').filter({hasText:'Display'}).click();
+ await framed.locator('.presentation-sidebar[data-open="true"]').waitFor({state:'visible'});
  await framed.locator('#framing').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
  await framed.locator('#framing').selectOption('action');
- const closeView=await framed.locator('#board svg').getAttribute('viewBox');
+ const closeView=await sceneSVG.getAttribute('viewBox');
  assert.notEqual(closeView,complete,'Presentation action camera must change only the SVG viewport');
  assert.equal(await framed.locator('#framing').inputValue(),'action');
- const beforeZoom=await framed.locator('#board svg').getAttribute('viewBox');
+ await framed.locator('.presentation-sidebar-close').click();
+ const beforeZoom=await sceneSVG.getAttribute('viewBox');
  await framed.locator('#playerZoomIn').click();
- const zoomed=await framed.locator('#board svg').getAttribute('viewBox');
+ const zoomed=await sceneSVG.getAttribute('viewBox');
  assert.notEqual(beforeZoom,zoomed,'Read-only player zoom should change the SVG viewport');
  await framed.locator('#playerZoomFit').click();
- assert.equal(await framed.locator('#board svg').getAttribute('viewBox'),beforeZoom,'Fit resets manual zoom');
+ assert.equal(await sceneSVG.getAttribute('viewBox'),beforeZoom,'Fit resets manual zoom');
 
  await framed.locator('#play').click();
  await framed.waitForTimeout(500);
