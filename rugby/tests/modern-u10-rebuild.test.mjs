@@ -20,7 +20,8 @@ test('U10 source and published copies use the same rebuilt ten-stage sequence',(
  assert.deepEqual(coach.frames,publicCopy.frames);
  assert.equal(publicCopy.savedFromCoachDrill,coach.id);
  assert.equal(marker(coach.frames[6]).breakdown.phase,'contest');
- assert.equal(marker(coach.frames[7]).breakdown.phase,'secured');
+ assert.ok(!marker(coach.frames[7]),'formed ruck must end when A3 picks up available ball');
+ assert.equal(coach.frames[7].objects.find(o=>o.type==='ball').transferKind,'pickup');
 });
 test('A2 meets the passive shield held by D2; contact stays close during contest',()=>{
  const formed=coach.frames[5],contest=coach.frames[6],pad=formed.objects.find(o=>o.type==='shieldItem');
