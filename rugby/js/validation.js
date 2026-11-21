@@ -1,5 +1,5 @@
 // Coach's diagram checker, not a referee or contact technique validator.
-import {playbackData} from './scene.js?v=0.13.12';
+import {playbackData} from './scene.js?v=0.20.87';
 import {pitchGeometry} from './pitch.js?v=0.12.23';
 import {canCarry,carrier,ballMovement,objectPose,transitionObjects} from './possession.js?v=0.12.34';
 import {posesFor} from './contact.js?v=0.12.34';
@@ -14,7 +14,7 @@ const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const same=(a,b)=>a&&b&&a.id===b.id;
 export const CHECK_GROUPS={possession:'Ball and possession',passing:'Passing direction',recovery:'Recovery poses',age:'Age-grade actions (U10)',breakdown:'Breakdown and restarts',offside:'Offside and entry',spacing:'Player spacing'};
 // Same guides as the presentation player.
-import {attackVector,offsideBands,offsideOverlay} from './offside.js?v=0.20.76';
+import {attackVector,offsideBands,offsideOverlay} from './offside.js?v=0.20.87';
 export {attackVector,offsideBands,offsideOverlay};
 const dot=(p,v)=>p.x*v.x+p.y*v.y;
 const projected=(o,g,v)=>dot(g.toView(o.x,o.y),v);
