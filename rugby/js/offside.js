@@ -32,8 +32,41 @@ export function offsideBands(objects,d,g,mode='auto'){
  }
  return out;
 }
+// Dynamic coach-drawn offside lines stay attached to the live breakdown.
+// The automatic guide is illustrative: icon footprints approximate hindmost feet.
+// Objects without a followContactId keep their fully editable manual positions.
+export function trackedOffsidePosition(o,objects,d,g){
+ if(o?.type!=='offsideLine'||!o.diagram?.followContactId)return o;
+ const band=offsideBands(objects,d,g,'guide').find(b=>b.id===o.diagram.followContactId);
+ if(!band)return null; // The ruck has ended (e.g. the ball has been picked up).
+ const v=band.v,t={x:-v.y,y:v.x};
+ const center={x:g.margin+g.fw/2,y:g.margin+g.fh/2};
+ const offset=clamp(Number(o.diagram.followOffset)||0,-15,15)*g.scale;
+ const lateral=clamp(Number(o.diagram.followLateral)||0,-15,15)*g.scale;
+ const foot=(o.diagram.followSide==='defence'?band.orange:band.blue)+offset;
+ const across=dot(center,t)+lateral;
+ const q=g.fromView(foot*v.x+across*t.x,foot*v.y+across*t.y);
+ const rot=Math.atan2(t.y,t.x)*180/Math.PI-g.rotation;
+ return {...o,x:q.x,y:q.y,rot};
+}
+export function trackedOffsideObjects(objects,d,g){
+ return objects.flatMap(o=>{const q=trackedOffsidePosition(o,objects,d,g);return q?[q]:[]});
+}
+// Dragging a tracked guide adjusts its anchor, rather than breaking the link.
+// Offsets are in real metres so different cameras and video resolutions agree.
+export function moveTrackedOffsideGuide(o,objects,d,g,point){
+ if(o?.type!=='offsideLine'||!o.diagram?.followContactId)return false;
+ const current=trackedOffsidePosition(o,objects,d,g),v=attackVector(d,g,'guide');
+ if(!current||!v||!g.scale)return false;
+ const a=g.toView(current.x,current.y),b=g.toView(point.x,point.y),dx=b.x-a.x,dy=b.y-a.y;
+ const forward=(dx*v.x+dy*v.y)/g.scale,lateral=(-dx*v.y+dy*v.x)/g.scale;
+ o.diagram.followOffset=clamp((Number(o.diagram.followOffset)||0)+forward,-15,15);
+ o.diagram.followLateral=clamp((Number(o.diagram.followLateral)||0)+lateral,-15,15);
+ return true;
+}
 export function offsideOverlay(objects,d,g,mode='auto',ink=false){
- return offsideBands(objects,d,g,mode).map(b=>{
+ const tracked=new Set(objects.filter(o=>o.type==='offsideLine'&&o.diagram?.followContactId).map(o=>o.diagram.followContactId));
+ return offsideBands(objects,d,g,mode).filter(b=>!tracked.has(b.id)).map(b=>{
   const horizontal=Math.abs(b.v.y)>.5;
   return '<g data-offside-guide="true" pointer-events="none" aria-label="Approximate breakdown offside lines">'+[[b.blue,ink?'#155a91':'#9bd6ff','BLUE'],[b.orange,ink?'#a6520e':'#ffc28d','ORANGE']].map(([p,c,label])=>{
    const k=p/(horizontal?b.v.y:b.v.x),pos=horizontal?'x1="'+g.margin+'" x2="'+(g.margin+g.fw)+'" y1="'+k+'" y2="'+k+'"':'x1="'+k+'" x2="'+k+'" y1="'+g.margin+'" y2="'+(g.margin+g.fh)+'"';
