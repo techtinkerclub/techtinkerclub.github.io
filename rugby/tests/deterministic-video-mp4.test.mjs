@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {encodeDeterministicVideo} from '../js/deterministic-video.js';
+import {encodeDeterministicVideo,prefersPhotosCompatibleMP4} from '../js/deterministic-video.js';
+import {MOVIE_QUALITIES} from '../js/movie.js';
 
 // Exercise Safari's H.264 route without depending on WebCodecs or a GPU in CI.
 // The muxer must produce a real MP4 container with frame-accurate timestamps.
-test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 is unavailable',async()=>{
+test('offline export selects H.264 MP4 even when the browser also supports VP8 WebM',async()=>{
  const original={encoder:globalThis.VideoEncoder,frame:globalThis.VideoFrame,doc:globalThis.document,chunk:globalThis.EncodedVideoChunk};
  const avcConfig=Uint8Array.from([
   1,66,224,31,255,225,0,10,103,66,224,31,149,168,20,1,110,155,1,0,4,104,206,60,128
@@ -21,7 +22,7 @@ test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 i
   close(){}
  }
  class FakeVideoEncoder{
-  static async isConfigSupported(config){return {supported:config.codec.startsWith('avc1.')}}
+  static async isConfigSupported(config){return {supported:true}}
   constructor({output,error}){this.output=output;this.error=error;this.encodeQueueSize=0}
   configure(config){this.config=config}
   encode(frame,{keyFrame}){
@@ -59,5 +60,34 @@ test('offline export uses H.264 MP4 instead of the real-time fallback when VP8 i
   if(original.frame===undefined)delete globalThis.VideoFrame;else globalThis.VideoFrame=original.frame;
   if(original.doc===undefined)delete globalThis.document;else globalThis.document=original.doc;
   if(original.chunk===undefined)delete globalThis.EncodedVideoChunk;else globalThis.EncodedVideoChunk=original.chunk;
+ }
+});
+
+test('4K 44-second showcase remains within the frame-accurate export memory budget',()=>{
+ const preset=MOVIE_QUALITIES['2160'];
+ assert.equal(preset.width,3840);
+ assert.equal(preset.height,2160);
+ assert.equal(preset.fps,30);
+ assert(preset.bitrate*44/8<140000000,'4K showcase should avoid live recorder fallback');
+});
+
+test('iOS devices request a Photos-compatible MP4, including desktop-class iPadOS',()=>{
+ const old=Object.getOwnPropertyDescriptor(globalThis,'navigator');
+ try{
+  Object.defineProperty(globalThis,'navigator',{configurable:true,
+   value:{userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)',
+    platform:'iPhone',maxTouchPoints:5}});
+  assert.equal(prefersPhotosCompatibleMP4(),true);
+  Object.defineProperty(globalThis,'navigator',{configurable:true,
+   value:{userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+    platform:'MacIntel',maxTouchPoints:5}});
+  assert.equal(prefersPhotosCompatibleMP4(),true);
+  Object.defineProperty(globalThis,'navigator',{configurable:true,
+   value:{userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    platform:'Win32',maxTouchPoints:0}});
+  assert.equal(prefersPhotosCompatibleMP4(),false);
+ }finally{
+  if(old)Object.defineProperty(globalThis,'navigator',old);
+  else delete globalThis.navigator;
  }
 });
