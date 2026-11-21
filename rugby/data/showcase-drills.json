@@ -151,7 +151,7 @@
         },
         {
           "name": "PASS · release backwards",
-          "seconds": 1.8,
+          "seconds": 1.7,
           "notes": "A1 releases to A2 behind the ball, not forwards.",
           "objects": [
             {
@@ -204,7 +204,12 @@
               "ownerId": "a2"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 54
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -213,7 +218,7 @@
               "text": "Pass back!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
@@ -277,7 +282,7 @@
         },
         {
           "name": "PASS · attack the outside",
-          "seconds": 1.9,
+          "seconds": 1.7,
           "notes": "A2 passes backwards to the supporting A3.",
           "objects": [
             {
@@ -330,7 +335,12 @@
               "ownerId": "a3"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 55
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -339,13 +349,13 @@
               "text": "Keep depth!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
         {
           "name": "Finish · run straight",
-          "seconds": 2.6,
+          "seconds": 2.38,
           "notes": "A3 accelerates into the channel; both passers support.",
           "objects": [
             {
@@ -1614,7 +1624,7 @@
         },
         {
           "name": "PASS · tagged carrier releases",
-          "seconds": 1.6,
+          "seconds": 1.7,
           "notes": "A1 passes backwards to A2; D1 holds the removed strip up.",
           "objects": [
             {
@@ -1705,7 +1715,12 @@
               "ownerId": "a2"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 52
+            }
+          },
           "paths": {}
         },
         {
@@ -1897,7 +1912,7 @@
         },
         {
           "name": "Pass to support and finish",
-          "seconds": 2,
+          "seconds": 1.7,
           "notes": "A2 passes backwards to A3 who continues into the wide channel.",
           "objects": [
             {
@@ -1980,7 +1995,12 @@
               "ownerId": "a3"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 49
+            }
+          },
           "paths": {}
         }
       ]
@@ -2375,7 +2395,7 @@
         },
         {
           "name": "Continue · attack space",
-          "seconds": 2.8,
+          "seconds": 2.06,
           "notes": "A3 accelerates into open space while defenders advance from their onside positions.",
           "objects": [
             {
@@ -2658,7 +2678,12 @@
               "ownerId": "a2"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 50
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -2667,7 +2692,7 @@
               "text": "Pass back!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
@@ -2809,13 +2834,13 @@
               "text": "Keep depth!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
         {
           "name": "Backward pass · release outside",
-          "seconds": 1.8,
+          "seconds": 1.7,
           "notes": "A2 draws D2 and gives A3 a backward pass into the outside channel.",
           "objects": [
             {
@@ -2876,7 +2901,12 @@
               "ownerId": "a3"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 50
+            }
+          },
           "paths": {}
         },
         {
@@ -3148,7 +3178,12 @@
               "ownerId": "a2"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 53
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -3157,7 +3192,7 @@
               "text": "Pass back!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
@@ -3283,7 +3318,7 @@
               "text": "Keep depth!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.82
             }
           ]
         },
@@ -3424,7 +3459,7 @@
                     "text": "Keep depth!",
                     "kind": "speech",
                     "at": 0.34,
-                    "displaySeconds": 1.4
+                    "displaySeconds": 1.82
                   }
                 ]
               },
@@ -3496,7 +3531,7 @@
             "frames": [
               {
                 "name": "B · D2 commits: pass",
-                "seconds": 2.3,
+                "seconds": 1.7,
                 "notes": "D2 steps in to stop A2; A2 gives A3 a backward pass.",
                 "objects": [
                   {
@@ -3549,7 +3584,12 @@
                     "ownerId": "a3"
                   }
                 ],
-                "timing": {},
+                "timing": {
+                  "ball": {
+                    "start": 26,
+                    "end": 54
+                  }
+                },
                 "paths": {},
                 "callouts": [
                   {
@@ -3558,7 +3598,7 @@
                     "text": "Keep depth!",
                     "kind": "speech",
                     "at": 0.34,
-                    "displaySeconds": 1.4
+                    "displaySeconds": 1.6
                   }
                 ]
               },
@@ -3789,7 +3829,7 @@
         },
         {
           "name": "Release to A2",
-          "seconds": 1.6,
+          "seconds": 1.7,
           "notes": "A1 passes backward to A2, then reloads into support.",
           "objects": [
             {
@@ -3850,7 +3890,12 @@
               "ownerId": "a2"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 51
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -3859,7 +3904,7 @@
               "text": "Pass back!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
@@ -3992,7 +4037,12 @@
               "ownerId": "a3"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 48
+            }
+          },
           "paths": {},
           "callouts": [
             {
@@ -4001,7 +4051,7 @@
               "text": "Keep depth!",
               "kind": "speech",
               "at": 0.34,
-              "displaySeconds": 1.4
+              "displaySeconds": 1.6
             }
           ]
         },
@@ -4073,7 +4123,7 @@
         },
         {
           "name": "Outside pass to A4",
-          "seconds": 1.6,
+          "seconds": 1.7,
           "notes": "A3 releases a third backward pass; A4 takes the ball behind A3.",
           "objects": [
             {
@@ -4134,7 +4184,12 @@
               "ownerId": "a4"
             }
           ],
-          "timing": {},
+          "timing": {
+            "ball": {
+              "start": 26,
+              "end": 48
+            }
+          },
           "paths": {}
         },
         {
