@@ -1297,8 +1297,8 @@
               "id": "qa04_A2",
               "type": "attacker",
               "label": "A2",
-              "x": 451,
-              "y": 303,
+              "x": 455,
+              "y": 295.3,
               "rot": 0,
               "playerPose": "bound",
               "posePinned": true
@@ -1307,8 +1307,8 @@
               "id": "qa04_D1",
               "type": "defender",
               "label": "D1",
-              "x": 484,
-              "y": 285,
+              "x": 455,
+              "y": 290.7,
               "rot": 180,
               "playerPose": "bound",
               "posePinned": true
@@ -1371,8 +1371,8 @@
               "id": "qa04_A2",
               "type": "attacker",
               "label": "A2",
-              "x": 451,
-              "y": 303,
+              "x": 455,
+              "y": 292.2,
               "rot": 0,
               "playerPose": "bound",
               "posePinned": true
@@ -1381,8 +1381,8 @@
               "id": "qa04_D1",
               "type": "defender",
               "label": "D1",
-              "x": 484,
-              "y": 285,
+              "x": 455,
+              "y": 287.6,
               "rot": 180,
               "playerPose": "bound",
               "posePinned": true
@@ -1417,7 +1417,12 @@
                   "id": "qa04_D1",
                   "pose": "bound"
                 }
-              ]
+              ],
+              "breakdown": {
+                "phase": "contest",
+                "winner": "attack",
+                "showWinnerLabel": false
+              }
             }
           ],
           "timing": {},
@@ -1442,8 +1447,8 @@
               "id": "qa04_A2",
               "type": "attacker",
               "label": "A2",
-              "x": 451,
-              "y": 303,
+              "x": 455,
+              "y": 292.2,
               "rot": 0,
               "playerPose": "bound",
               "posePinned": true
@@ -1452,8 +1457,8 @@
               "id": "qa04_D1",
               "type": "defender",
               "label": "D1",
-              "x": 484,
-              "y": 285,
+              "x": 455,
+              "y": 287.6,
               "rot": 180,
               "playerPose": "bound",
               "posePinned": true
@@ -1488,7 +1493,12 @@
                   "id": "qa04_D1",
                   "pose": "bound"
                 }
-              ]
+              ],
+              "breakdown": {
+                "phase": "secured",
+                "winner": "attack",
+                "showWinnerLabel": false
+              }
             }
           ],
           "timing": {},
