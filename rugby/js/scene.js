@@ -2,10 +2,10 @@ import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {withAnnotationCamera,isVisibleAnnotation,cameraTextPlacement} from './annotation-camera.js?v=1';
 import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=6';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=3';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=4';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=3';
 import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=5';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
-import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.87';
+import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.35';
 // Output scenes use the same geometry, paths, poses and possession engine as the editor.
 import {esc,types,shape,clamp} from './model.js?v=0.20.60';
 import {headSettings} from './player-gaze.js?v=3';
@@ -25,7 +25,7 @@ import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
-import {offsideOverlay,trackedOffsideObjects} from './offside.js?v=0.20.87';
+import {offsideOverlay} from './offside.js?v=0.20.76';
 import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=5';
 import {contestResultOverlay} from './ruck-outcome.js?v=0.20.76';
 export function playbackData(d){
@@ -68,8 +68,7 @@ export function timeLocation(d,t){return stepLocation(d,t)}
 const svgObj=(o,g,poses,ink=false,objects=[],previous=null,frame=null,progress=1,cartoonMode=false,celebration=null)=>{const q=g.toView(o.x,o.y),color=types[o.type][1];if(isDiagramObject(o))return '<g transform="translate('+q.x+' '+q.y+') rotate('+(o.rot+g.rotation)+')">'+diagramSVG(o,g,{ink,anchor:q})+'</g>';if(o.type==='label')return '<g transform="translate('+q.x+' '+q.y+')">'+textLabelSVG(o,{baseline:labelOffset(o,g),ink,g,anchor:q})+'</g>';return '<g transform="translate('+q.x+' '+q.y+')"><g transform="rotate('+(o.rot+g.rotation)+') '+symbolTransform(o,g,cartoonMode&&canCarry(o)?'standing':poses.get(o.id))+'">'+playerAppearance(o,poses.get(o.id),posedShape(o,poses.get(o.id),contactMarkerShape(o,donutShape(o,o.type==='label'?'':shape(o.type,o.coneColor))),color),objects,g,previous,frame,progress,{cartoonMode,ink,celebration})+(cartoonMode&&canCarry(o)?cartoonTagIcon(o):skillIcon(o))+'</g>'+(o.label&&!contactType(o.type)&&isVisibleAnnotation(g,q.x,q.y,10*(g.annotationScale||1))?(()=>{const size=symbolLabelSize(g)*(g.annotationScale||1),off=cartoonMode&&canCarry(o)?cartoonLabelPosition(o,g,poses.get(o.id)):labelPosition(o,g,poses.get(o.id)),v=g.annotationViewport,xx=v?clamp(q.x+off.x,v.x+5,v.x+v.width-5)-q.x:off.x,yy=v?clamp(q.y+off.y,v.y+size+3,v.y+v.height-3)-q.y:off.y;return '<text x="'+xx+'" y="'+yy+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+size+'" font-weight="600" fill="'+(ink?'#172820':'#fff')+'" paint-order="stroke" stroke="'+(ink?'#fff':'#234f38')+'" stroke-width="'+(3*(g.annotationScale||1))+'">'+esc(o.label)+'</text>'})():'')+'</g>'};
 export function renderScene(d,{time=null,index=0,orientation='up',runs=true,passes=true,labels=true,decisions=true,offside=false,teachingGuides=true,markups=true,scaleMode='realistic',framing='field',ghosts=false,ink=false,cartoonMode=false,prefix='scene',cameraOverride=null}={}){
  const g={...drillGeometry(d,orientation),displayMode:normalScaleMode(scaleMode)},loc=time===null?{i:clamp(index,0,d.frames.length-1),p:1}:timeLocation(d,time),{i,p}=loc,fr=d.frames[i],old=d.frames[i-1];
- const sceneObjects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p);
-  const objects=trackedOffsideObjects(sceneObjects,d,g),poses=trainingPoses(objects,posesFor(objects));
+ const objects=timedSkillObjects(old&&time!==null?trainingTransition(transitionObjects(old,fr,p,g),old,fr,p,g):frameObjects(fr,g),old,fr,p),poses=trainingPoses(objects,posesFor(objects));
  const scoreTime=time===null?d.frames.slice(0,i+1).reduce((sum,step)=>sum+Math.max(0,Number(step.seconds)||0),0):time;
  const scoredTries=tryLineEvents(d,g);
  const focused=framing==='action'||framing==='follow',camera=cameraOverride&&cameraOverride.width>0&&cameraOverride.height>0?cameraOverride:framing==='follow'?followActionViewport(d,g,i,time===null?1:p):focused?(time===null?actionViewport(d,g,i):actionViewportAt(d,g,i,p)):wholeFieldView(g);
@@ -92,7 +91,7 @@ export function renderScene(d,{time=null,index=0,orientation='up',runs=true,pass
  if(guideCaption(fr)&&!objects.some(o=>contactType(o.type)&&o.label===guideCaption(fr)))changes.push(guideCaption(fr));
  const caption=labels?contactLabels(objects,g,esc,[...new Set(changes)],cartoonMode):'';
  const placedCaption=caption;
- let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink,markups):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode,cartoonMode?tryCelebrationAt(scoredTries,scoreTime,o.id):null)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i,cartoonMode})+ripOverlay(fr,old,objects,g,time===null?1:p,ink,cartoonMode)+calloutOverlay(d.frames,i,objects,g,time===null?1:p,{cartoonMode,ink,editing:time===null})+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null,cartoonMode})+contestResultOverlay(fr,objects,g,p,ink,cartoonMode)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
+ let body=field+(offside?offsideOverlay(objects,d,g,'auto',ink):'')+(teachingGuides?teachingGuidesSVG(fr,g,{ink}):'')+(labels?phaseOverlay(fr,g):'')+arrows+starts+order.filter(o=>o.type!=='decision'&&(markups||!isDiagramObject(o))).map(o=>svgObj(o,g,poses,ink,objects,old,fr,time===null?1:p,cartoonMode,cartoonMode?tryCelebrationAt(scoredTries,scoreTime,o.id):null)).join('') +interactionOverlay(fr,objects,g,time===null?1:p,ink,{frames:d.frames,index:i,cartoonMode})+ripOverlay(fr,old,objects,g,time===null?1:p,ink,cartoonMode)+calloutOverlay(d.frames,i,objects,g,time===null?1:p,{cartoonMode,ink,editing:time===null})+whistleOverlay(fr,g,time===null?0:p*fr.seconds,{ink,staticView:time===null,cartoonMode})+contestResultOverlay(fr,objects,g,p,ink,cartoonMode)+(decisions?decisionOverlay(fr,g,esc,'',ink,old):'') +placedCaption;
  const tryMark=tryFeedbackSVG(scoredTries,scoreTime,g,{cartoonMode,ink});
  if(tryMark)body+=tryMark;
  const safePrefix=String(prefix).replace(/[^a-zA-Z0-9_-]/g,'')||'scene';body=body.replaceAll('id="arr"','id="'+safePrefix+'-arr"').replaceAll('url(#arr)','url(#'+safePrefix+'-arr)').replaceAll('id="gridpat"','id="'+safePrefix+'-gridpat"');

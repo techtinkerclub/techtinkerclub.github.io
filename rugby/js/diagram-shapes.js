@@ -21,14 +21,7 @@ export function diagramSettings(type,raw={},pitchWidth=15){
   dashed:v.dashed===undefined?base.dashed:v.dashed===true,
   labelAnchor:['start','middle','end'].includes(v.labelAnchor)?v.labelAnchor:'middle',
   labelSide:['left','right','inside'].includes(v.labelSide)?v.labelSide:'left',
-  scoringSide:v.scoringSide==='negative'?'negative':'positive',
-  // Opt-in dynamic guide. Freehand offside lines remain ordinary movable marks.
-  ...(type==='offsideLine'&&typeof v.followContactId==='string'&&v.followContactId.length>0&&v.followContactId.length<=200?{
-   followContactId:v.followContactId,
-   followSide:v.followSide==='defence'?'defence':'attack',
-   followOffset:clamp(v.followOffset,-15,15,0),
-   followLateral:clamp(v.followLateral,-15,15,0)
-  }:{})};
+  scoringSide:v.scoringSide==='negative'?'negative':'positive'};
 }
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n.toFixed(2)).toString();
