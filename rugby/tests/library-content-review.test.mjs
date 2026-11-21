@@ -78,7 +78,7 @@ test('legacy diamond follower speed, L-shaped pass and modified handling games a
  }
  const L=by(master,'seed-011'),turn=L.frames.at(-1);
  assert(turn.objects.find(o=>o.id==='a3').y>turn.objects.find(o=>o.id==='a1').y,
-  'L pattern's receiver must stay behind the turned carrier');
+  "L pattern's receiver must stay behind the turned carrier");
  assert.match(by(master,'seed-014').frames[2].notes,/NOT normal rugby laws/);
  assert.match(by(master,'seed-086').frames.at(-1).notes,/orange attacking downfield/);
 });
