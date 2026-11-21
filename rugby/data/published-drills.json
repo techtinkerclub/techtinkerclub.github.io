@@ -208,7 +208,7 @@
         },
         {
           "name": "Hold shape · look and communicate",
-          "seconds": 1,
+          "seconds": 2.1,
           "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
           "objects": [
             {
@@ -3729,7 +3729,7 @@
         {
           "name": "Ball available · A3 picks up",
           "seconds": 1.6,
-          "notes": "Once the ruck is secure and the ball is available, A3 arrives from behind the blue side, picks the ball up from the ground and prepares to play away. D2 has cleared from the passive pad and A2 is no longer driving.",
+          "notes": "Once the ruck is secure and the ball is available, A3 arrives from behind the blue side, picks the ball up from the ground and prepares to play away. D2 has cleared from the passive pad and A2 is no longer driving. The formed ruck is over as soon as A3 collects the ball; the ruck symbol disappears at the pickup moment.",
           "objects": [
             {
               "id": "mwj8e2r2oxyqlk",
@@ -3861,42 +3861,6 @@
               "y": 283.408,
               "rot": 0,
               "ownerId": "mwj8ftzhp158ce"
-            },
-            {
-              "id": "mwj8ldmgzz1gti",
-              "type": "ruck",
-              "label": "Ball secure · next phase",
-              "x": 549,
-              "y": 261,
-              "rot": 180,
-              "members": [
-                {
-                  "id": "mwj8e2r2oxyqlk",
-                  "pose": "grounded"
-                },
-                {
-                  "id": "mwj8e34mdkmz60",
-                  "pose": "standing"
-                },
-                {
-                  "id": "mwj8ftzhp158ce",
-                  "pose": "standing"
-                }
-              ],
-              "breakdown": {
-                "phase": "secured",
-                "carrierId": "mwj8e2r2oxyqlk",
-                "tacklerId": "mwj8ftsmevmydz",
-                "tacklerIds": [
-                  "mwj8ftsmevmydz"
-                ],
-                "ballId": "mwj8h553khg2gb",
-                "arrivalSide": "defence",
-                "winner": "attack",
-                "showWinnerLabel": false,
-                "showNextPlayerLabel": false,
-                "nextPlayerId": "mwj8e3k6cepl43"
-              }
             }
           ],
           "timing": {
@@ -5427,7 +5391,7 @@
         },
         {
           "name": "TRY! · watch the celebration and review",
-          "seconds": 1.5,
+          "seconds": 2.5,
           "notes": "One TRY is registered after genuine grounding, never just after crossing. Hold the prone ball presentation, rise and celebrate clearly; then discuss A1/A2 fixing defenders, the final pass and the direction of attack. Review and rotate. The extra Ruckus celebration time is a view-only outro; Classic and the authored rugby steps remain unchanged.",
           "objects": [
             {
