@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {transitionObjects} from '../js/possession.js';
 import {formationTrajectorySVG,formationRouteOffset,unraiseFormationPoint} from '../js/formation-trajectory.js';
 import {orderObjects,drawLayer,setDrawingOrder,copyDrawingOrder} from '../js/draw-order.js';
-import {labelPosition} from '../js/symbol-scale.js';
+import {labelPosition,symbolRadius,symbolLabelSize} from '../js/symbol-scale.js';
 
 const g={scale:65,margin:40,fw:900,fh:560,rotation:0,displayMode:'realistic',
  toView:(x,y)=>({x,y}),fromView:(x,y)=>({x,y})};
@@ -37,11 +37,15 @@ const shifted={x:500+offset.x,y:440+offset.y};
 assert.deepEqual(unraiseFormationPoint(shifted,next,next.objects[1],g),{x:500,y:440});
 assert(labelPosition({...players[2],rot:0},g,'standing').y>0);
 assert(labelPosition({...players[2],rot:180},g,'standing').y<0);
-// Text is baseline-aligned: a caption ABOVE the player otherwise looks
-// 10px farther away than one BELOW, even when the offsets are identical.
+// Compare the visible glyph-to-sprite clearance, not the old hard-coded
+// 10px baseline compensation (which changed when camera-aware labels were fixed).
 const lower=labelPosition({...players[2],rot:0},g,'standing');
 const upper=labelPosition({...players[2],rot:180},g,'standing');
-assert(Math.abs(lower.y+upper.y-10)<1e-6,
+const spriteEdge=symbolRadius(players[2],g,'standing');
+const textAscent=symbolLabelSize(g)*.78*(g.annotationScale||1);
+const belowGap=lower.y-textAscent-spriteEdge;
+const aboveGap=-upper.y-spriteEdge;
+assert(Math.abs(belowGap-aboveGap)<.02,
  'Captions must have matching visible gaps above and below in portrait view');
 assert.equal(orderObjects(players)[0].id,'sausage');
 setDrawingOrder([next],'sausage','front','top');
