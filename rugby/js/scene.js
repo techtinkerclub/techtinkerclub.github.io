@@ -26,7 +26,7 @@ import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
 import {offsideOverlay} from './offside.js?v=0.20.76';
-import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=4';
+import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=5';
 import {contestResultOverlay} from './ruck-outcome.js?v=0.20.76';
 export function playbackData(d){
  if(d?.version!==1||!Array.isArray(d.frames)||!d.frames.length||d.frames.length>150)throw Error('Invalid drill.');
