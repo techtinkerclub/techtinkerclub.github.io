@@ -6,7 +6,7 @@ import {decisionList,decisionText} from './training.js?v=0.18.8';
 import {moviePlan,movieMoment,movieRaster,rasterSVG} from './movie.js?v=0.20.81';
 import {recordCoachingMovie} from './video-recorder.js?v=0.20.83';
 import {createMovieFrame} from './movie-frame.js?v=0.7.2';
-import {encodeDeterministicVideo} from './deterministic-video.js?v=0.20.83';
+import {encodeDeterministicVideo,prefersPhotosCompatibleMP4} from './deterministic-video.js?v=0.20.85';
 import {cardAge,cardMeta,cardEntries,cardLinks,coachingMarkup,wrapCanvas,noteLines,decisionMarkup,branchDecisionMarkup} from './coaching-output.js?v=0.13.10';
 const RAW_LIMIT=3000000,LINK_LIMIT=60000;
 const encode64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'')};
@@ -95,10 +95,16 @@ export async function recordDrill(d,opts={},progress=()=>{},signal=null){
  let recorder,recorded;
  try{
   // Avoid a restrictive fixed H.264 profile/level, especially for Full HD and 4K.
-  const types=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
-  const candidates=types.filter(v=>MediaRecorder.isTypeSupported?.(v));candidates.push('');
+  const photos=prefersPhotosCompatibleMP4();
+  const types=['video/mp4;codecs=avc1','video/mp4',
+   ...(!photos?['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']:[])];
+  const candidates=types.filter(v=>MediaRecorder.isTypeSupported?.(v));
+  // On iPhone an unspecified recorder may produce an unimportable WebM.
+  if(!photos)candidates.push('');
   let lastError;for(const mime of candidates){try{recorder=new MediaRecorder(stream,{...(mime?{mimeType:mime}:{}),videoBitsPerSecond:bitrate});break}catch(e){lastError=e}}
-  if(!recorder)throw lastError||Error('The chosen resolution cannot be encoded in this browser.');
+  if(!recorder)throw lastError||Error(photos?
+   'This iPhone cannot record a Photos-compatible MP4 at this resolution. Try Full HD or another browser.':
+   'The chosen resolution cannot be encoded in this browser.');
   const chunks=[];let encoderError=null;
   recorded=new Promise((res,rej)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>res(new Blob(chunks,{type:recorder.mimeType||chunks[0]?.type||'video/webm'}));recorder.onerror=e=>{encoderError=e.error||Error('Video encoder failed.');rej(encoderError)}});
   recorded.catch(()=>{});
