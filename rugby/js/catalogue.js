@@ -30,7 +30,7 @@ export function filterDrills(drills,f){
 export function libraryHref(f){const p=filterParams(f).toString();return './library.html'+(p?'?'+p:'')}
 export function drillHref(id,f={}){const p=filterParams(f);p.set('drill',id);return './play.html?'+p.toString()}
 export async function loadCatalogue(fetcher=fetch){
- const res=await fetcher(new URL('../data/drills.json?v=0.20.86',import.meta.url),{cache:'no-cache'});
+ const res=await fetcher(new URL('../data/drills.json?v=0.20.88',import.meta.url),{cache:'no-cache'});
  if(!res.ok)throw Error('The library could not load (HTTP '+res.status+').');
  const data=await res.json();if(data?.version!==1||!Array.isArray(data.drills)||!data.drills.length)throw Error('The drill catalogue is unavailable.');
  const ids=new Set();for(const d of data.drills){if(!/^seed-\d{3,}$/.test(d.id)||ids.has(d.id)||!Array.isArray(d.frames)||!d.frames.length)throw Error('The catalogue contains an invalid entry.');ids.add(d.id)}
@@ -79,7 +79,7 @@ export async function loadCatalogue(fetcher=fetch){
  // public viewing and the Studio's in-app library load this same catalogue.
  let matchShowcases=[];
  try{
-  const response=await fetcher(new URL('../data/u10-match-showcases.json?v=5',import.meta.url),{cache:'no-cache'});
+  const response=await fetcher(new URL('../data/u10-match-showcases.json?v=7',import.meta.url),{cache:'no-cache'});
   if(!response.ok)throw Error('Match showcase pack HTTP '+response.status);
   const pack=await response.json();
   if(pack?.version!==1||pack.kind!=='rugby-match-showcases'||pack.category!=='U10 Match Showcases'||

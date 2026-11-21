@@ -1,4 +1,4 @@
-import {loadCatalogue} from './catalogue.js?v=0.17.0';
+import {loadCatalogue} from './catalogue.js?v=0.20.88';
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const ids=(params.get('drills')||'').split(',').map(x=>x.trim()).filter(x=>/^seed-[a-z0-9-]{1,30}$/i.test(x)).slice(0,8);

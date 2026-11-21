@@ -6,6 +6,10 @@ on:
     paths:
       - 'rugby/**'
       - '.github/workflows/rugby-browser-qa.yml'
+  pull_request:
+    paths:
+      - 'rugby/**'
+      - '.github/workflows/rugby-browser-qa.yml'
   workflow_dispatch:
 
 permissions:
