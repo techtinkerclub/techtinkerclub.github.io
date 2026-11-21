@@ -12180,7 +12180,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -12195,7 +12199,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
@@ -12422,7 +12430,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -12437,7 +12449,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
@@ -12606,36 +12622,6 @@
                 "scoringSide": "negative",
                 "labelAnchor": "end",
                 "labelSide": "left"
-              }
-            },
-            {
-              "id": "onsideAttack",
-              "type": "offsideLine",
-              "label": "ATTACK BACK FOOT · schematic",
-              "x": 450,
-              "y": 351,
-              "rot": 0,
-              "diagram": {
-                "length": 35,
-                "width": 2,
-                "color": "#70cafa",
-                "opacity": 78,
-                "dashed": true
-              }
-            },
-            {
-              "id": "onsideDefence",
-              "type": "offsideLine",
-              "label": "DEFENCE BACK FOOT · schematic",
-              "x": 450,
-              "y": 274,
-              "rot": 0,
-              "diagram": {
-                "length": 35,
-                "width": 2,
-                "color": "#f2ba74",
-                "opacity": 78,
-                "dashed": true
               }
             }
           ],
@@ -13620,7 +13606,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact2",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -13635,7 +13625,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact2",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -13871,7 +13865,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact2",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -13886,7 +13884,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "redContact2",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
@@ -14055,36 +14057,6 @@
                 "scoringSide": "negative",
                 "labelAnchor": "end",
                 "labelSide": "left"
-              }
-            },
-            {
-              "id": "onsideAttack",
-              "type": "offsideLine",
-              "label": "ATTACK BACK FOOT · schematic",
-              "x": 450,
-              "y": 271,
-              "rot": 0,
-              "diagram": {
-                "length": 35,
-                "width": 2,
-                "color": "#70cafa",
-                "opacity": 78,
-                "dashed": true
-              }
-            },
-            {
-              "id": "onsideDefence",
-              "type": "offsideLine",
-              "label": "DEFENCE BACK FOOT · schematic",
-              "x": 450,
-              "y": 189,
-              "rot": 0,
-              "diagram": {
-                "length": 35,
-                "width": 2,
-                "color": "#f2ba74",
-                "opacity": 78,
-                "dashed": true
               }
             }
           ],
