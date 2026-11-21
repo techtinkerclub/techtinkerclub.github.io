@@ -5047,6 +5047,4960 @@
           "paths": {}
         }
       ]
+    },
+    {
+      "version": 1,
+      "id": "seed-1104",
+      "title": "U10 PLAYBOOK · Four Calls | WIDE → SWITCH → GO AGAIN → WALL",
+      "age": "U10",
+      "ageMin": 10,
+      "ageMax": 10,
+      "category": "Match-day Plays",
+      "length": 60,
+      "width": 35,
+      "pitchContext": {
+        "mode": "field",
+        "age": "U10",
+        "x": 0,
+        "y": 0
+      },
+      "attackDirection": "up",
+      "showAttack": true,
+      "boundary": "line",
+      "minutes": 25,
+      "players": "Eight attackers and eight defenders, with the roles rotating between four coached scenarios. Separate repetitions are joined by clearly marked repositioning steps.",
+      "equipment": "One size-4 rugby ball, field markings or cones, and 16 players; rehearse in a suitably reduced coaching area.",
+      "objective": "A single four-part tactical rehearsal: draw and pass wide, switch the running angle, legally recycle after contact, and defend as a connected line.",
+      "coaching": "Four short calls, four jobs: WIDE = straighten then pass to deep support; SWITCH = run behind the ball carrier to receive the backward inside pass; GO AGAIN = legal release, present, limited U10 ruck and quick recycling; WALL = track the ball and defend in a connected line. Always respond to the actual defence, never force the scripted option.",
+      "safety": "Match-day teaching playbook only, NOT four consecutive match phases. Repositioning steps involve resets between independent scenarios. U10 safety: no illegal forward pass, obstruction or dangerous contact. All contact must be coached by a qualified age-grade coach, according to current RFU U10 law. No more than one additional player per team joins the tackled participants at a U10 ruck. Start with touch/walk-throughs.",
+      "instructions": "PLAYBOOK • Four separate tactical scenarios in one watchable/editable sequence. The numbered RESET steps are deliberate coaching repositioning, not real passes or continuous match action.\n1. WIDE — Run straight to fix defenders, make backwards passes to the outside and support the ball.\n2. SWITCH — Sell an outside carry, pass backwards to a supporting inside runner who straightens.\n3. GO AGAIN — Controlled tackle/release, backwards presentation, legal one-extra-player-per-side U10 ruck, quick ball to a new runner.\n4. WALL — Connected defenders slide and communicate while a ball carrier and receiver challenge the line.\nTeach the calls individually first. During the full sequence, freeze after each section to explain the defensive reaction and the decision. Use touch-only defence initially; teach live tackle/ruck technique separately under a suitably qualified club coach.",
+      "regression": "First run WIDE and WALL with passive/touch defenders and no contact. Add SWITCH at walking speed. Run GO AGAIN with simulated tackle, presentation and uncontested standing ruck before any qualified-coach-supervised contact.",
+      "progression": "Let the defenders make independent decisions rather than freezing. At each section ask whether a different option (carry, extra support or pass) would work better.",
+      "questions": "WIDE: Who fixed the defender? SWITCH: Did the receiver stay behind at release? GO AGAIN: Who releases and who may join the ruck? WALL: Who tracks the ball and who protects the gaps?",
+      "notes": "A published four-chapter lesson, not a promise that all four scenarios occur in a single possession. 'RESET FOR ...' frames are distinct coached breaks and repositioning sequences. Eight players a side, Classic engine only (Ruckus optional). Individual plays remain separate and editable in the same library.",
+      "links": [
+        {
+          "label": "RFU U10 age-grade rules 2026–27",
+          "url": "https://rfu.freshdesk.com/support/solutions/articles/103000094877-what-are-the-rules-of-play-for-my-childs-age-group-",
+          "kind": "Rules"
+        }
+      ],
+      "frames": [
+        {
+          "name": "1/4 · WIDE — Setup",
+          "seconds": 0,
+          "notes": "CHAPTER 1/4 • WIDE. A2 starts with the ball; A3 and A4 are deeper and wider.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 433,
+              "y": 452,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 551,
+              "y": 472,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 389,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 507,
+              "y": 281,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 312,
+              "y": 426,
+              "rot": 0,
+              "ownerId": "a2",
+              "carrySide": "right",
+              "transferKind": "pickup"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "1/4 · Go straight · draw D3",
+          "seconds": 2.4,
+          "notes": "A2 fixes D3 by running square towards the defender; A3 holds support depth.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 340,
+              "y": 327,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 429,
+              "y": 370,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 403,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 365,
+              "y": 301,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 502,
+              "y": 295,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 350,
+              "y": 317,
+              "rot": 0,
+              "ownerId": "a2",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-1",
+              "actorId": "a2",
+              "text": "DRAW FIRST",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "1/4 · Pass behind · A3 receives",
+          "seconds": 2,
+          "notes": "A2 passes backwards to A3 after D3 has committed.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 354,
+              "y": 306,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 453,
+              "y": 335,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 569,
+              "y": 363,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 358,
+              "y": 302,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 502,
+              "y": 295,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 463,
+              "y": 325,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "ball": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a3",
+              "text": "STAY DEEP",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "1/4 · A3 straightens at D4",
+          "seconds": 2.2,
+          "notes": "A3 goes forward and fixes D4; A4 continues wider, behind the ball.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 403,
+              "y": 294,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 487,
+              "y": 271,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 575,
+              "y": 322,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 358,
+              "y": 302,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 502,
+              "y": 274,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 497,
+              "y": 261,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "1/4 · Pass backwards · A4 outside",
+          "seconds": 1.9,
+          "notes": "A3 passes backwards to A4, outside the second defender.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 403,
+              "y": 294,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 505,
+              "y": 265,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 593,
+              "y": 292,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 358,
+              "y": 302,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 507,
+              "y": 270,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 624,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 603,
+              "y": 282,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "ball": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a4",
+              "text": "SPACE!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "1/4 · A4 exploits edge",
+          "seconds": 2.6,
+          "notes": "A4 accelerates in the edge channel while A3 and A5 support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 403,
+              "y": 294,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 532,
+              "y": 244,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 647,
+              "y": 216,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 715,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 358,
+              "y": 302,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 507,
+              "y": 270,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 627,
+              "y": 249,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 709,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 657,
+              "y": 206,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "1/4 · Review · pass or keep?",
+          "seconds": 1.3,
+          "notes": "If the defenders hold outside, keep the ball and attack inside instead of forcing the pass.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 403,
+              "y": 294,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 559,
+              "y": 232,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 661,
+              "y": 196,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 715,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 358,
+              "y": 302,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 507,
+              "y": 270,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 627,
+              "y": 249,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 709,
+              "y": 250,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 671,
+              "y": 186,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2/4 · RESET FOR SWITCH — coaching reset",
+          "seconds": 9,
+          "notes": "COACHING RESET (not continuous match play). Players reposition for SWITCH. Change the starting ball carrier, then coach the new call. A3 will sell an outside line; A4 is behind and outside ready to return inside.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 468,
+              "y": 425,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 598,
+              "y": 472,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 420,
+              "y": 281,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 534,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 478,
+              "y": 415,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "chapter-1-reset",
+              "actorId": "a3",
+              "text": "NEXT: SWITCH",
+              "kind": "speech",
+              "at": 0.08,
+              "displaySeconds": 1.55
+            }
+          ]
+        },
+        {
+          "name": "2/4 · A3 tempts D4 to drift outside",
+          "seconds": 2.4,
+          "notes": "A3 runs towards D4's outside shoulder. A4 curves behind the carrier.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 506,
+              "y": 351,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 572,
+              "y": 406,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 420,
+              "y": 281,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 553,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 516,
+              "y": 341,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-1",
+              "actorId": "a3",
+              "text": "SELL OUTSIDE",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "2/4 · Switch pass · A4 runs inside",
+          "seconds": 1.8,
+          "notes": "A4 runs BEHIND A3, not across the defender's path. A3 passes backwards at release.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 531,
+              "y": 312,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 505,
+              "y": 328,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 421,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 562,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 515,
+              "y": 318,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "ball": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "a4",
+              "text": "SWITCH!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "2/4 · A4 straightens into the gap",
+          "seconds": 2.2,
+          "notes": "A4 runs square and attacks space inside D4; A3 becomes support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 537,
+              "y": 290,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 470,
+              "y": 250,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 418,
+              "y": 261,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 559,
+              "y": 285,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 480,
+              "y": 240,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-3",
+              "actorId": "a4",
+              "text": "STRAIGHT!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "2/4 · A4 attacks, A3 supports",
+          "seconds": 2.4,
+          "notes": "The pass was behind; the receiver accelerates into space rather than running around a blocking team-mate.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 535,
+              "y": 236,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 470,
+              "y": 179,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 436,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 571,
+              "y": 251,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 480,
+              "y": 169,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "2/4 · Review · only if the gap opens",
+          "seconds": 1.2,
+          "notes": "Never force the switch when the defender stays inside; a normal support pass or carry may be better.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 535,
+              "y": 236,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 473,
+              "y": 166,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 436,
+              "y": 240,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 571,
+              "y": 251,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 483,
+              "y": 156,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3/4 · RESET FOR GO AGAIN — coaching reset",
+          "seconds": 9,
+          "notes": "COACHING RESET (not continuous match play). Players reposition for GO AGAIN. Change the starting ball carrier, then coach the new call. A2 carries with A1 and A3 in support; A4 waits deeper for the next phase.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 351,
+              "y": 418,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 440,
+              "y": 410,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 500,
+              "y": 448,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 563,
+              "y": 462,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 445,
+              "y": 270,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 512,
+              "y": 269,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 450,
+              "y": 400,
+              "rot": 0,
+              "ownerId": "a2",
+              "carrySide": "right",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "chapter-2-reset",
+              "actorId": "a2",
+              "text": "NEXT: GO AGAIN",
+              "kind": "speech",
+              "at": 0.08,
+              "displaySeconds": 1.55
+            }
+          ]
+        },
+        {
+          "name": "3/4 · Go forward · support follows",
+          "seconds": 2.2,
+          "notes": "A2 attacks space, A3 supports, D3 tracks the carrier.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 372,
+              "y": 390,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 445,
+              "y": 348,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 466,
+              "y": 396,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 445,
+              "y": 311,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 504,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 455,
+              "y": 338,
+              "rot": 0,
+              "ownerId": "a2",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-1",
+              "actorId": "a2",
+              "text": "GO FORWARD",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "3/4 · Controlled tackle · A2 to ground",
+          "seconds": 1.5,
+          "notes": "D3 performs a qualified-coach-supervised U10 tackle; sequence only, not technique.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 389,
+              "y": 371,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 312,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 458,
+              "y": 375,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 446,
+              "y": 303,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 504,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 456,
+              "y": 302,
+              "rot": 0,
+              "ownerId": "a2",
+              "carrySide": "right"
+            },
+            {
+              "id": "contact",
+              "type": "tackle",
+              "label": "CONTROLLED TACKLE",
+              "x": 446,
+              "y": 311,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a2",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "d3",
+                  "pose": "tackling"
+                }
+              ],
+              "breakdown": {
+                "phase": "tackle",
+                "carrierId": "a2",
+                "tacklerId": "d3",
+                "tacklerIds": [
+                  "d3"
+                ],
+                "ballId": "ball",
+                "arrivalSide": "attack"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3/4 · Release and present back",
+          "seconds": 1.65,
+          "notes": "D3 releases and clears. A2 presents the ball on the attacking side.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 405,
+              "y": 361,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 451,
+              "y": 348,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 501,
+              "y": 315,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 456,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 447,
+              "y": 329,
+              "rot": 0,
+              "carrySide": "right",
+              "groundState": "presented",
+              "transferKind": "presentation"
+            },
+            {
+              "id": "contact",
+              "type": "tackle",
+              "label": "RELEASE",
+              "x": 446,
+              "y": 311,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a2",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "d3",
+                  "pose": "recovering"
+                }
+              ],
+              "breakdown": {
+                "phase": "release",
+                "carrierId": "a2",
+                "tacklerId": "d3",
+                "tacklerIds": [
+                  "d3"
+                ],
+                "ballId": "ball",
+                "arrivalSide": "attack"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-3",
+              "actorId": "a2",
+              "text": "PRESENT BACK",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "3/4 · A3 and D4 approach on feet",
+          "seconds": 1.8,
+          "notes": "Only the one additional player per side joins the tackle participants at the U10 ruck.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 422,
+              "y": 364,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 325,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 292,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 447,
+              "y": 329,
+              "rot": 0,
+              "carrySide": "right",
+              "groundState": "presented"
+            },
+            {
+              "id": "contact",
+              "type": "tackle",
+              "label": "SUPPORT",
+              "x": 447,
+              "y": 310,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a2",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a3",
+                  "pose": "standing"
+                }
+              ],
+              "breakdown": {
+                "phase": "support",
+                "carrierId": "a2",
+                "tacklerId": "d3",
+                "tacklerIds": [
+                  "d3"
+                ],
+                "ballId": "ball",
+                "arrivalSide": "attack"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-4",
+              "actorId": "a3",
+              "text": "ONE EACH",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "3/4 · Ruck · one arriving player each",
+          "seconds": 1.8,
+          "notes": "A3 and D4 engage over the ball, with all other players behind their team's offside line.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 427,
+              "y": 362,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 312.3,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 307.7,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 447,
+              "y": 329,
+              "rot": 0,
+              "carrySide": "right",
+              "groundState": "presented"
+            },
+            {
+              "id": "contact",
+              "type": "ruck",
+              "label": "RUCK",
+              "x": 447,
+              "y": 310,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a2",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a3",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d4",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "ruck",
+                "carrierId": "a2",
+                "tacklerId": "d3",
+                "tacklerIds": [
+                  "d3"
+                ],
+                "ballId": "ball",
+                "arrivalSide": "attack"
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3/4 · Contest · possession secured",
+          "seconds": 1.8,
+          "notes": "Both on-feet players remain engaged; A3 secures possession and no extra players join.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 433,
+              "y": 355,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 309.2,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 558,
+              "y": 422,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 304.6,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 447,
+              "y": 329,
+              "rot": 0,
+              "carrySide": "right",
+              "groundState": "presented"
+            },
+            {
+              "id": "contact",
+              "type": "ruck",
+              "label": "CONTEST",
+              "x": 447,
+              "y": 310,
+              "rot": 0,
+              "members": [
+                {
+                  "id": "a2",
+                  "pose": "grounded"
+                },
+                {
+                  "id": "a3",
+                  "pose": "bound"
+                },
+                {
+                  "id": "d4",
+                  "pose": "bound"
+                }
+              ],
+              "breakdown": {
+                "phase": "contest",
+                "carrierId": "a2",
+                "tacklerId": "d3",
+                "tacklerIds": [
+                  "d3"
+                ],
+                "ballId": "ball",
+                "arrivalSide": "attack",
+                "winner": "attack",
+                "showWinnerLabel": false
+              }
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3/4 · A1 retrieves available ball",
+          "seconds": 1.6,
+          "notes": "A1 takes the available ball from behind the ruck and prepares to pass it away promptly.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 434,
+              "y": 349,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 309.2,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 565,
+              "y": 384,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 304.6,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 610,
+              "y": 280,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 444,
+              "y": 339,
+              "rot": 0,
+              "carrySide": "right",
+              "ownerId": "a1",
+              "transferKind": "pickup"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-7",
+              "actorId": "a1",
+              "text": "USE IT!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.4500000000000002
+            }
+          ]
+        },
+        {
+          "name": "3/4 · Pass behind · A4 receives",
+          "seconds": 2,
+          "notes": "A1 passes backwards to A4, who stays deeper and outside the previous tackle.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 445,
+              "y": 331,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 309.2,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 568,
+              "y": 363,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 304.6,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 586,
+              "y": 296,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 578,
+              "y": 353,
+              "rot": 0,
+              "carrySide": "right",
+              "ownerId": "a4",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "ball": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-8",
+              "actorId": "a4",
+              "text": "GO AGAIN!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "3/4 · A4 attacks the next channel",
+          "seconds": 2.6,
+          "notes": "A4 attacks space, rather than crowding the previous contact, with A5 in support.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 483,
+              "y": 317,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 309.2,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 583,
+              "y": 276,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 649,
+              "y": 340,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 304.6,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 601,
+              "y": 263,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 593,
+              "y": 266,
+              "rot": 0,
+              "carrySide": "right",
+              "ownerId": "a4"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "3/4 · Review · present, secure, move",
+          "seconds": 1.2,
+          "notes": "Point out release, offside, the limited U10 ruck numbers and playing the ball away.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 483,
+              "y": 317,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 446,
+              "y": 311,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 447,
+              "y": 309.2,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 590,
+              "y": 256,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 651,
+              "y": 316,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 161,
+              "y": 283,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 270,
+              "y": 284,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 505,
+              "y": 317,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 447,
+              "y": 304.6,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 601,
+              "y": 263,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 700,
+              "y": 278,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 777,
+              "y": 277,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 838,
+              "y": 276,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 600,
+              "y": 246,
+              "rot": 0,
+              "carrySide": "right",
+              "ownerId": "a4"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4/4 · RESET FOR WALL — coaching reset",
+          "seconds": 9,
+          "notes": "COACHING RESET (not continuous match play). Players reposition for WALL. Change the starting ball carrier, then coach the new call. Defenders establish an even line across the pitch; A3 carries in attack.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 463,
+              "y": 432,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 580,
+              "y": 461,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 169,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 269,
+              "y": 285,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 384,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 500,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 612,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 709,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 781,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 841,
+              "y": 286,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 473,
+              "y": 422,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right",
+              "transferKind": "set"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "chapter-3-reset",
+              "actorId": "d4",
+              "text": "NEXT: WALL",
+              "kind": "speech",
+              "at": 0.08,
+              "displaySeconds": 1.55
+            }
+          ]
+        },
+        {
+          "name": "4/4 · Move forward together",
+          "seconds": 2.1,
+          "notes": "The defending line moves forward together and scans the ball. No lone defender races ahead.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 473,
+              "y": 369,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 593,
+              "y": 409,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 395,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 505,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 621,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 719,
+              "y": 306,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 784,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 483,
+              "y": 359,
+              "rot": 0,
+              "ownerId": "a3",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-1",
+              "actorId": "d4",
+              "text": "WALL!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "4/4 · A3 passes wide to A4",
+          "seconds": 2,
+          "notes": "A3 makes a backward pass to A4. Defenders slide together towards the new ball carrier.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 483,
+              "y": 347,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 601,
+              "y": 378,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 415,
+              "y": 308,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 532,
+              "y": 307,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 644,
+              "y": 307,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 738,
+              "y": 306,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 803,
+              "y": 306,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 611,
+              "y": 368,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right",
+              "transferKind": "pass"
+            }
+          ],
+          "timing": {
+            "ball": {
+              "start": 25,
+              "end": 60
+            }
+          },
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-2",
+              "actorId": "d5",
+              "text": "SHIFT!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "4/4 · D5 takes ball, neighbours cover",
+          "seconds": 2.2,
+          "notes": "D5 tracks A4; D4 protects inside and D6 covers outside. Keep the line connected.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 500,
+              "y": 327,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 635,
+              "y": 310,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 434,
+              "y": 300,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 556,
+              "y": 298,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 643,
+              "y": 297,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 737,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 809,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 645,
+              "y": 300,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {},
+          "callouts": [
+            {
+              "id": "cue-3",
+              "actorId": "d5",
+              "text": "BALL!",
+              "kind": "speech",
+              "at": 0.12,
+              "displaySeconds": 1.5
+            }
+          ]
+        },
+        {
+          "name": "4/4 · Close safely without gaps",
+          "seconds": 1.6,
+          "notes": "D5 reaches a controlled two-handed touch for this walk-through; match tackling must follow U10 rules.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 500,
+              "y": 327,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 643,
+              "y": 291,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 434,
+              "y": 300,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 567,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 649,
+              "y": 285,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 744,
+              "y": 289,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 809,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 653,
+              "y": 281,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4/4 · Reset the defensive picture",
+          "seconds": 2.1,
+          "notes": "After the stop, reorganise the defensive line instead of swarming the contact point.",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 500,
+              "y": 327,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 643,
+              "y": 291,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 446,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 567,
+              "y": 300,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 655,
+              "y": 298,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 742,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 810,
+              "y": 298,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 653,
+              "y": 281,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        },
+        {
+          "name": "4/4 · Review · defend as one team",
+          "seconds": 1.2,
+          "notes": "Ask: who has the carrier, who covers inside and outside, and where would a gap appear?",
+          "objects": [
+            {
+              "id": "a1",
+              "type": "attacker",
+              "label": "A1",
+              "x": 170,
+              "y": 454,
+              "rot": 0
+            },
+            {
+              "id": "a2",
+              "type": "attacker",
+              "label": "A2",
+              "x": 302,
+              "y": 436,
+              "rot": 0
+            },
+            {
+              "id": "a3",
+              "type": "attacker",
+              "label": "A3",
+              "x": 500,
+              "y": 327,
+              "rot": 0
+            },
+            {
+              "id": "a4",
+              "type": "attacker",
+              "label": "A4",
+              "x": 643,
+              "y": 291,
+              "rot": 0
+            },
+            {
+              "id": "a5",
+              "type": "attacker",
+              "label": "A5",
+              "x": 641,
+              "y": 475,
+              "rot": 0
+            },
+            {
+              "id": "a6",
+              "type": "attacker",
+              "label": "A6",
+              "x": 709,
+              "y": 482,
+              "rot": 0
+            },
+            {
+              "id": "a7",
+              "type": "attacker",
+              "label": "A7",
+              "x": 773,
+              "y": 491,
+              "rot": 0
+            },
+            {
+              "id": "a8",
+              "type": "attacker",
+              "label": "A8",
+              "x": 822,
+              "y": 497,
+              "rot": 0
+            },
+            {
+              "id": "d1",
+              "type": "defender",
+              "label": "D1",
+              "x": 173,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d2",
+              "type": "defender",
+              "label": "D2",
+              "x": 276,
+              "y": 304,
+              "rot": 180
+            },
+            {
+              "id": "d3",
+              "type": "defender",
+              "label": "D3",
+              "x": 446,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d4",
+              "type": "defender",
+              "label": "D4",
+              "x": 567,
+              "y": 300,
+              "rot": 180
+            },
+            {
+              "id": "d5",
+              "type": "defender",
+              "label": "D5",
+              "x": 655,
+              "y": 298,
+              "rot": 180
+            },
+            {
+              "id": "d6",
+              "type": "defender",
+              "label": "D6",
+              "x": 742,
+              "y": 299,
+              "rot": 180
+            },
+            {
+              "id": "d7",
+              "type": "defender",
+              "label": "D7",
+              "x": 810,
+              "y": 298,
+              "rot": 180
+            },
+            {
+              "id": "d8",
+              "type": "defender",
+              "label": "D8",
+              "x": 844,
+              "y": 305,
+              "rot": 180
+            },
+            {
+              "id": "ball",
+              "type": "ball",
+              "label": "",
+              "x": 653,
+              "y": 281,
+              "rot": 0,
+              "ownerId": "a4",
+              "carrySide": "right"
+            }
+          ],
+          "timing": {},
+          "paths": {}
+        }
+      ]
     }
-  ]
+  ],
+  "description": "Four editable individual U10 plays plus one chaptered combined match-day playbook."
 }
