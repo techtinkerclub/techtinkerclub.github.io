@@ -24,7 +24,8 @@ try {
  assert.equal(await page.locator('#board .cartoon-pitch-decor').count(),0,'No corner flowers');
  await page.locator('#playerMinionMode').click();
  assert.equal(await page.locator('#board .ruckus-player').count(),0,'Switch restores Classic view');
-  assert.equal(await page.locator('#addPlayerToVideo').isVisible(),true);
+  assert.equal(await page.locator('#addPlayerToVideo').evaluate(el=>el.hidden),false,
+    'The video-composition link must be enabled, even when Blackboard intentionally hides the header');
   assert.match(await page.locator('#addPlayerToVideo').getAttribute('href'),/video=seed-133/);
  assert.equal(await page.locator('#branchPlayer').evaluate(el=>el.hidden),false,'Outcome selector should be available in the coaching sidebar');
  assert.match(await page.locator('#coachCardContent').innerText(),/World Rugby|RFU/i);
@@ -49,6 +50,10 @@ try {
  assert.equal(await page.locator('#branchChoice').inputValue(),'a');
  await page.locator('#play').click();
  // Verify the settings and actual video creation in a headless Chromium browser.
+ // Public Blackboard hides the legacy header and controls: open the actual
+ // Share drawer first, as a coach would in the read-only presentation UI.
+ await page.locator('.public-board-toolbar button').filter({hasText:'Share'}).click();
+ await page.locator('.presentation-sidebar[data-open="true"]').waitFor({state:'visible'});
  await page.locator('#playerMovieMode').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
  await page.locator('#playerMovieMode').selectOption('single');
  await page.locator('#playerMovieQuality').selectOption('720');
@@ -183,18 +188,22 @@ try {
  capture(framed);
  await framed.goto(origin+'/rugby/play.html?drill=seed-057',{waitUntil:'networkidle',timeout:40000});
  await framed.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Tackle, Present'));
- const complete=await framed.locator('#board svg').getAttribute('viewBox');
- await framed.locator('#framing').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
- await framed.locator('#framing').selectOption('action');
- const closeView=await framed.locator('#board svg').getAttribute('viewBox');
+ const sceneSVG=framed.locator('#board svg:not(.public-board-ink)');
+ const complete=await sceneSVG.getAttribute('viewBox');
+ // Public Blackboard intentionally hides the old framing control. Use the
+ // visible floating Camera menu, which syncs the legacy value internally.
+ await framed.locator('.public-board-camera-toggle').click();
+ await framed.locator('#publicCameraTarget').selectOption('action');
+ const closeView=await sceneSVG.getAttribute('viewBox');
  assert.notEqual(closeView,complete,'Presentation action camera must change only the SVG viewport');
  assert.equal(await framed.locator('#framing').inputValue(),'action');
- const beforeZoom=await framed.locator('#board svg').getAttribute('viewBox');
+ await framed.locator('.public-board-camera-close').click();
+ const beforeZoom=await sceneSVG.getAttribute('viewBox');
  await framed.locator('#playerZoomIn').click();
- const zoomed=await framed.locator('#board svg').getAttribute('viewBox');
+ const zoomed=await sceneSVG.getAttribute('viewBox');
  assert.notEqual(beforeZoom,zoomed,'Read-only player zoom should change the SVG viewport');
  await framed.locator('#playerZoomFit').click();
- assert.equal(await framed.locator('#board svg').getAttribute('viewBox'),beforeZoom,'Fit resets manual zoom');
+ assert.equal(await sceneSVG.getAttribute('viewBox'),beforeZoom,'Fit resets manual zoom');
 
  await framed.locator('#play').click();
  await framed.waitForTimeout(500);
