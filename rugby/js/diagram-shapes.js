@@ -39,10 +39,19 @@ export function diagramSVG(o,g,{ink=false,anchor=null}={}){
  const camera=g.annotationViewport,anno=Number(g.annotationScale)||1;
  const compact=!!camera&&anno<.999;
  const labelScale=compact?anno:1;
- const offsideTextX=compact&&anchor
-  ?Math.max(-a/2+10*anno,Math.min(a/2-14*anno,camera.x-anchor.x+10*anno)):0;
+ // Attach the compact caption to an end of its own line. The attacking
+ // and defending sides use opposite ends so nearby breakdown guides remain legible.
+ const offsideDefence=o.diagram?.followSide==='defence';
+ const captionSize=8.5*labelScale;
+ const captionWidth=(offsideDefence?11:11)*captionSize*.57;
+ const cameraLeft=compact&&anchor?camera.x-anchor.x:-a/2;
+ const cameraRight=compact&&anchor?camera.x+camera.width-anchor.x:a/2;
+ const visibleLeft=Math.max(-a/2,cameraLeft),visibleRight=Math.min(a/2,cameraRight);
+ const offsideTextX=offsideDefence
+  ?Math.max(visibleLeft+captionWidth+5*labelScale,visibleRight-7*labelScale)
+  :Math.min(visibleRight-captionWidth-5*labelScale,visibleLeft+7*labelScale);
  
- const attrs=' fill="none" stroke="'+st+'" stroke-opacity="'+s.opacity/100+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"'+(s.dashed?' stroke-dasharray="8 5"':'');
+ const attrs=' fill="none" stroke="'+st+'" stroke-opacity="'+s.opacity/100+'" stroke-width="'+(o.type==='offsideLine'?1.5:2.5)+'" stroke-linecap="round" stroke-linejoin="round"'+(s.dashed?' stroke-dasharray="8 5"':'');
  let visible='',hit='',measurement='';
  const label=o.type==='offsideLine'?'OFFSIDE · COACH GUIDE':o.type==='measureLine'?fmt(s.length)+' m':String(o.label||'');
  if(o.type==='offsideLine'||o.type==='measureLine'||o.type==='fieldLine'||o.type==='tryLine'){
@@ -72,7 +81,7 @@ export function diagramSVG(o,g,{ink=false,anchor=null}={}){
   visible='<rect x="'+(-a/2)+'" y="'+(-b/2)+'" width="'+a+'" height="'+b+'" rx="2" fill="'+(s.fill?st:'none')+'" fill-opacity="'+(s.fill?s.fillOpacity/100:0)+'"'+attrs.replace(' fill="none"','')+'/>';
   hit='<rect x="'+(-a/2)+'" y="'+(-b/2)+'" width="'+a+'" height="'+b+'" fill="transparent" stroke="transparent" stroke-width="14" pointer-events="all"/>';
  }
- const description=o.type==='offsideLine'?'<text x="'+offsideTextX+'" y="'+(-9*labelScale)+'" text-anchor="'+(compact?'start':'middle')+'" font-size="'+(10*labelScale)+'" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(3*labelScale)+'" pointer-events="none">'+escape(compact?'OFFSIDE · GUIDE':label)+'</text>':o.type!=='measureLine'&&o.label?'<text x="0" y="'+(o.type==='fieldLine'?-10:o.type==='zoneRect'?-b/2-8:o.type==='zoneCircle'?-a/2-8:-a/2-9)+'" text-anchor="middle" font-size="'+(11*labelScale)+'" font-weight="600" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(o.label)+'</text>':'';
+ const description=o.type==='offsideLine'?'<text x="'+offsideTextX+'" y="'+(-6*labelScale)+'" text-anchor="'+(offsideDefence?'end':'start')+'" font-size="'+captionSize+'" font-weight="650" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(2*labelScale)+'" pointer-events="none">'+escape(offsideDefence?'DEF OFFSIDE':'ATT OFFSIDE')+'</text>':o.type!=='measureLine'&&o.label?'<text x="0" y="'+(o.type==='fieldLine'?-10:o.type==='zoneRect'?-b/2-8:o.type==='zoneCircle'?-a/2-8:-a/2-9)+'" text-anchor="middle" font-size="'+(11*labelScale)+'" font-weight="600" fill="'+st+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="3" pointer-events="none">'+escape(o.label)+'</text>':'';
  let positionedLabel='';
  if(['fieldLine','tryLine'].includes(o.type)){
   const title=String(o.label|| (o.type==='tryLine'?'TRY LINE':'')).slice(0,64);
