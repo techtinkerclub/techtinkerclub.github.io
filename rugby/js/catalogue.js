@@ -96,15 +96,15 @@ export async function loadCatalogue(fetcher=fetch){
   }
   matchShowcases=pack.drills;
  }catch(err){console.warn('U10 match showcases unavailable:',err)}
- // Four traditional, coach-call tactical patterns. The same published pack
+ // Four traditional, coach-call tactical patterns plus one combined playbook. The same published pack
  // is visible in Studio and the public library; none is a demo-only renderer.
  let matchPlays=[];
  try{
-  const response=await fetcher(new URL('../data/match-day-plays.json?v=1',import.meta.url),{cache:'no-cache'});
+  const response=await fetcher(new URL('../data/match-day-plays.json?v=2',import.meta.url),{cache:'no-cache'});
   if(!response.ok)throw Error('Match-day playbook HTTP '+response.status);
   const pack=await response.json();
   if(pack?.version!==1||pack.kind!=='rugby-match-day-plays'||pack.category!=='Match-day Plays'||
-     !Array.isArray(pack.drills)||pack.drills.length!==4)throw Error('Invalid match-day playbook');
+     !Array.isArray(pack.drills)||pack.drills.length!==5)throw Error('Invalid match-day playbook');
   const known=new Set([...curated,...showcase,...qa,...matchShowcases].map(d=>d.id));
   for(const d of pack.drills){
    if(!/^seed-\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Match-day Plays'||
