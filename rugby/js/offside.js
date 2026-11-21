@@ -75,10 +75,18 @@ export function offsideOverlay(objects,d,g,mode='auto',ink=false,suppressTracked
    const zoomView=g.annotationViewport,scale=zoomView?g.annotationScale||1:1;
    const view=scale<.999?zoomView:null;
    const lineVisible=!view||(horizontal?(k>=view.y&&k<=view.y+view.height):(k>=view.x&&k<=view.x+view.width));
-   const tx=horizontal?(view?Math.max(g.margin+5,view.x+9*scale):g.margin+5):k+4*scale;
-   const ty=horizontal?k-5*scale:(view?Math.max(g.margin+12,view.y+12*scale):g.margin+12);
-   const guideText=lineVisible?'<text x="'+tx+'" y="'+ty+'" font-size="'+(10*scale)+'" fill="'+c+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(3*scale)+'">'+(view?'OFFSIDE · GUIDE':label+' · OFFSIDE GUIDE')+'</text>':'';
-   return '<line '+pos+' stroke="'+c+'" stroke-width="2" stroke-dasharray="7 5"/>'+guideText;
+   // Put the two team captions at opposing visible ends, rather than
+   // stacking them over the breakdown. Keep captions attached to their line.
+   const defence=label==='ORANGE',font=8.5*scale;
+   const minX=view?Math.max(g.margin,view.x):g.margin;
+   const maxX=view?Math.min(g.margin+g.fw,view.x+view.width):g.margin+g.fw;
+   const minY=view?Math.max(g.margin,view.y):g.margin;
+   const maxY=view?Math.min(g.margin+g.fh,view.y+view.height):g.margin+g.fh;
+   const tx=horizontal?(defence?maxX-7*scale:minX+7*scale):k+(defence?-6:6)*scale;
+   const ty=horizontal?k-6*scale:(defence?maxY-7*scale:minY+12*scale);
+   const anchor=horizontal?(defence?'end':'start'):(defence?'end':'start');
+   const guideText=lineVisible?'<text x="'+tx+'" y="'+ty+'" text-anchor="'+anchor+'" font-size="'+font+'" font-weight="650" fill="'+c+'" paint-order="stroke" stroke="'+(ink?'#fff':'#203b2b')+'" stroke-width="'+(2*scale)+'">'+(defence?'DEF OFFSIDE':'ATT OFFSIDE')+'</text>':'';
+   return '<line '+pos+' stroke="'+c+'" stroke-width="1.4" stroke-dasharray="7 5"/>'+guideText;
   }).join('')+'</g>'
  }).join('');
 }
