@@ -1582,7 +1582,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -1597,7 +1601,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -1842,7 +1850,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -1857,7 +1869,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
@@ -3181,7 +3197,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact2",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -3196,7 +3216,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact2",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -3441,7 +3465,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact2",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -3456,7 +3484,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact2",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
@@ -6143,7 +6175,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -6158,7 +6194,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -6403,7 +6443,11 @@
                 "width": 2,
                 "color": "#70cafa",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "attack",
+                "followOffset": 0,
+                "followLateral": 0
               }
             },
             {
@@ -6418,7 +6462,11 @@
                 "width": 2,
                 "color": "#f2ba74",
                 "opacity": 78,
-                "dashed": true
+                "dashed": true,
+                "followContactId": "contact1",
+                "followSide": "defence",
+                "followOffset": 0,
+                "followLateral": 0
               }
             }
           ],
