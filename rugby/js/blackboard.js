@@ -395,6 +395,9 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
   if(routeButton)routeButton.title=state.routeDrawing?'Finish drawing this route':'Draw the selected player’s route';
  }
  function showDetails(open,tab='object'){
+  // Details and Add are alternate editing surfaces: never leave the Add
+  // toggle on while its panel is hidden behind the inspector.
+  if(open){adding=false;$('bbAddMenu').hidden=true;}
   drawer=!!open;document.body.classList.toggle('blackboard-details-open',drawer);
   $('bbCloseDetails').hidden=!drawer;
   btn('details')?.classList.toggle('is-active',drawer);
@@ -424,7 +427,14 @@ export function initBlackboard({getState,fit,rotate,openDetails,openStepDetails,
     if(!click('drawRouteSide'))hint('Select a player first, then choose Run.');else hint('Click points on the pitch for the run. Tap Run again to finish.');break;
    case 'pass':setPen(false);
     if(!click('passBallSide'))hint('Select the player carrying the ball first.');else hint('Now tap the teammate who should receive the ball.');break;
-   case 'add':setPen(false);adding=!adding;if(adding)syncAddPalette();$('bbAddMenu').hidden=!adding;break;
+   case 'add':
+    setPen(false);
+    const openAdd=!adding;
+    if(openAdd&&drawer)showDetails(false);
+    adding=openAdd;
+    if(adding)syncAddPalette();
+    $('bbAddMenu').hidden=!adding;
+    break;
    case 'actions':setPen(false);openObjectActions?.();break;
    case 'details':showDetails(!drawer);break;
    case 'close-details':showDetails(false);break;
