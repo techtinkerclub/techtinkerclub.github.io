@@ -2578,7 +2578,7 @@
         {
           "name": "Set up the L",
           "seconds": 0,
-          "notes": "A1 waits below the corner; A2 feeds from the side. A3 waits inside and behind the direction of the turn.",
+          "notes": "The L-turn handling pattern now has A3 waiting behind A1's turn, so the eventual pass can travel backwards when the runner turns upfield.",
           "objects": [
             {
               "id": "a1",
@@ -2603,7 +2603,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 378,
-              "y": 125,
+              "y": 353,
               "rot": 0
             },
             {
@@ -2663,7 +2663,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 378,
-              "y": 125,
+              "y": 353,
               "rot": 0
             },
             {
@@ -2704,7 +2704,7 @@
         {
           "name": "Turn and pass",
           "seconds": 1.8,
-          "notes": "A1 rounds the corner and passes towards A3 along the new running direction. In a match, set the support behind the carrier and keep the pass backwards relative to the attack direction.",
+          "notes": "A1 turns and passes backwards to A3, whose position remains behind the current ball carrier. Keep a clear receiving lane and rotate the feeder and runner.",
           "objects": [
             {
               "id": "a1",
@@ -2727,7 +2727,7 @@
               "type": "attacker",
               "label": "A3",
               "x": 378,
-              "y": 125,
+              "y": 353,
               "rot": 0
             },
             {
@@ -3603,7 +3603,7 @@
         },
         {
           "name": "Pass A1 → A2",
-          "seconds": 1.8,
+          "seconds": 3,
           "notes": "A2 steps in to receive from A1. Once the ball has left A1's hands, A1 follows into A2's old space.",
           "objects": [
             {
@@ -3669,7 +3669,7 @@
         },
         {
           "name": "Pass A2 → A3",
-          "seconds": 1.8,
+          "seconds": 3,
           "notes": "A3 offers a target. A2 releases the pass before moving into the space A3 has vacated.",
           "objects": [
             {
@@ -3735,7 +3735,7 @@
         },
         {
           "name": "Pass A3 → A4",
-          "seconds": 1.8,
+          "seconds": 3,
           "notes": "A4 moves towards the centre and receives. A3 follows after the pass; check that the runners have room.",
           "objects": [
             {
@@ -3801,7 +3801,7 @@
         },
         {
           "name": "Pass A4 → A1",
-          "seconds": 1.8,
+          "seconds": 3,
           "notes": "A1 receives the final pass. A4 follows, then everyone resets the diamond.",
           "objects": [
             {
@@ -3882,8 +3882,8 @@
       "minutes": 8,
       "players": "8–12",
       "equipment": "4 cones, 2 balls, bibs",
-      "instructions": "Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules.",
-      "coaching": "Scan before receiving; communicate which ball is live. Coach observation: Look for visible hands and an early receiver call before the ball travels; prioritise completed catches over pace.",
+      "instructions": "Use two marked scoring zones. Teams score by passing to a teammate inside a zone. Begin with one ball before introducing the second, with clear possession rules. This is a deliberately modified, non-match End Ball game: scoring-zone passes may travel forwards under the game's own rules. Explain that the same pass is illegal in normal rugby; for rugby-law practice, position the receiving player level with or behind the ball carrier instead.",
+      "coaching": "Scan before receiving; communicate which ball is live. Coach observation: Look for visible hands and an early receiver call before the ball travels; prioritise completed catches over pace. Distinguish the modified End Ball scoring rule from a legal rugby pass: do not present a forward scoring-zone pass as a match example.",
       "regression": "Use one ball.",
       "progression": "Add a second scoring zone per end.",
       "questions": "Which ball are you offering for? How do you avoid two receivers chasing the same pass?",
@@ -4093,7 +4093,7 @@
         {
           "name": "Pass to the scoring zone",
           "seconds": 1.8,
-          "notes": "A1 passes to A2 in the marked scoring area. This is a modified end-ball game; announce which ball is live.",
+          "notes": "Modified End Ball game (NOT normal rugby laws): A1 passes into the scoring zone to A2 ahead. For a rugby-law version, keep the receiver behind the carrier and award points for a completed backwards pass instead.",
           "objects": [
             {
               "id": "a1",
@@ -37099,7 +37099,7 @@
         {
           "name": "Free pass · 5 m and 7 m",
           "seconds": 2.7,
-          "notes": "D1 stands 5 m in from touch. Blue retires at least 7 m. D2 waits behind D1.",
+          "notes": "D1 stands 5 m in from touch. Blue retires at least 7 m. D2 waits behind D1. Orange attacks towards the BOTTOM of this diagram after the change of possession; D2 is deeper for this new direction.",
           "objects": [
             {
               "id": "a1",
@@ -37243,7 +37243,7 @@
         {
           "name": "Pass backwards to restart",
           "seconds": 1.6,
-          "notes": "D1 passes backwards to D2 on the signal. Neither side runs before the pass.",
+          "notes": "D1 passes backwards to D2 on the signal. Neither side runs before the pass. For orange attacking downfield, a backwards pass travels UP the drawing towards D2.",
           "objects": [
             {
               "id": "a1",
@@ -67220,7 +67220,7 @@
         },
         {
           "name": "Hold shape · look and communicate",
-          "seconds": 0.8,
+          "seconds": 2.1,
           "notes": "Pause and check that the line is still connected, everyone is facing the play and nobody has sprinted out alone. Repeat several times before adding a ball-carrier decision.",
           "objects": [
             {
