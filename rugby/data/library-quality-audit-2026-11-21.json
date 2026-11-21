@@ -664,9 +664,9 @@
       "category": "Game",
       "ageRange": "12–16",
       "stageCount": 5,
-      "mainSequenceSeconds": 5.95,
+      "mainSequenceSeconds": 6.45,
       "alternatives": [],
-      "maxApproxPlayerSpeedMps": 6.92,
+      "maxApproxPlayerSpeedMps": 5.35,
       "flags": []
     },
     {
