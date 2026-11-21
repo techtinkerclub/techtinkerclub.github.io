@@ -1107,6 +1107,9 @@ function ensureSkillActionStep(title){
 let actionScope='any',actionFromGroup=false;
 function openActionChooser(fromGroup=groupIds.size>=2){
  if(!canEditObjects())return;
+ if(!fromGroup&&!canCarry(activeObject())&&activeObject()?.type!=='ball'){
+  note('Select a player or ball for rugby actions. Lines and equipment have their own editing controls.');return;
+ }
  hydrateLegacyTagItems(drill.frames);
  actionFromGroup=fromGroup;
  const sel=$('actionKind'),roster=f().objects.filter(canCarry),selectedIds=[...groupIds];
@@ -1394,34 +1397,39 @@ function openObjectMenu(e){
  }
  groupIds.clear();groupMode=false;
  if(path){selected=path.dataset.pathId;selectedPathId=selected}
- else{selectedPathId=null;if(group&&!stack.some(o=>o.id===selected))selected=group.dataset.id;else if(!group&&!handle)selected=stack[0].id;}
+ else{selectedPathId=null;if(group)selected=group.dataset.id;else if(!handle&&stack.length)selected=stack[0].id;}
+ // The clicked SVG object always wins, even when another selected player overlaps.
  $('stackOptions').hidden=stack.length<2;$('stackOptions').innerHTML=stack.length<2?'':'<small>Choose overlapping object</small>'+stack.map(o=>'<button data-stack-id="'+esc(o.id)+'">'+esc(objectName(o))+'</button>').join('');
  const o=activeObject();if(!o)return;
  e.preventDefault();menuRoutePoint=viewPoint(e);render();inspector();openInspector('Object',false);
- const moving=!!(idx>0&&canCarry(o)&&decisionRoute(f(),drill.frames[idx-1],o.id,geometry()));
+ const player=canCarry(o),ballObject=o.type==='ball',contact=contactType(o.type);
+ const moving=!!(idx>0&&player&&decisionRoute(f(),drill.frames[idx-1],o.id,geometry()));
  const decision=hasOutcomes(drill),annotation=o.type==='decision';
  const ball=chosenBall(),hasBall=!!ball,carried=!!(ball&&carrier(f(),ball));
- const drawable=(canCarry(o)||o.type==='ball'||contactType(o.type))&&!(isShield(o)&&o.ownerId);
+ const drawable=(player||ballObject||contact)&&!(isShield(o)&&o.ownerId);
  const visible=(id,on,disabled=false)=>{const el=$(id);el.hidden=!on;el.disabled=disabled};
  visible('menuDecision',moving&&!decision);
- visible('menuEditDecision',decision||annotation);
+ visible('menuEditDecision',annotation||(decision&&moving));
  visible('menuWhistle',o.type==='coach');
- visible('menuAction',canCarry(o)||o.type==='ball');
- visible('menuSpeech',canCarry(o));
+ visible('menuAction',player||ballObject);
+ visible('menuSpeech',player);
  visible('menuBreakdown',f().objects.some(m=>validPhase(m.breakdown?.phase)&&(m.id===o.id||(m.members||[]).some(member=>member.id===o.id))));
  visible('menuConeColour',o.type==='cone');
- visible('menuManageActions',!!f().interactions?.length||!!(idx&&f().objects.some(p=>p.type==='ball'&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)))));
+ const relatedAction=(f().interactions||[]).some(a=>Object.values(a).some(v=>v===o.id||Array.isArray(v)&&v.includes(o.id)));
+ const relatedBallChange=idx&&f().objects.some(p=>p.type==='ball'&&(p.id===o.id||p.ownerId===o.id)&&drill.frames[idx-1]?.objects.some(b=>b.id===p.id&&(b.ownerId||null)!==(p.ownerId||null)));
+ visible('menuManageActions',(player||ballObject||contact)&&!!(relatedAction||relatedBallChange));
 
  visible('menuRoute',drawable);
- visible('menuAddPoint',canInsertPoint());
+ visible('menuAddPoint',drawable&&canInsertPoint());
  visible('menuResetMovement',!!(idx>0&&selectedMovement()&&(canCarry(o)||o.type==='ball'&&!o.ownerId)));
- visible('menuBall',(canCarry(o)||o.type==='ball')&&hasBall,!hasBall);
+ visible('menuBall',(player||ballObject)&&hasBall,!hasBall);
  visible('menuRelease',carried&&(o.id===ball.id||o.id===ball.ownerId));
  visible('menuFront',!annotation);visible('menuBack',!annotation);
 
  visible('menuDeleteOnward',idx<drill.frames.length-1&&!annotation);
  visible('menuDeleteAll',drill.frames.length>1&&!annotation);
- $('menuDuplicate').hidden=annotation;
+ visible('menuDuplicate',!annotation);
+ visible('menuDeleteHere',true);
  const menu=$('objectMenu');$('objectMenuLabel').textContent=o.label||types[o.type][0];
  menu.hidden=false;
  menu.style.left='0px';menu.style.top='0px';
@@ -1444,6 +1452,7 @@ $('mobileObjectActions')?.addEventListener('click',()=>{
 $('objectMenu').addEventListener('click',e=>{
  const stacked=e.target.closest('[data-stack-id]');if(stacked){selectObject(stacked.dataset.stackId);closeObjectMenu();return}
  const b=e.target.closest('[data-object-command]');if(!b)return;
+ if(b.hidden||b.disabled)return;
  const command=b.dataset.objectCommand;closeObjectMenu();focusPitch();
  if(command==='actions')openActionChooser(groupIds.size>=2);
  else if(command==='cone-colour'){openInspector('Object',true);$('coneColour')?.focus()}
@@ -2130,12 +2139,15 @@ pitch.addEventListener('pointerdown',e=>{
  render();inspector();openInspector('Object',false);
  // Clicking a carried ball still selects it for passing; dragging it moves its carrier.
  const owner=o.type==='ball'||isShield(o)?carrier(f(),o):null,moving=owner||o,p=point(e);let scope=$('moveScope').value;
+ const tracked=o.type==='offsideLine'&&!!o.diagram?.followContactId;
+ const visual=tracked?trackedOffsidePosition(o,frameObjects(f(),geometry()),drill,geometry())||o:moving;
+ if(tracked)scope='here';
  if(scope!=='here'&&(!canPropagate(f(),moving)||scope==='entire'&&!canEntire(moving))){scope='here';note('Linked action: this edit applies to the current step only. Review the following transition.');}
  if(contactType(o.type)&&o.members?.length){
   drag={id:o.id,kind:'formation',items:groupSnapshot(f(),contactDragIds(f(),o),geometry()),pointerId:e.pointerId,origin:viewPoint(e),moved:false};
   note('Move the '+contactTitle(o.type).toLowerCase()+' and its involved players. This step only; other equipment stays put.');
  }else{
-  drag={id:moving.id,scope,kind:o.type==='decision'&&o.decision?.anchor!==null&&decisionRoute(f(),drill.frames[idx-1],o.decision?.playerId,geometry())?'decision-anchor':'move',pointerId:e.pointerId,dx:moving.x-p.x,dy:moving.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
+  drag={id:moving.id,scope,kind:o.type==='decision'&&o.decision?.anchor!==null&&decisionRoute(f(),drill.frames[idx-1],o.decision?.playerId,geometry())?'decision-anchor':'move',pointerId:e.pointerId,dx:visual.x-p.x,dy:visual.y-p.y,moved:false,contact:null,origin:viewPoint(e),originalPosition:{x:moving.x,y:moving.y}};
   if(owner)note((isShield(o)?'Shield':'Ball')+' attached to '+(owner.label||'player')+' · drag to move both.');
  }
  pitch.setPointerCapture(e.pointerId);
@@ -2166,11 +2178,13 @@ pitch.addEventListener('pointermove',e=>{
   const {x,y}=placement(raw,e.shiftKey);
   const before=drag.contact;
   drag.contact=(!drag.scope||drag.scope==='here')&&autoAttach&&!e.altKey?(isShield(o)?shieldTarget(f(),o,raw,geometry())||shieldTarget(f(),o,{x,y},geometry()):contactTarget(f(),o,raw,geometry())||contactTarget(f(),o,{x,y},geometry())):null;
-  if(Math.abs(x-o.x)<1e-8&&Math.abs(y-o.y)<1e-8){
+  if(!o.diagram?.followContactId&&Math.abs(x-o.x)<1e-8&&Math.abs(y-o.y)<1e-8){
    if(JSON.stringify(before)!==JSON.stringify(drag.contact))render();
    return
   }
-  o.x=x;o.y=y;
+  if(o.type==='offsideLine'&&o.diagram?.followContactId){
+   if(!moveTrackedOffsideGuide(o,frameObjects(f(),geometry()),drill,geometry(),{x,y}))return;
+  }else{o.x=x;o.y=y;}
  }
  if(!drag.moved)changed(false);
  drag.moved=true;render();
