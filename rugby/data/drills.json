@@ -12562,7 +12562,7 @@
         {
           "name": "Control and present",
           "seconds": 1.1,
-          "notes": "A1 makes the ball available behind the body at the touch mark; D1 stands clear. No opponent contests a ruck.",
+          "notes": "A1 places the ball only about one metre behind the body at the touch mark, within immediate reach. D1 stands clear; no opponent contests a ruck.",
           "objects": [
             {
               "id": "a1",
@@ -12603,7 +12603,7 @@
               "type": "ball",
               "label": "",
               "x": 431.1764705882353,
-              "y": 315.5,
+              "y": 304.5,
               "rot": 0,
               "transferKind": "presentation",
               "groundState": "presented"
@@ -31056,7 +31056,7 @@
         {
           "name": "Blue attack",
           "seconds": 0,
-          "notes": "Blue carries upward; orange defend.",
+          "notes": "Blue carries upward; orange defend. The attack reverses direction after the turnover, so this bidirectional drill deliberately has no single attack arrow.",
           "objects": [
             {
               "id": "a1",
