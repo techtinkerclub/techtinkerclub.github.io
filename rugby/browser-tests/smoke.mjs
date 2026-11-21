@@ -190,16 +190,14 @@ try {
  await framed.waitForFunction(()=>document.querySelector('#title')?.textContent.includes('Tackle, Present'));
  const sceneSVG=framed.locator('#board svg:not(.public-board-ink)');
  const complete=await sceneSVG.getAttribute('viewBox');
- // The compact Public Blackboard exposes Display settings through Tools.
- await framed.locator('.public-board-mobile-menu').click();
- await framed.locator('.public-board-toolbar button').filter({hasText:'Display'}).click();
- await framed.locator('.presentation-sidebar[data-open="true"]').waitFor({state:'visible'});
- await framed.locator('#framing').evaluate(el=>{for(let n=el;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true});
- await framed.locator('#framing').selectOption('action');
+ // Public Blackboard intentionally hides the old framing control. Use the
+ // visible floating Camera menu, which syncs the legacy value internally.
+ await framed.locator('.public-board-camera-toggle').click();
+ await framed.locator('#publicCameraTarget').selectOption('action');
  const closeView=await sceneSVG.getAttribute('viewBox');
  assert.notEqual(closeView,complete,'Presentation action camera must change only the SVG viewport');
  assert.equal(await framed.locator('#framing').inputValue(),'action');
- await framed.locator('.presentation-sidebar-close').click();
+ await framed.locator('.public-board-camera-close').click();
  const beforeZoom=await sceneSVG.getAttribute('viewBox');
  await framed.locator('#playerZoomIn').click();
  const zoomed=await sceneSVG.getAttribute('viewBox');
