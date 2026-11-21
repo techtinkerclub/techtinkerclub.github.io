@@ -2,7 +2,7 @@ import {drillSeconds,stepLocation} from './step-timeline.js?v=1';
 import {withAnnotationCamera,isVisibleAnnotation,cameraTextPlacement} from './annotation-camera.js?v=1';
 import {cleanCallouts,calloutOverlay} from './comic-callouts.js?v=6';
 import {cleanTeachingGuides,teachingGuidesSVG} from './teaching-guides.js?v=3';
-import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=4';
+import {isDiagramObject,diagramSettings,diagramSVG} from './diagram-shapes.js?v=5';
 import {tryLineEvents,tryFeedbackSVG,tryCelebrationAt} from './try-scoring.js?v=5';
 import {normaliseTextStyle,textLabelSVG} from './text-label.js?v=0.20.75';
 import {normalScaleMode,symbolTransform,labelOffset,labelPosition,cartoonLabelPosition,symbolFactors,symbolLabelSize} from './symbol-scale.js?v=0.20.88';
@@ -25,7 +25,7 @@ import {cleanBreakdowns} from './breakdown.js?v=0.12.34';
 import {cleanGuide,guideCaption,phaseOverlay} from './game-phases.js?v=0.12.0';
 import {cardLinks} from './coaching-output.js?v=0.13.10';
 import {orderObjects,copyDrawingOrder} from './draw-order.js?v=0.12.28';
-import {offsideOverlay,trackedOffsideObjects} from './offside.js?v=0.20.88';
+import {offsideOverlay,trackedOffsideObjects} from './offside.js?v=0.20.89';
 import {actionViewport,actionViewportAt,followActionViewport,wholeFieldView} from './action-camera.js?v=5';
 import {contestResultOverlay} from './ruck-outcome.js?v=0.20.76';
 export function playbackData(d){
