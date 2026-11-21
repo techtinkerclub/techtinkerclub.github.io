@@ -1,6 +1,6 @@
 import {loadPublicationData,applyPublications} from './publication.js?v=1';
 // The read-only library and player share the same curated catalogue, not browser storage.
-export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game','U10 Match Showcases','Test drills'];
+export const CATEGORIES=['Attack','Defence','Handling','Contact','Breakdown','Set piece','Movement','Game','Match-day Plays','U10 Match Showcases','Test drills'];
 export const FORMATS=['animated','card','rules'];
 export const isAnimated=d=>Array.isArray(d.frames)&&d.frames.length>1;
 export const isRules=d=>String(d.title).startsWith('Understand the game ·');
@@ -96,7 +96,28 @@ export async function loadCatalogue(fetcher=fetch){
   }
   matchShowcases=pack.drills;
  }catch(err){console.warn('U10 match showcases unavailable:',err)}
- return curated.concat(matchShowcases,showcase,qa);
+ // Four traditional, coach-call tactical patterns. The same published pack
+ // is visible in Studio and the public library; none is a demo-only renderer.
+ let matchPlays=[];
+ try{
+  const response=await fetcher(new URL('../data/match-day-plays.json?v=1',import.meta.url),{cache:'no-cache'});
+  if(!response.ok)throw Error('Match-day playbook HTTP '+response.status);
+  const pack=await response.json();
+  if(pack?.version!==1||pack.kind!=='rugby-match-day-plays'||pack.category!=='Match-day Plays'||
+     !Array.isArray(pack.drills)||pack.drills.length!==4)throw Error('Invalid match-day playbook');
+  const known=new Set([...curated,...showcase,...qa,...matchShowcases].map(d=>d.id));
+  for(const d of pack.drills){
+   if(!/^seed-\\d{3,}$/.test(d?.id)||known.has(d.id)||d.category!=='Match-day Plays'||
+      d.ageMin!==10||d.ageMax!==10||d.length!==60||d.width!==35||
+      d.pitchContext?.mode!=='field'||!Array.isArray(d.frames)||d.frames.length<5||
+      d.frames.some(f=>f.objects.filter(o=>o.type==='attacker').length!==8||
+        f.objects.filter(o=>o.type==='defender').length!==8))
+    throw Error('Invalid U10 match-day play '+d?.id);
+   known.add(d.id);
+  }
+  matchPlays=pack.drills;
+ }catch(err){console.warn('Rugby match-day playbook unavailable:',err)}
+ return curated.concat(matchPlays,matchShowcases,showcase,qa);
 }
 export async function copyText(s){
  try{await navigator.clipboard.writeText(s);return true}catch{return false}
