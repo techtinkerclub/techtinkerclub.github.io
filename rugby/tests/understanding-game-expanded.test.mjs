@@ -66,14 +66,18 @@ test('U10 three-player scrum and held-up demonstration do not misrepresent a liv
  assert(inGoal.objects.some(o=>o.id==='inGoalBand'));
  assert.equal(obj(inGoal,'b').ownerId,'a1','Held up means ball still held');
  assert.equal(stop.objects.filter(o=>o.type==='scrum').length,0,'Only award is drawn; scrum is a separate lesson');
- assert(Math.abs(distance(held,obj(stop,'restartScrum5m'),{x:450,y:100})-5)<.01);
+ const scrumMark=obj(stop,'restartScrum5m'),tryLine=obj(stop,'tryLine');
+ assert(scrumMark&&tryLine,'Both the scrum mark and try line must be present');
+ assert(Math.abs(distance(held,scrumMark,{x:scrumMark.x,y:tryLine.y})-5)<.01,
+  'Attacking scrum mark must be five metres from the actual try line, not an arbitrary coordinate');
 });
 test('scoring demonstration distinguishes crossing and grounding inside marked in-goal',()=>{
  const d=pick('seed-140');
  for(const f of d.frames){assert(f.objects.some(o=>o.id==='tryLine'));assert(f.objects.some(o=>o.id==='inGoalBand'));}
  assert.equal(obj(d.frames[2],'b').ownerId,'a1','Crossing without grounding is not yet a try');
  assert.equal(obj(d.frames[3],'b').groundState,'grounded');
- assert(obj(d.frames[3],'b').y<100,'Ball must be beyond marked try line');
+ assert(obj(d.frames[3],'b').y<obj(d.frames[3],'tryLine').y,
+  'Grounded ball must be beyond the actual marked try line');
  assert.match(renderScene(d,{index:3}).svg,/TRY LINE/);
 });
 test('maul and no-kick diagrams keep the teaching choice age appropriate',()=>{

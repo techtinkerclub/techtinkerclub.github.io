@@ -308,7 +308,16 @@ export function transitionObjects(old,next,p,g){
    if(prior&&p<switchAt){pose.type=prior.type;pose.label=prior.label;pose.breakdown=prior.breakdown}
   }
   return pose;
- }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>o.type!=='label'&&!isDiagramObject(o)&&!findObject(next,o.id)):[]);
+ }).filter(Boolean).concat(p<1?frameObjects(old,g).filter(o=>{
+  if(o.type==='label'||isDiagramObject(o)||findObject(next,o.id))return false;
+  // A formed ruck disappears once an available ball has actually been picked up.
+  // Otherwise the old marker wrongly stays on screen throughout the whole step.
+  if(o.type==='ruck'){
+   const pickup=(next.objects||[]).find(b=>b.type==='ball'&&b.ownerId&&b.transferKind==='pickup');
+   if(pickup&&p*100>=(next.timing?.[pickup.id]?.end??75))return false;
+  }
+  return true;
+ }):[]);
  // Old markers are kept for visual continuity, but may never control a player who has left.
  return result.map(o=>{if(!o.members?.length)return o;const members=o.members.filter(m=>{const recovery=recoveries.get(m.id);return !recovery||p<=recovery.start||m.pose===recovery.target&&formationPose(next,m.id)===m.pose});return members.length===o.members.length?o:{...o,members}});
 }
