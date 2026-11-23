@@ -16,13 +16,6 @@ This page will grow over time — bookmark it!
 
 ---
 
-## 🧮 Classroom Generators
-
-- [**99 Club Studio**](/tools/99-club/)  
-  Create, customise, save and reproduce personalised 99 Club and advanced mental-maths worksheets with matching answer keys. Includes reusable presets, portable setup files, full browser backup and teacher-copy recreation QR codes. Everything runs privately in your browser.
-
----
-
 ## 🔧 Tools
 
 - [BBC MakeCode for micro:bit](https://makecode.microbit.org){:target="_blank" rel="noopener"}  
@@ -84,6 +77,4 @@ This page will grow over time — bookmark it!
   [CADclass.org]](https://www.cadclass.org/pages/tinkercadbook){:target="_blank" rel="noopener"}
   [[TTC Sharedrive]](https://drive.google.com/file/d/1c0yNEGlk4vJSmzpAin5Frp9Mc-DfZ0JU/view?usp=drive_link){:target="_blank" rel="noopener"}
 
-
 ---
-
