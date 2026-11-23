@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a problem with the Tech Tinker Club website or 99 Club Studio.
+description: Report a problem with the Tech Tinker Club website or a supporting club tool.
 body:
   - type: dropdown
     id: area
@@ -7,9 +7,9 @@ body:
       label: Area
       options:
         - Tech Tinker Club website/content
-        - 99 Club
-        - Custom Worksheets
-        - Maths Games & Puzzles
+        - Curriculum / lesson content
+        - Tools / tutorials
+        - Supporting app or project
         - Other
     validations:
       required: true
@@ -33,7 +33,7 @@ body:
     id: reproduce
     attributes:
       label: Steps to reproduce
-      description: Include selected years/topics/game settings or worksheet settings when relevant.
+      description: Include the page, activity or settings involved when relevant.
     validations:
       required: false
 
@@ -48,7 +48,7 @@ body:
   - type: textarea
     id: evidence
     attributes:
-      label: Screenshots, PDF details or other notes
-      description: Screenshots and details of generated PDFs are especially useful for layout issues.
+      label: Screenshots or other notes
+      description: Screenshots are especially useful for layout issues.
     validations:
       required: false

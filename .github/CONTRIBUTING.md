@@ -1,16 +1,16 @@
 # Contributing
 
-This repository is the Tech Tinker Club website and 99 Club Studio codebase.
+This repository contains the Tech Tinker Club website and supporting club tools.
 
-For project structure and current maintainer guidance, start with [`../docs/README.md`](../docs/README.md).
+For project structure and maintainer guidance, start with [`../docs/README.md`](../docs/README.md).
 
-When changing 99 Club Studio:
+When making changes:
 
 1. Work on a branch and keep the change focused.
-2. Preserve deterministic generation unless the change intentionally modifies the maths engine.
-3. Check browser preview and generated PDF for visual or worksheet changes.
-4. Run the relevant regression tests under `assets/99club/tests/`.
-5. Add or update invariant-based tests for new behaviour; avoid tests that only pin cache strings or obsolete internal version numbers.
-6. Do not add maintainer release notes or roadmaps to repository root. Put current documentation under `docs/` and historical material under `docs/archive/`.
+2. Check the affected browser UI where relevant.
+3. Check curriculum/lesson links when changing public content.
+4. Run the relevant tests for any supporting application you modify.
+5. Add or update tests for new behaviour where practical.
+6. Keep maintainer notes under `docs/`; that directory is excluded from the public Jekyll build.
 
-For Games & Puzzles work, see [`../docs/99club/GAMES.md`](../docs/99club/GAMES.md).
+Avoid committing generated logs, temporary reports or one-off release artefacts as public site content.

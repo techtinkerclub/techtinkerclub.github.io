@@ -20,6 +20,17 @@ plugins:
 include:
   - "_pages"
 
+# Internal repository material must never be copied into the public site.
+exclude:
+  - docs
+  - scripts
+  - README.md
+  - package.json
+  - package-lock.json
+  - Rakefile
+  - Gemfile
+  - .travis.yml
+
 # Logo
 logo: "/assets/images/logo300px.png"
 
